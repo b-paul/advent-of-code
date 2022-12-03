@@ -83,7 +83,8 @@ mod benches {
     #[bench]
     fn part1(b: &mut Bencher) {
         b.iter(|| {
-            include_str!("../../input/2022/2.txt").to_string()
+            include_str!("../../input/2022/2.txt")
+                .to_string()
                 .lines()
                 .map(|line| score_part1(line))
                 .sum::<u64>()
@@ -91,14 +92,92 @@ mod benches {
         });
     }
 
+    // this was ~6.6 times faster, but was also 2.75x faster on top of that when using
+    // RUSTFLAGS="target-cpu=native" (I have a ryzen 5 2600)
+    // I guess some simd stuff makes it faster
+    #[bench]
+    fn possibly_faster_part1(b: &mut Bencher) {
+        b.iter(|| {
+            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let mut total = 0;
+            for i in 0..(s.len() / 4) {
+                let them = (s[4*i + 0] - b'A') as i8;
+                let us = (s[4*i + 2] - b'X') as i8;
+                total += (1 + us + ((4 + us - them) % 3) * 3) as u64;
+            }
+            assert_eq!(total, 13809);
+            total
+        });
+    }
+
+    // like 2x faster again almost
+    // This is only faster when you don't have access to some simd stuff it seems
+    // i guess a lookup isn't very easy to do simd maybe? or maybe it's easy with avx512 or
+    // something
+    #[bench]
+    fn possibly_even_faster_part1(b: &mut Bencher) {
+        const SOLS: [[u8; 3]; 3] = [
+            [4, 1, 7],
+            [8, 5, 2],
+            [3, 9, 6],
+        ];
+        b.iter(|| {
+            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let mut total = 0;
+            for i in 0..(s.len() / 4) {
+                let them = (s[4*i + 0] - b'A') as usize;
+                let us = (s[4*i + 2] - b'X') as usize;
+                total += SOLS[us][them] as u64;
+            }
+            assert_eq!(total, 13809);
+            total
+        });
+    }
+
     #[bench]
     fn part2(b: &mut Bencher) {
         b.iter(|| {
-            include_str!("../../input/2022/2.txt").to_string()
+            include_str!("../../input/2022/2.txt")
+                .to_string()
                 .lines()
                 .map(|line| score_part2(line))
                 .sum::<u64>()
                 .to_string()
+        });
+    }
+
+    #[bench]
+    fn possibly_faster_part2(b: &mut Bencher) {
+        b.iter(|| {
+            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let mut total = 0;
+            for i in 0..(s.len() / 4) {
+                let them = (s[4*i + 0] - b'A') as i8;
+                let result = (s[4*i + 2] - b'X') as i8;
+                total += (3 * result + 1 + (them + result + 2) % 3) as u64
+            }
+            assert_eq!(total, 12316);
+            total
+        });
+    }
+
+    #[bench]
+    fn possibly_even_faster_part2(b: &mut Bencher) {
+        const SOLS: [[u8; 3]; 3] = [
+            [3, 1, 2],
+            [4, 5, 6],
+            [8, 9, 7],
+        ];
+        b.iter(|| {
+            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let mut total = 0;
+            for i in 0..(s.len() / 4) {
+                let them = (s[4*i + 0] - b'A') as usize;
+                let result = (s[4*i + 2] - b'X') as usize;
+                total += SOLS[result][them] as u64;
+            }
+            assert_eq!(total, 12316);
+            total
         });
     }
 }

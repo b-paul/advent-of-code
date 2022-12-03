@@ -1,0 +1,92 @@
+use std::fs::File;
+use std::io::{BufReader, BufRead};
+
+fn priority_of(byte: u8) -> u64 {
+    if byte >= b'a' {
+        1 + byte - b'a'
+    } else {
+        1 + byte - b'A' + 26
+    }.into()
+}
+
+fn part1_calculate(line: String) -> u8 {
+    let len = line.len();
+    let (bytes1, bytes2) = line.as_bytes().split_at(len/2);
+
+    // Create a bitmasks where the nth bit represents compartment 1 containing an item of priority
+    // n
+    let mut mask = 0u64;
+    for b in bytes1 {
+        mask |= 1 << (priority_of(*b));
+    }
+    for b in bytes2 {
+        if mask & 1 << (priority_of(*b)) != 0 {
+            return *b;
+        }
+    }
+    unreachable!()
+}
+
+#[test]
+fn part1_tests() {
+    assert_eq!(part1_calculate("vJrwpWtwJgWrhcsFMMfFFhFp".to_string()), b'p');
+    assert_eq!(part1_calculate("jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL".to_string()), b'L');
+    assert_eq!(part1_calculate("PmmdzqPrVvPwwTWBwg".to_string()), b'P');
+    assert_eq!(part1_calculate("wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn".to_string()), b'v');
+    assert_eq!(part1_calculate("ttgJtRGJQctTZtZT".to_string()), b't');
+    assert_eq!(part1_calculate("CrZsJsPPZsGzwwsLwLmpwMDw".to_string()), b's');
+    assert_eq!(priority_of(b'p'), 16);
+    assert_eq!(priority_of(b'L'), 38);
+    assert_eq!(priority_of(b'P'), 42);
+    assert_eq!(priority_of(b'v'), 22);
+    assert_eq!(priority_of(b't'), 20);
+    assert_eq!(priority_of(b's'), 19);
+}
+
+pub fn part_1(reader: BufReader<File>) -> String {
+    reader
+        .lines()
+        .map(|l| priority_of(part1_calculate(l.unwrap())))
+        .sum::<u64>()
+        .to_string()
+}
+
+fn part2_calculate(l1: String, l2: String, l3: String) -> u64 {
+    let mut mask1 = 0u64;
+    let mut mask2 = 0u64;
+    for b in l1.as_bytes() {
+        mask1 |= 1 << (priority_of(*b));
+    }
+    for b in l2.as_bytes() {
+        mask2 |= 1 << (priority_of(*b));
+    }
+    let mask = mask1 & mask2;
+    for b in l3.as_bytes() {
+        if mask & (1 << priority_of(*b)) != 0 {
+            return priority_of(*b);
+        }
+    }
+
+    unreachable!()
+}
+
+#[test]
+fn part2_tests() {
+    assert_eq!(part2_calculate(
+        "vJrwpWtwJgWrhcsFMMfFFhFp".to_string(),
+        "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL".to_string(),
+        "PmmdzqPrVvPwwTWBwg".to_string()), priority_of(b'r'));
+    assert_eq!(part2_calculate(
+            "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn".to_string(),
+            "ttgJtRGJQctTZtZT".to_string(),
+            "CrZsJsPPZsGzwwsLwLmpwMDw".to_string()), priority_of(b'Z'));
+}
+
+pub fn part_2(reader: BufReader<File>) -> String {
+    reader
+        .lines()
+        .array_chunks::<3>()
+        .map(|[l1, l2, l3]| part2_calculate(l1.unwrap(), l2.unwrap(), l3.unwrap()))
+        .sum::<u64>()
+        .to_string()
+}

@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
+#![feature(iter_array_chunks)]
 #![feature(test)]
 extern crate test;
 
