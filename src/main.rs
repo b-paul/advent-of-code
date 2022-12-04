@@ -19,13 +19,13 @@ use std::fs::File;
 use std::io::BufReader;
 
 fn run_part1(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = File::open(&file)?;
+    let file = File::open(file)?;
     let reader = BufReader::new(file);
     Ok((day.part1)(reader))
 }
 
 fn run_part2(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = File::open(&file)?;
+    let file = File::open(file)?;
     let reader = BufReader::new(file);
     Ok((day.part2)(reader))
 }
