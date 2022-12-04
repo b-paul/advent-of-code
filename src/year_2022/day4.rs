@@ -14,8 +14,7 @@ pub fn part_1(reader: BufReader<File>) -> String {
                 nums.next().unwrap().parse::<i64>().unwrap(),
             );
 
-            //u64::from((e1min >= e2min && e1max <= e2max) || (e2min >= e1min && e2max <= e1max))
-            u64::from((e1min >= e2min) == (e1max <= e2max))
+            u64::from((e1min >= e2min && e1max <= e2max) || (e2min >= e1min && e2max <= e1max))
         })
         .sum::<u64>()
         .to_string()
