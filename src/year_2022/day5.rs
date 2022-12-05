@@ -41,7 +41,7 @@ pub fn part_1(reader: BufReader<File>) -> String {
         }
     }
 
-    stack.iter().map(|v| v[0]).fold("".to_string(), |s, c| s + &c.to_string())
+    stack.iter().map(|v| v[0]).collect()
 }
 
 pub fn part_2(reader: BufReader<File>) -> String {
@@ -87,5 +87,5 @@ pub fn part_2(reader: BufReader<File>) -> String {
         }
     }
 
-    stack.iter().map(|v| v[0]).fold("".to_string(), |s, c| s + &c.to_string())
+    stack.iter().map(|v| v[0]).collect()
 }
