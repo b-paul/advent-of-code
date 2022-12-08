@@ -24,7 +24,7 @@ pub fn part_1(reader: BufReader<File>) -> String {
             }
         } else {
             // First line will be a blank line
-            if line.len() != 0 {
+            if !line.is_empty() {
                 let mut words = line.split_whitespace();
                 words.next();
                 let count = words.next().unwrap().parse::<usize>().unwrap();
@@ -66,7 +66,7 @@ pub fn part_2(reader: BufReader<File>) -> String {
             }
         } else {
             // First line will be a blank line
-            if line.len() != 0 {
+            if !line.is_empty() {
                 let mut words = line.split_whitespace();
                 words.next();
                 let count = words.next().unwrap().parse::<usize>().unwrap();

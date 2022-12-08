@@ -3,8 +3,8 @@ use std::io::{BufRead, BufReader, Read};
 
 fn find_idx<const WIDTH: usize>(buf: &[u8]) -> usize {
     let mut mask: u64 = 0;
-    for i in 0..WIDTH {
-        mask ^= 1 << (buf[i] - b'a');
+    for byte in buf.iter().take(WIDTH) {
+        mask ^= 1 << (byte - b'a');
     }
     if mask.count_ones() == WIDTH as _ {
         return 1;
@@ -58,13 +58,6 @@ mod benches {
     fn part1(b: &mut Bencher) {
         b.iter(|| {
             find_idx::<4>(include_str!("../../input/2022/6.txt").as_bytes())
-        })
-    }
-
-    #[bench]
-    fn part1_simd(b: &mut Bencher) {
-        let input = include_bytes!("../../input/2022/6.txt");
-        b.iter(|| {
         })
     }
 

@@ -59,7 +59,7 @@ fn sum_small_dirs(dir: &Directory) -> u64 {
         total += dir.size();
     }
     for dir in &dir.dirs {
-        total += sum_small_dirs(&dir);
+        total += sum_small_dirs(dir);
     }
     total
 }
@@ -70,7 +70,7 @@ pub fn part_1(reader: BufReader<File>) -> String {
 
     for line in reader.lines().skip(1).map(|l| l.unwrap()) {
         let parts = line.split(' ').collect::<Vec<&str>>();
-        if parts[0].starts_with("$") {
+        if parts[0].starts_with('$') {
             if parts[1] == "cd" {
                 if parts[2] == ".." {
                     current_dir.pop();
@@ -80,12 +80,10 @@ pub fn part_1(reader: BufReader<File>) -> String {
             }
             // We don't care if the command says ls because output that doesn't start with a $ can
             // only be from calling an ls
+        } else if parts[0] == "dir" {
+            add_dir(&mut root_dir, current_dir.clone(), parts[1]);
         } else {
-            if parts[0] == "dir" {
-                add_dir(&mut root_dir, current_dir.clone(), parts[1]);
-            } else {
-                add_file(&mut root_dir, current_dir.clone(), parts[0].parse().unwrap());
-            }
+            add_file(&mut root_dir, current_dir.clone(), parts[0].parse().unwrap());
         }
     }
 
@@ -115,7 +113,7 @@ pub fn part_2(reader: BufReader<File>) -> String {
 
     for line in reader.lines().skip(1).map(|l| l.unwrap()) {
         let parts = line.split(' ').collect::<Vec<&str>>();
-        if parts[0].starts_with("$") {
+        if parts[0].starts_with('$') {
             if parts[1] == "cd" {
                 if parts[2] == ".." {
                     current_dir.pop();
@@ -125,12 +123,10 @@ pub fn part_2(reader: BufReader<File>) -> String {
             }
             // We don't care if the command says ls because output that doesn't start with a $ can
             // only be from calling an ls
+        } else if parts[0] == "dir" {
+            add_dir(&mut root_dir, current_dir.clone(), parts[1]);
         } else {
-            if parts[0] == "dir" {
-                add_dir(&mut root_dir, current_dir.clone(), parts[1]);
-            } else {
-                add_file(&mut root_dir, current_dir.clone(), parts[0].parse().unwrap());
-            }
+            add_file(&mut root_dir, current_dir.clone(), parts[0].parse().unwrap());
         }
     }
 
