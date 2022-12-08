@@ -109,7 +109,7 @@ fn smallest_big_enough_dir(dir: &Directory, needed: u64) -> u64 {
     min
 }
 
-pub fn part_2(mut reader: BufReader<File>) -> String {
+pub fn part_2(reader: BufReader<File>) -> String {
     let mut root_dir = Directory::default();
     let mut current_dir = vec![];
 
