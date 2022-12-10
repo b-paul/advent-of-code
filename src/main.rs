@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
-
 #![feature(iter_array_chunks)]
 #![feature(array_chunks)]
 #![feature(test)]
@@ -16,30 +15,28 @@ mod year_2020;
 mod year_2021;
 mod year_2022;
 
-use std::fs::File;
-use std::io::BufReader;
+use std::fs::read_to_string;
+use std::io::Read;
 
 fn run_part1(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = File::open(file)?;
-    let reader = BufReader::new(file);
-    Ok((day.part1)(reader))
+    let file = read_to_string(file)?;
+    Ok((day.part1)(file))
 }
 
 fn run_part2(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = File::open(file)?;
-    let reader = BufReader::new(file);
-    Ok((day.part2)(reader))
+    let file = read_to_string(file)?;
+    Ok((day.part2)(file))
 }
 
 macro_rules! run_year {
     ($year:ident, $year_num:expr) => {
         for (i, day) in $year::DAYS.iter().enumerate() {
-            let input_file = format!("input/{}/{}.txt", $year_num, i+1);
+            let input_file = format!("input/{}/{}.txt", $year_num, i + 1);
 
             println!("Day {} part 1: {}", i + 1, run_part1(&input_file, day)?);
             println!("Day {} part 2: {}", i + 1, run_part2(&input_file, day)?);
         }
-    }
+    };
 }
 
 fn main() -> std::io::Result<()> {

@@ -1,6 +1,4 @@
 use std::cmp::min;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 use std::collections::BTreeSet;
 
 fn solve_p1(line: String) -> u64 {
@@ -38,8 +36,8 @@ fn p1_tests() {
     assert_eq!(solve_p1("^v^v^v^v^v".to_string()), 2);
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
-    solve_p1(reader.lines().next().unwrap().unwrap()).to_string()
+pub fn part_1(input: String) -> String {
+    solve_p1(input.lines().next().unwrap().to_string()).to_string()
 }
 
 fn solve_p2(line: String) -> u64 {
@@ -89,6 +87,6 @@ fn p2_tests() {
     assert_eq!(solve_p2("^v^v^v^v^v".to_string()), 11);
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
-    solve_p2(reader.lines().next().unwrap().unwrap()).to_string()
+pub fn part_2(input: String) -> String {
+    solve_p2(input.lines().next().unwrap().to_string()).to_string()
 }

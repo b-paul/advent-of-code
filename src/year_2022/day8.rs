@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
-
 fn is_visible(trees: &Vec<Vec<u8>>, x: usize, y: usize) -> bool {
     let height = trees[y][x];
     let mut visible = false;
@@ -12,10 +9,10 @@ fn is_visible(trees: &Vec<Vec<u8>>, x: usize, y: usize) -> bool {
     visible
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
+pub fn part_1(input: String) -> String {
     let mut trees: Vec<Vec<u8>> = vec![];
 
-    for line in reader.lines().map(|l| l.unwrap()) {
+    for line in input.lines() {
         let mut row = vec![];
         for byte in line.as_bytes() {
             row.push(byte - b'0');
@@ -46,10 +43,10 @@ fn scenic_score(trees: &Vec<Vec<u8>>, x: usize, y: usize) -> usize {
     score
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
+pub fn part_2(input: String) -> String {
     let mut trees: Vec<Vec<u8>> = vec![];
 
-    for line in reader.lines().map(|l| l.unwrap()) {
+    for line in input.lines() {
         let mut row = vec![];
         for byte in line.as_bytes() {
             row.push(byte - b'0');

@@ -1,6 +1,4 @@
 use std::cmp::min;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
 fn solve_p1(line: String) -> u64 {
     let line = line;
@@ -27,11 +25,11 @@ fn p1_tests() {
     assert_eq!(solve_p1("1x1x10".to_string()), 43);
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
+pub fn part_1(input: String) -> String {
     let mut total: u64 = 0;
 
-    for line in reader.lines() {
-        total += solve_p1(line.unwrap());
+    for line in input.lines() {
+        total += solve_p1(line.to_string());
     }
 
     total.to_string()
@@ -62,11 +60,11 @@ fn p2_tests() {
     assert_eq!(solve_p2("1x1x10".to_string()), 14);
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
+pub fn part_2(input: String) -> String {
     let mut total: u64 = 0;
 
-    for line in reader.lines() {
-        total += solve_p2(line.unwrap());
+    for line in input.lines() {
+        total += solve_p2(line.to_string());
     }
 
     total.to_string()
