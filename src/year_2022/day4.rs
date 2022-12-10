@@ -1,10 +1,6 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
-
-pub fn part_1(reader: BufReader<File>) -> String {
-    reader
+pub fn part_1(input: String) -> String {
+    input
         .lines()
-        .map(|l| l.unwrap())
         .map(|l| {
             let mut nums = l.split(&['-', ',']);
             let (e1min, e1max, e2min, e2max) = (
@@ -20,10 +16,9 @@ pub fn part_1(reader: BufReader<File>) -> String {
         .to_string()
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
-    reader
+pub fn part_2(input: String) -> String {
+    input
         .lines()
-        .map(|l| l.unwrap())
         .map(|l| {
             let mut nums = l.split(&['-', ',']);
             let (e1min, e1max, e2min, e2max) = (

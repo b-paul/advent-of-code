@@ -1,9 +1,7 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
 use std::collections::VecDeque;
 
-pub fn part_1(reader: BufReader<File>) -> String {
-    let lines = reader.lines().map(|l| l.unwrap());
+pub fn part_1(input: String) -> String {
+    let lines = input.lines();
 
     let mut reading_crates = true;
 
@@ -14,7 +12,7 @@ pub fn part_1(reader: BufReader<File>) -> String {
             if line.as_bytes()[1] == b'1' {
                 reading_crates = false;
             }
-            for (i, bytes) in (line + " ").as_bytes().array_chunks::<4>().enumerate() {
+            for (i, bytes) in (line.to_owned() + " ").as_bytes().array_chunks::<4>().enumerate() {
                 if stack.len() <= i {
                     stack.push(VecDeque::new())
                 }
@@ -44,8 +42,8 @@ pub fn part_1(reader: BufReader<File>) -> String {
     stack.iter().map(|v| v[0]).collect()
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
-    let lines = reader.lines().map(|l| l.unwrap());
+pub fn part_2(input: String) -> String {
+    let lines = input.lines();
 
     let mut reading_crates = true;
 
@@ -56,7 +54,7 @@ pub fn part_2(reader: BufReader<File>) -> String {
             if line.as_bytes()[1] == b'1' {
                 reading_crates = false;
             }
-            for (i, bytes) in (line + " ").as_bytes().array_chunks::<4>().enumerate() {
+            for (i, bytes) in (line.to_owned() + " ").as_bytes().array_chunks::<4>().enumerate() {
                 if stack.len() <= i {
                     stack.push(VecDeque::new())
                 }

@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::{BufReader, Read};
-
 fn elf_callories(str: &str) -> u64 {
     let mut total = 0;
 
@@ -13,11 +10,8 @@ fn elf_callories(str: &str) -> u64 {
     total
 }
 
-pub fn part_1(mut reader: BufReader<File>) -> String {
-    let mut str = String::new();
-    reader.read_to_string(&mut str).unwrap();
-
-    let mut str = str.chars();
+pub fn part_1(input: String) -> String {
+    let mut str = input.chars();
     str.next_back();
     let elves = str.as_str().split("\n\n");
 
@@ -26,11 +20,8 @@ pub fn part_1(mut reader: BufReader<File>) -> String {
     most_callories.to_string()
 }
 
-pub fn part_2(mut reader: BufReader<File>) -> String {
-    let mut str = String::new();
-    reader.read_to_string(&mut str).unwrap();
-
-    let mut str = str.chars();
+pub fn part_2(input: String) -> String {
+    let mut str = input.chars();
     str.next_back();
     let elves = str.as_str().split("\n\n");
 

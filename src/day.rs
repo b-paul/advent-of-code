@@ -2,8 +2,8 @@ use std::fs::File;
 use std::io::BufReader;
 
 pub struct Day {
-    pub part1: fn(BufReader<File>) -> String,
-    pub part2: fn(BufReader<File>) -> String,
+    pub part1: fn(String) -> String,
+    pub part2: fn(String) -> String,
 }
 
 #[macro_export]

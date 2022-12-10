@@ -1,12 +1,10 @@
 use std::collections::HashSet;
-use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
 
 fn mv_tail(head: (i32, i32), tail: (i32, i32)) -> bool {
     (head.0 - tail.0).abs() > 1 || (head.1 - tail.1).abs() > 1
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
+pub fn part_1(input: String) -> String {
     let mut head_pos = (0, 0);
     let mut old_head_pos;
     let mut tail_pos = (0, 0);
@@ -15,7 +13,7 @@ pub fn part_1(reader: BufReader<File>) -> String {
 
     pos_map.insert(tail_pos);
 
-    for line in reader.lines().map(|l| l.unwrap()) {
+    for line in input.lines() {
         let bytes = line.as_bytes();
 
         let n = line.split(' ').nth(1).unwrap().parse().unwrap();
@@ -93,7 +91,7 @@ fn newpos(k1: (i32, i32), k2: (i32, i32)) -> (i32, i32) {
     unreachable!()
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
+pub fn part_2(input: String) -> String {
     let mut knots_pos = [(0, 0); 10];
     let mut old_knots_pos = [(0, 0); 10];
 
@@ -103,7 +101,7 @@ pub fn part_2(reader: BufReader<File>) -> String {
 
     pos_map.insert(knots_pos[9]);
 
-    for line in reader.lines().map(|l| l.unwrap()) {
+    for line in input.lines() {
         let bytes = line.as_bytes();
 
         let n = line.split(' ').nth(1).unwrap().parse().unwrap();

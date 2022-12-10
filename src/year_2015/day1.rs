@@ -1,13 +1,7 @@
-use std::fs::File;
-use std::io::{BufReader, Read};
-
-pub fn part_1(mut reader: BufReader<File>) -> String {
-    let mut input = vec![];
-    reader.read_to_end(&mut input).unwrap();
-
+pub fn part_1(input: String) -> String {
     let mut floor = 0;
 
-    for ch in input {
+    for ch in input.bytes() {
         if ch == b'(' {
             floor += 1;
         } else if ch == b')' {
@@ -18,16 +12,13 @@ pub fn part_1(mut reader: BufReader<File>) -> String {
     floor.to_string()
 }
 
-pub fn part_2(mut reader: BufReader<File>) -> String {
-    let mut input = vec![];
-    reader.read_to_end(&mut input).unwrap();
-
+pub fn part_2(input: String) -> String {
     let mut floor = 0;
 
-    for (i, ch) in input.iter().enumerate() {
-        if *ch == b'(' {
+    for (i, ch) in input.bytes().enumerate() {
+        if ch == b'(' {
             floor += 1;
-        } else if *ch == b')' {
+        } else if ch == b')' {
             floor -= 1;
         }
         if floor < 0 {

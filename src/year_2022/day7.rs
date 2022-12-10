@@ -1,5 +1,3 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
 use std::collections::VecDeque;
 
 #[derive(Debug, Default)]
@@ -64,11 +62,11 @@ fn sum_small_dirs(dir: &Directory) -> u64 {
     total
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
+pub fn part_1(input: String) -> String {
     let mut root_dir = Directory::default();
     let mut current_dir = vec![];
 
-    for line in reader.lines().skip(1).map(|l| l.unwrap()) {
+    for line in input.lines().skip(1) {
         let parts = line.split(' ').collect::<Vec<&str>>();
         if parts[0].starts_with('$') {
             if parts[1] == "cd" {
@@ -107,11 +105,11 @@ fn smallest_big_enough_dir(dir: &Directory, needed: u64) -> u64 {
     min
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
+pub fn part_2(input: String) -> String {
     let mut root_dir = Directory::default();
     let mut current_dir = vec![];
 
-    for line in reader.lines().skip(1).map(|l| l.unwrap()) {
+    for line in input.lines().skip(1) {
         let parts = line.split(' ').collect::<Vec<&str>>();
         if parts[0].starts_with('$') {
             if parts[1] == "cd" {

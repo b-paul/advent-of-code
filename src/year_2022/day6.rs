@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader, Read};
-
 fn find_idx<const WIDTH: usize>(buf: &[u8]) -> usize {
     let mut mask: u64 = 0;
     for byte in buf.iter().take(WIDTH) {
@@ -29,8 +26,8 @@ fn header_test() {
     assert_eq!(find_idx::<4>("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw".as_bytes()), 11);
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
-    let bytes: Vec<u8> = reader.bytes().map(|b| b.unwrap()).collect();
+pub fn part_1(input: String) -> String {
+    let bytes: Vec<u8> = input.bytes().collect();
 
     find_idx::<4>(&bytes).to_string()
 }
@@ -43,8 +40,8 @@ fn message_test() {
     assert_eq!(find_idx::<14>("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw".as_bytes()), 26);
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
-    let bytes: Vec<u8> = reader.bytes().map(|b| b.unwrap()).collect();
+pub fn part_2(input: String) -> String {
+    let bytes: Vec<u8> = input.bytes().collect();
 
     find_idx::<14>(&bytes).to_string()
 }

@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::{BufReader, BufRead};
-
 fn priority_of(byte: u8) -> u64 {
     if byte >= b'a' {
         1 + byte - b'a'
@@ -44,10 +41,10 @@ fn part1_tests() {
     assert_eq!(priority_of(b's'), 19);
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
-    reader
+pub fn part_1(input: String) -> String {
+    input
         .lines()
-        .map(|l| priority_of(part1_calculate(l.unwrap())))
+        .map(|l| priority_of(part1_calculate(l.to_owned())))
         .sum::<u64>()
         .to_string()
 }
@@ -83,11 +80,11 @@ fn part2_tests() {
             "CrZsJsPPZsGzwwsLwLmpwMDw".to_string()), priority_of(b'Z'));
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
-    reader
+pub fn part_2(input: String) -> String {
+    input
         .lines()
         .array_chunks::<3>()
-        .map(|[l1, l2, l3]| part2_calculate(l1.unwrap(), l2.unwrap(), l3.unwrap()))
+        .map(|[l1, l2, l3]| part2_calculate(l1.to_string(), l2.to_string(), l3.to_string()))
         .sum::<u64>()
         .to_string()
 }

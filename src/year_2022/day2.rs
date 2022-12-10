@@ -1,6 +1,3 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-
 fn score_part1(game: &str) -> u64 {
     let bytes = game.as_bytes();
     let them = (bytes[0] - b'A') as i8;
@@ -40,10 +37,10 @@ fn scoring_part1_test() {
     assert_eq!(score_part1("C Z"), 6);
 }
 
-pub fn part_1(reader: BufReader<File>) -> String {
-    reader
+pub fn part_1(input: String) -> String {
+    input
         .lines()
-        .map(|line| score_part1(line.unwrap().as_str()))
+        .map(score_part1)
         .sum::<u64>()
         .to_string()
 }
@@ -67,10 +64,10 @@ fn scoring_part2_test() {
     assert_eq!(score_part2("C Z"), 7);
 }
 
-pub fn part_2(reader: BufReader<File>) -> String {
-    reader
+pub fn part_2(input: String) -> String {
+    input
         .lines()
-        .map(|line| score_part2(line.unwrap().as_str()))
+        .map(score_part2)
         .sum::<u64>()
         .to_string()
 }
@@ -86,7 +83,7 @@ mod benches {
             include_str!("../../input/2022/2.txt")
                 .to_string()
                 .lines()
-                .map(|line| score_part1(line))
+                .map(score_part1)
                 .sum::<u64>()
                 .to_string()
         });
@@ -140,7 +137,7 @@ mod benches {
             include_str!("../../input/2022/2.txt")
                 .to_string()
                 .lines()
-                .map(|line| score_part2(line))
+                .map(score_part2)
                 .sum::<u64>()
                 .to_string()
         });
