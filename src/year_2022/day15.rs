@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 fn remove_dupe_iter(ranges: &Vec<std::ops::Range<isize>>) -> Vec<std::ops::Range<isize>> {
     let mut new_ranges: Vec<std::ops::Range<isize>> = vec![];
 
