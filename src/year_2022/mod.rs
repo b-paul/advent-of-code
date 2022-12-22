@@ -2,7 +2,7 @@ use crate::day::Day;
 use crate::make_day;
 
 // Amount of days that have problems so far this year
-pub const DAYS_NUM: usize = 16;
+pub const DAYS_NUM: usize = 22;
 
 pub const DAYS: [Day; DAYS_NUM] = [
     make_day!(day1),
@@ -21,6 +21,12 @@ pub const DAYS: [Day; DAYS_NUM] = [
     make_day!(day14),
     make_day!(day15),
     make_day!(day16),
+    make_day!(day17),
+    make_day!(day18),
+    make_day!(day19),
+    make_day!(day20),
+    make_day!(day21),
+    make_day!(day22),
 ];
 
 mod day1;
@@ -39,3 +45,9 @@ mod day13;
 mod day14;
 mod day15;
 mod day16;
+mod day17;
+mod day18;
+mod day19;
+mod day20;
+mod day21;
+mod day22;
