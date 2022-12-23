@@ -10,35 +10,6 @@ pub fn part_1(input: String) -> String {
         }
     }
 
-    let mut minx = 999999;
-    let mut miny = 999999;
-    let mut maxx = -999999;
-    let mut maxy = -999999;
-
-    for (x, y) in &elves {
-        minx = minx.min(*x);
-        miny = miny.min(*y);
-        maxx = maxx.max(*x);
-        maxy = maxy.max(*y);
-    }
-
-    println!("{} {} {} {}", minx, miny, maxx, maxy);
-
-    println!("{:?}", elves);
-
-    for y in miny..=maxy {
-        for x in minx..=maxx {
-            if elves.contains(&(x, y)) {
-                print!("#");
-            } else {
-                print!(".");
-            }
-        }
-        println!();
-    }
-    println!();
-    println!();
-
     let mut new_state = HashSet::new();
 
     for round in 0..10 {
@@ -114,30 +85,6 @@ pub fn part_1(input: String) -> String {
                 elves.insert((*tx, *ty));
             }
         }
-        let mut minx = 999999;
-        let mut miny = 999999;
-        let mut maxx = -999999;
-        let mut maxy = -999999;
-
-        for (x, y) in &elves {
-            minx = minx.min(*x);
-            miny = miny.min(*y);
-            maxx = maxx.max(*x);
-            maxy = maxy.max(*y);
-        }
-
-        for y in miny..=maxy {
-            for x in minx..=maxx {
-                if elves.contains(&(x, y)) {
-                    print!("#");
-                } else {
-                    print!(".");
-                }
-            }
-            println!();
-        }
-        println!();
-        println!();
 
         new_state.clear();
     }
@@ -152,8 +99,6 @@ pub fn part_1(input: String) -> String {
         maxx = maxx.max(*x);
         maxy = maxy.max(*y);
     }
-
-    println!("{} {} {} {}", minx, miny, maxx, maxy);
 
     let mut total = 0;
     for x in minx..=maxx {
@@ -193,35 +138,6 @@ pub fn part_2(input: String) -> String {
             }
         }
     }
-
-    let mut minx = 999999;
-    let mut miny = 999999;
-    let mut maxx = -999999;
-    let mut maxy = -999999;
-
-    for (x, y) in &elves {
-        minx = minx.min(*x);
-        miny = miny.min(*y);
-        maxx = maxx.max(*x);
-        maxy = maxy.max(*y);
-    }
-
-    println!("{} {} {} {}", minx, miny, maxx, maxy);
-
-    println!("{:?}", elves);
-
-    for y in miny..=maxy {
-        for x in minx..=maxx {
-            if elves.contains(&(x, y)) {
-                print!("#");
-            } else {
-                print!(".");
-            }
-        }
-        println!();
-    }
-    println!();
-    println!();
 
     let mut new_state = HashSet::new();
 
@@ -289,7 +205,7 @@ pub fn part_2(input: String) -> String {
         }
 
         if new_state.len() == 0 {
-            return (round+1).to_string();
+            return (round + 1).to_string();
         }
 
         for ((fx, fy), (tx, ty)) in &new_state {
@@ -303,6 +219,8 @@ pub fn part_2(input: String) -> String {
                 elves.insert((*tx, *ty));
             }
         }
+        // Uncomment to visualize
+        /*
         let mut minx = 999999;
         let mut miny = 999999;
         let mut maxx = -999999;
@@ -327,6 +245,7 @@ pub fn part_2(input: String) -> String {
         }
         println!();
         println!();
+        */
 
         new_state.clear();
     }
@@ -341,8 +260,6 @@ pub fn part_2(input: String) -> String {
         maxx = maxx.max(*x);
         maxy = maxy.max(*y);
     }
-
-    println!("{} {} {} {}", minx, miny, maxx, maxy);
 
     let mut total = 0;
     for x in minx..=maxx {
