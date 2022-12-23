@@ -167,11 +167,11 @@ fn testp1() {
 LL1"
             .to_string()
         ),
-        1039.to_string()
+        1038.to_string()
     );
 }
 
-fn push2(maze: [Vec<Vec<i8>>; 6], pos: &mut (usize, usize, usize), facing: &mut usize) {
+fn push2(maze: &[Vec<Vec<i8>>; 6], pos: &mut (usize, usize, usize), facing: &mut usize) {
     match facing {
         0 => pos.0 += 1,
         1 => pos.1 += 1,
@@ -182,9 +182,7 @@ fn push2(maze: [Vec<Vec<i8>>; 6], pos: &mut (usize, usize, usize), facing: &mut 
 }
 
 pub fn part_2(input: String) -> String {
-    return "No part 2 :(((".to_string();
-
-    let mut net = [[-1i8; 300]; 300];
+    let mut net = [[-1i8; 512]; 512];
 
     for (y, line) in input.lines().enumerate() {
         if line.is_empty() {
@@ -204,9 +202,30 @@ pub fn part_2(input: String) -> String {
     }
     let inputs = input.lines().last().unwrap();
 
-    let mut width = todo!();
+    let mut width = 4;
 
     let mut maze = [vec![], vec![], vec![], vec![], vec![], vec![]];
+
+    let mut i = 0;
+    for nx in 0..6 {
+        for ny in 0..6 {
+            if net[ny * width][nx * width] == -1 {
+                continue;
+            }
+            for y in 0..width {
+                let mut v = vec![];
+                for x in 0..width {
+                    v.push(net[ny*width + y][nx*width + x]);
+                }
+                maze[i].push(v);
+            }
+            i += 1;
+        }
+    }
+    return "Not done yet".to_string();
+
+    println!("{:?}", maze);
+    return todo!();
 
     let mut pos = (0, 0, 0);
     let mut facing = 0;
@@ -215,12 +234,12 @@ pub fn part_2(input: String) -> String {
         if ch == b'L' || ch == b'R' {
             // Move
             for _ in 0..mv {
-                push2(maze, &mut pos, &mut facing);
+                push2(&maze, &mut pos, &mut facing);
                 if maze[pos.2][pos.1][pos.0] == 1 {
                     // go backwards one
                     facing += 2;
                     facing %= 4;
-                    push2(maze, &mut pos, &mut facing);
+                    push2(&maze, &mut pos, &mut facing);
                     facing += 2;
                     facing %= 4;
                     break;
@@ -242,12 +261,12 @@ pub fn part_2(input: String) -> String {
     }
     // do the last move
     for _ in 0..mv {
-        push2(maze, &mut pos, &mut facing);
+        push2(&maze, &mut pos, &mut facing);
         if maze[pos.2][pos.1][pos.0] == 1 {
             // go backwards one
             facing += 2;
             facing %= 4;
-            push2(maze, &mut pos, &mut facing);
+            push2(&maze, &mut pos, &mut facing);
             facing += 2;
             facing %= 4;
             break;
