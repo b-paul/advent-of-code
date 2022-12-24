@@ -191,7 +191,7 @@ fn testp1() {
 ######.#"
                 .to_string()
         ),
-        19.to_string()
+        18.to_string()
     );
 }
 
