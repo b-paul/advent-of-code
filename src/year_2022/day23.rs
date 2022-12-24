@@ -130,6 +130,8 @@ fn testp1() {
 }
 
 pub fn part_2(input: String) -> String {
+    return "To slow".to_string();
+
     let mut elves = HashSet::new();
     for (y, line) in input.lines().enumerate() {
         for (x, b) in line.bytes().enumerate() {
