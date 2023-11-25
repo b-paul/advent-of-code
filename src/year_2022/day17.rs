@@ -93,6 +93,7 @@ fn place(board: &mut HashSet<(isize, isize)>, piece: i32, x: isize, y: isize) {
 }
 
 fn run<const N: usize>(input: String) -> String {
+    // Make this a Vec<u8>
     let mut board = HashSet::new();
     let mut maxheight = 0;
     let mut piece = 0;
@@ -129,8 +130,8 @@ fn run<const N: usize>(input: String) -> String {
                 piece += 1;
                 count += 1;
 
-                if i == input.len() - 2 && piece == 5 {
-                    for y in (0..maxheight + 2).rev() {
+                if i == input.len() - 2 && piece == 4 {
+                    for y in ((maxheight - 30)..maxheight + 2).rev() {
                         for x in 0..7 {
                             if board.contains(&(x, y)) {
                                 print!("#");
@@ -140,10 +141,11 @@ fn run<const N: usize>(input: String) -> String {
                         }
                         println!();
                     }
+                    println!("{} {}", maxheight, count);
                     println!();
                     println!();
 
-                    return count.to_string();
+                    //return count.to_string();
                 }
 
                 if count == N {
@@ -169,10 +171,19 @@ fn testp1() {
     );
 }
 
-pub fn part_2(input: String) -> String {
-    return "No idea how to do this".to_string();
+pub fn part_2(_input: String) -> String {
+    // ok with some print debugging i got the numbers:
+    // cycle 1: 2613 height, 1724 pieces
+    // cycle 2: 5243 height, 3449 pieces
+    // cycle 3: 7873 height, 5174 pieces
+    // after cycle one, we gain 2630 height per cycle, and place 1725 pieces
+    // just need a modulo at the end and yay we're done!
+    // 1000000000000 = 579710143 * 1725 + 1724 + 1601
+    // 2442 + 2613 + 2630 * 579710143
 
-    run::<1000000000000>(input)
+    "Lol i just did math after some print stuff uhhhhh look at the comments in the part_2 function!"
+        .to_string()
+    // run::<5050>(input)
 }
 
 #[test]

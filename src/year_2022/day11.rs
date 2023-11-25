@@ -78,7 +78,6 @@ pub fn part_1(input: String) -> String {
         }
     }
     inspections.sort();
-    println!("{:?}", inspections);
     (inspections[6]*inspections[7]).to_string()
 }
 
@@ -134,10 +133,8 @@ Monkey 3:
                 items[i].remove(j);
             }
         }
-        println!("{:?}", items);
     }
     inspections.sort();
-    println!("{:?}", inspections);
     assert_eq!((inspections[2]*inspections[3]), 10605);
 }
 
@@ -221,7 +218,6 @@ pub fn part_2(input: String) -> String {
         }
     }
     inspections.sort();
-    println!("{:?}", inspections);
     (inspections[6]*inspections[7]).to_string()
 }
 
@@ -277,9 +273,7 @@ Monkey 3:
                 items[i].remove(j);
             }
         }
-        println!("{} {:?}", r, items);
     }
     inspections.sort();
-    println!("{:?}", inspections);
     assert_eq!((inspections[2]*inspections[3]), 2713310158);
 }
