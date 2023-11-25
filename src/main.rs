@@ -16,19 +16,36 @@ mod year_2020;
 mod year_2021;
 mod year_2022;
 
-use std::fs::read_to_string;
+use std::fs;
+use std::env;
 use std::io::Read;
 
 use clap::Parser;
 
 fn run_part1(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = read_to_string(file)?;
+    let file = fs::read_to_string(file)?;
     Ok((day.part1)(file))
 }
 
 fn run_part2(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = read_to_string(file)?;
+    let file = fs::read_to_string(file)?;
     Ok((day.part2)(file))
+}
+
+fn get_input(year: u32, day: u32) -> anyhow::Result<String> {
+    let path = format!("input/{year}/{day}.txt");
+    fs::read_to_string(&path).or_else(|_| {
+        let url = format!("https://adventofcode.com/{year}/day/{day}/input");
+        let aoc_cookie = env::var("AOCCOOKIE")?;
+        let response = ureq::get(&url)
+            .set("Cookie", &aoc_cookie)
+            .call()?
+            .into_string()?;
+
+        fs::write(path, &response)?;
+
+        Ok(response)
+    })
 }
 
 /*
@@ -58,7 +75,7 @@ struct Args {
     day: u32,
 }
 
-fn main() -> std::io::Result<()> {
+fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
     let day = match args.year {
@@ -78,8 +95,7 @@ fn main() -> std::io::Result<()> {
         true => day.part2,
     };
 
-    let input_file = format!("input/{}/{}.txt", args.year, args.day);
-    let file = read_to_string(input_file)?;
+    let file = get_input(args.year, args.day)?;
 
     println!(
         "Day {} part {}: {}",
