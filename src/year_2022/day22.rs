@@ -171,7 +171,7 @@ LL1"
     );
 }
 
-fn push2(maze: &[[i8; 300]; 300], pos: &mut (isize, isize), facing: &mut usize) {
+fn push2(pos: &mut (isize, isize), facing: &mut usize) {
     let face = match pos.1 {
         0..50 => match pos.0 {
             50..100 => 1,
@@ -343,11 +343,11 @@ pub fn part_2(input: String) -> String {
         if ch == b'L' || ch == b'R' {
             // Move
             for _ in 0..mv {
-                push2(&maze, &mut pos, &mut facing);
+                push2(&mut pos, &mut facing);
                 if maze[pos.1 as usize][pos.0 as usize] == 1 {
                     // go backwards one
                     facing ^= 2;
-                    push2(&maze, &mut pos, &mut facing);
+                    push2(&mut pos, &mut facing);
                     facing ^= 2;
                     break;
                 }
@@ -368,11 +368,11 @@ pub fn part_2(input: String) -> String {
     }
     // do the last move
     for _ in 0..mv {
-        push2(&maze, &mut pos, &mut facing);
+        push2(&mut pos, &mut facing);
         if maze[pos.1 as usize][pos.0 as usize] == 1 {
             // go backwards one
             facing ^= 2;
-            push2(&maze, &mut pos, &mut facing);
+            push2(&mut pos, &mut facing);
             facing ^= 2;
             break;
         }

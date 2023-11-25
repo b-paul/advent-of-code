@@ -39,14 +39,13 @@ fn search_optimal(
 
 pub fn part_1(input: String) -> String {
     let mut set = HashMap::new();
-    let mut start = "AA".to_string();
+    let start = "AA".to_string();
 
     let mut relevant_nodes = vec![];
 
-    for (i, line) in input
+    for line in input
         .lines()
         .map(|l| l.split(' ').collect::<Vec<&str>>())
-        .enumerate()
     {
         let id = line[1].to_string();
         let rate = line[4][5..line[4].len() - 1].parse::<isize>().unwrap();
@@ -132,15 +131,12 @@ fn search_double(
 ) -> isize {
     let mut best = 0;
 
-    let mut moves = 0;
-
     for node in relevant.clone().iter() {
         let (len, rate) = paths.get(&(p1node.clone(), node.to_string())).unwrap();
 
         if depth - len < 1 {
             continue;
         }
-        moves += 1;
 
         relevant.remove(node);
 
@@ -164,14 +160,13 @@ fn search_double(
 
 pub fn part_2(input: String) -> String {
     let mut set = HashMap::new();
-    let mut start = "AA".to_string();
+    let start = "AA".to_string();
 
     let mut relevant_nodes = vec![];
 
-    for (i, line) in input
+    for line in input
         .lines()
         .map(|l| l.split(' ').collect::<Vec<&str>>())
-        .enumerate()
     {
         let id = line[1].to_string();
         let rate = line[4][5..line[4].len() - 1].parse::<isize>().unwrap();
@@ -219,8 +214,6 @@ pub fn part_2(input: String) -> String {
         }
     }
 
-    // This took a solid couple of minutes to run!
-    return "Too slow to run lol".to_string();
     // This can be sped up i think (this is doing a ton of recomputation similar to the naive
     // fibonacci algorithm)
     search_double(
