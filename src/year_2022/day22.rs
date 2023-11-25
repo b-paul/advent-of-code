@@ -1,6 +1,6 @@
 use itertools::Itertools;
 
-fn push(maze: &[[i8; 300]; 300], pos: &mut (usize, usize), facing: usize) {
+fn push1(maze: &[[i8; 300]; 300], pos: &mut (usize, usize), facing: usize) {
     match facing {
         0 => pos.0 += 1,
         1 => pos.1 += 1,
@@ -93,10 +93,10 @@ pub fn part_1(input: String) -> String {
         if ch == b'L' || ch == b'R' {
             // Move
             for _ in 0..mv {
-                push(&maze, &mut pos, facing);
+                push1(&maze, &mut pos, facing);
                 if maze[pos.1][pos.0] == 1 {
                     // go backwards one
-                    push(&maze, &mut pos, (facing + 2) % 4);
+                    push1(&maze, &mut pos, (facing + 2) % 4);
                     break;
                 }
             }
@@ -116,10 +116,10 @@ pub fn part_1(input: String) -> String {
     }
     // do the last move
     for _ in 0..mv {
-        push(&maze, &mut pos, facing);
+        push1(&maze, &mut pos, facing);
         if maze[pos.1][pos.0] == 1 {
             // go backwards one
-            push(&maze, &mut pos, (facing + 2) % 4);
+            push1(&maze, &mut pos, (facing + 2) % 4);
             break;
         }
     }
@@ -171,7 +171,23 @@ LL1"
     );
 }
 
-fn push2(maze: &[Vec<Vec<i8>>; 6], pos: &mut (usize, usize, usize), facing: &mut usize) {
+fn push2(maze: &[[i8; 300]; 300], pos: &mut (isize, isize), facing: &mut usize) {
+    let face = match pos.1 {
+        0..50 => match pos.0 {
+            50..100 => 1,
+            100..150 => 2,
+            _ => unreachable!()
+        },
+        50..100 => 3,
+        100..150 => match pos.0 {
+            0..50 => 5,
+            50..100 => 4,
+            _ => unreachable!()
+        }
+        150..200 => 6,
+        _ => unreachable!()
+    };
+
     match facing {
         0 => pos.0 += 1,
         1 => pos.1 += 1,
@@ -179,10 +195,122 @@ fn push2(maze: &[Vec<Vec<i8>>; 6], pos: &mut (usize, usize, usize), facing: &mut
         3 => pos.1 -= 1,
         _ => (),
     }
+
+    match face {
+        1 => {
+            let rel_x = pos.0 - 50;
+            let rel_y = pos.1;
+            if rel_x < 0 {
+                // move to 5
+                pos.0 = 0;
+                pos.1 = 149 - rel_y;
+                *facing = 0;
+            }
+            if rel_y < 0 {
+                // move to 6
+                pos.0 = 0;
+                pos.1 = 150 + rel_x;
+                *facing = 0;
+            }
+        },
+        2 => {
+            let rel_x = pos.0 - 100;
+            let rel_y = pos.1;
+            if rel_y < 0 {
+                // move to 6
+                pos.0 = rel_x;
+                pos.1 = 199;
+                *facing = 3;
+            }
+            if rel_x >= 50 {
+                // move to 4
+                pos.0 = 99;
+                pos.1 = 149 - rel_y;
+                *facing = 2;
+            }
+            if rel_y >= 50 {
+                // move to 3
+                pos.0 = 99;
+                pos.1 = 50 + rel_x;
+                *facing = 2;
+            }
+        },
+        3 => {
+            let rel_x = pos.0 - 50;
+            let rel_y = pos.1 - 50;
+            if rel_x < 0 {
+                // move to 5
+                pos.0 = rel_y;
+                pos.1 = 100;
+                *facing = 1;
+            }
+            if rel_x >= 50 {
+                // move to 2
+                pos.0 = 100 + rel_y;
+                pos.1 = 49;
+                *facing = 3;
+            }
+        },
+        4 => {
+            let rel_x = pos.0 - 50;
+            let rel_y = pos.1 - 100;
+            if rel_x >= 50 {
+                // move to 2
+                pos.0 = 149;
+                pos.1 = 49 - rel_y;
+                *facing = 2;
+            }
+            if rel_y >= 50 {
+                // move to 6
+                pos.0 = 49;
+                pos.1 = 150 + rel_x;
+                *facing = 2;
+            }
+        },
+        5 => {
+            let rel_x = pos.0;
+            let rel_y = pos.1 - 100;
+            if rel_x < 0 {
+                // move to 1
+                pos.0 = 50;
+                pos.1 = 49 - rel_y;
+                *facing = 0;
+            }
+            if rel_y < 0 {
+                // move to 3
+                pos.0 = 50;
+                pos.1 = 50 + rel_x;
+                *facing = 0;
+            }
+        },
+        6 => {
+            let rel_x = pos.0;
+            let rel_y = pos.1 - 150;
+            if rel_x < 0 {
+                // move to 1
+                pos.0 = 50 + rel_y;
+                pos.1 = 0;
+                *facing = 1
+            }
+            if rel_x >= 50 {
+                // move to 4
+                pos.0 = 50 + rel_y;
+                pos.1 = 149;
+                *facing = 3;
+            }
+            if rel_y >= 50 {
+                // move to 2
+                pos.0 = 100 + rel_x;
+                pos.1 = 0;
+                *facing = 1;
+            }
+        },
+        _ => unreachable!()
+    }
 }
 
 pub fn part_2(input: String) -> String {
-    let mut net = [[-1i8; 512]; 512];
+    let mut maze = [[-1i8; 300]; 300];
 
     for (y, line) in input.lines().enumerate() {
         if line.is_empty() {
@@ -191,10 +319,10 @@ pub fn part_2(input: String) -> String {
         for (x, ch) in line.chars().enumerate() {
             match ch {
                 '.' => {
-                    net[y][x] = 0;
+                    maze[y][x] = 0;
                 }
                 '#' => {
-                    net[y][x] = 1;
+                    maze[y][x] = 1;
                 }
                 _ => (),
             }
@@ -202,32 +330,13 @@ pub fn part_2(input: String) -> String {
     }
     let inputs = input.lines().last().unwrap();
 
-    let mut width = 4;
-
-    let mut maze = [vec![], vec![], vec![], vec![], vec![], vec![]];
-
-    let mut i = 0;
-    for nx in 0..6 {
-        for ny in 0..6 {
-            if net[ny * width][nx * width] == -1 {
-                continue;
-            }
-            for y in 0..width {
-                let mut v = vec![];
-                for x in 0..width {
-                    v.push(net[ny*width + y][nx*width + x]);
-                }
-                maze[i].push(v);
-            }
-            i += 1;
+    let mut pos = (0, 0);
+    for (x, cell) in maze[0].iter().enumerate() {
+        if cell != &-1 {
+            pos.0 = x as isize;
+            break;
         }
     }
-    return "Not done yet".to_string();
-
-    println!("{:?}", maze);
-    return todo!();
-
-    let mut pos = (0, 0, 0);
     let mut facing = 0;
     let mut mv = 0;
     for ch in inputs.bytes() {
@@ -235,13 +344,11 @@ pub fn part_2(input: String) -> String {
             // Move
             for _ in 0..mv {
                 push2(&maze, &mut pos, &mut facing);
-                if maze[pos.2][pos.1][pos.0] == 1 {
+                if maze[pos.1 as usize][pos.0 as usize] == 1 {
                     // go backwards one
-                    facing += 2;
-                    facing %= 4;
+                    facing ^= 2;
                     push2(&maze, &mut pos, &mut facing);
-                    facing += 2;
-                    facing %= 4;
+                    facing ^= 2;
                     break;
                 }
             }
@@ -262,42 +369,40 @@ pub fn part_2(input: String) -> String {
     // do the last move
     for _ in 0..mv {
         push2(&maze, &mut pos, &mut facing);
-        if maze[pos.2][pos.1][pos.0] == 1 {
+        if maze[pos.1 as usize][pos.0 as usize] == 1 {
             // go backwards one
-            facing += 2;
-            facing %= 4;
+            facing ^= 2;
             push2(&maze, &mut pos, &mut facing);
-            facing += 2;
-            facing %= 4;
+            facing ^= 2;
             break;
         }
     }
 
-    ((pos.1 + 1) * 1000 + (pos.0 + 1) * 4 + facing).to_string()
+    ((pos.1 + 1) * 1000 + (pos.0 + 1) * 4 + facing as isize).to_string()
 }
 
 #[test]
 fn testp2() {
     /*
-    assert_eq!(
-        part_2(
-            "        ...#
-        .#..
-        #...
-        ....
-...#.......#
-........#...
-..#....#....
-..........#.
-        ...#....
-        .....#..
-        .#......
-        ......#.
+        assert_eq!(
+            part_2(
+                "        ...#
+            .#..
+            #...
+            ....
+    ...#.......#
+    ........#...
+    ..#....#....
+    ..........#.
+            ...#....
+            .....#..
+            .#......
+            ......#.
 
-10R5L5R10L4R5L5"
-                .to_string()
-        ),
-        5031.to_string()
-    );
-    */
+    10R5L5R10L4R5L5"
+                    .to_string()
+            ),
+            5031.to_string()
+        );
+        */
 }
