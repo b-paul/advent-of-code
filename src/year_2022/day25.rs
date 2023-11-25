@@ -1,4 +1,4 @@
-fn from_snafu(mut s: String) -> isize {
+fn from_snafu(s: String) -> isize {
     let mut num = 0;
     let mut pow = 1;
 
@@ -21,7 +21,6 @@ fn from_snafu(mut s: String) -> isize {
 
 fn to_snafu(mut num: isize) -> String {
     let mut v = vec![];
-    let mut pow = 1;
     while num != 0 {
         v.push(num % 5);
         num /= 5;
@@ -115,7 +114,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(_input: String) -> String {
     "got trolled".to_string()
 }
 
