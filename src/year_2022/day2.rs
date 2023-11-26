@@ -75,13 +75,14 @@ pub fn part_2(input: String) -> String {
 #[cfg(test)]
 mod benches {
     use crate::test::Bencher;
+    use crate::get_input;
     use crate::year_2022::day2::*;
 
     #[bench]
     fn part1(b: &mut Bencher) {
+        let input = get_input(2022, 2).unwrap();
         b.iter(|| {
-            include_str!("../../input/2022/2.txt")
-                .to_string()
+            input
                 .lines()
                 .map(score_part1)
                 .sum::<u64>()
@@ -94,8 +95,9 @@ mod benches {
     // I guess some simd stuff makes it faster
     #[bench]
     fn possibly_faster_part1(b: &mut Bencher) {
+        let input = get_input(2022, 2).unwrap();
         b.iter(|| {
-            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let s = input.as_bytes();
             let mut total = 0;
             for i in 0..(s.len() / 4) {
                 let them = (s[4*i + 0] - b'A') as i8;
@@ -113,13 +115,14 @@ mod benches {
     // something
     #[bench]
     fn possibly_even_faster_part1(b: &mut Bencher) {
+        let input = get_input(2022, 2).unwrap();
         const SOLS: [[u8; 3]; 3] = [
             [4, 1, 7],
             [8, 5, 2],
             [3, 9, 6],
         ];
         b.iter(|| {
-            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let s = input.as_bytes();
             let mut total = 0;
             for i in 0..(s.len() / 4) {
                 let them = (s[4*i + 0] - b'A') as usize;
@@ -133,9 +136,9 @@ mod benches {
 
     #[bench]
     fn part2(b: &mut Bencher) {
+        let input = get_input(2022, 2).unwrap();
         b.iter(|| {
-            include_str!("../../input/2022/2.txt")
-                .to_string()
+            input
                 .lines()
                 .map(score_part2)
                 .sum::<u64>()
@@ -145,8 +148,9 @@ mod benches {
 
     #[bench]
     fn possibly_faster_part2(b: &mut Bencher) {
+        let input = get_input(2022, 2).unwrap();
         b.iter(|| {
-            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let s = input.as_bytes();
             let mut total = 0;
             for i in 0..(s.len() / 4) {
                 let them = (s[4*i + 0] - b'A') as i8;
@@ -160,13 +164,14 @@ mod benches {
 
     #[bench]
     fn possibly_even_faster_part2(b: &mut Bencher) {
+        let input = get_input(2022, 2).unwrap();
         const SOLS: [[u8; 3]; 3] = [
             [3, 1, 2],
             [4, 5, 6],
             [8, 9, 7],
         ];
         b.iter(|| {
-            let s = include_str!("../../input/2022/2.txt").as_bytes();
+            let s = input.as_bytes();
             let mut total = 0;
             for i in 0..(s.len() / 4) {
                 let them = (s[4*i + 0] - b'A') as usize;

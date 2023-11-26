@@ -84,7 +84,7 @@ pub fn part_1(_input: String) -> String {
 
 #[test]
 fn testp1() {
-    let sample = "Monkey 0:
+    let _sample = "Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
   Test: divisible by 23
@@ -223,7 +223,7 @@ pub fn part_2(_input: String) -> String {
 
 #[test]
 fn testp2() {
-    let sample = "Monkey 0:
+    let _sample = "Monkey 0:
   Starting items: 79, 98
   Operation: new = old * 19
   Test: divisible by 23
@@ -258,7 +258,7 @@ Monkey 3:
         vec![74],
     ];
     let mut inspections = [0u64; 4];
-    for r in 0..10000 {
+    for _ in 0..10000 {
         for i in 0..4 {
             for item in items[i].iter_mut() {
                 opertest2(i, item);
