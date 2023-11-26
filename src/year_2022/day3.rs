@@ -92,12 +92,14 @@ pub fn part_2(input: String) -> String {
 #[cfg(test)]
 mod benches {
     use test::Bencher;
+    use crate::get_input;
     use crate::year_2022::day3::*;
 
     #[bench]
     fn part1(b: &mut Bencher) {
+        let input = get_input(2022, 3).unwrap();
         b.iter(|| {
-            include_str!("../../input/2022/3.txt")
+            input
                 .lines()
                 .map(|l| priority_of(part1_calculate(l.to_string())))
                 .sum::<u64>()
@@ -107,8 +109,9 @@ mod benches {
 
     #[bench]
     fn part2(b: &mut Bencher) {
+        let input = get_input(2022, 3).unwrap();
         b.iter(|| {
-            include_str!("../../input/2022/3.txt")
+            input
                 .split('\n')
                 .array_chunks::<3>()
                 .map(|[l1, l2, l3]| part2_calculate(l1.to_string(), l2.to_string(), l3.to_string()))
@@ -119,8 +122,9 @@ mod benches {
 
     #[bench]
     fn possibly_faster_part2(b: &mut Bencher) {
+        let input = get_input(2022, 3).unwrap();
         b.iter(|| {
-            let bytes = include_str!("../../input/2022/3.txt").as_bytes();
+            let bytes = input.as_bytes();
 
             let mut total = 0;
             let mut i = 0;

@@ -49,19 +49,22 @@ pub fn part_2(input: String) -> String {
 #[cfg(test)]
 mod benches {
     use test::Bencher;
+    use crate::get_input;
     use crate::year_2022::day6::*;
 
     #[bench]
     fn part1(b: &mut Bencher) {
+        let input = get_input(2022, 6).unwrap();
         b.iter(|| {
-            find_idx::<4>(include_str!("../../input/2022/6.txt").as_bytes())
+            find_idx::<4>(input.as_bytes())
         })
     }
 
     #[bench]
     fn part2(b: &mut Bencher) {
+        let input = get_input(2022, 6).unwrap();
         b.iter(|| {
-            find_idx::<14>(include_str!("../../input/2022/6.txt").as_bytes())
+            find_idx::<14>(input.as_bytes())
         })
     }
 }
