@@ -1,5 +1,5 @@
 use bitvec::prelude::*;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Tile1 {
@@ -114,6 +114,11 @@ impl Tile2 {
                         self.inside[y][7-x] = tmp;
                     }
                 }
+                // flip the edges
+                { let tmp = self.edges[0]; self.edges[0] = self.edges[1]; self.edges[1] = tmp; }
+                { let tmp = self.edges[4]; self.edges[4] = self.edges[5]; self.edges[5] = tmp; }
+                { let tmp = self.edges[2]; self.edges[2] = self.edges[7]; self.edges[7] = tmp; }
+                { let tmp = self.edges[3]; self.edges[3] = self.edges[6]; self.edges[6] = tmp; }
             },
             2 => {
                 // rotate
@@ -125,6 +130,21 @@ impl Tile2 {
                         self.inside[7-y][7-x] = self.inside[7-x][y];
                         self.inside[7-x][y] = tmp;
                     }
+                }
+                // rotate the edges :sob:
+                {
+                    let tmp = self.edges[0];
+                    self.edges[0] = self.edges[6];
+                    self.edges[6] = self.edges[4];
+                    self.edges[4] = self.edges[2];
+                    self.edges[2] = tmp;
+                }
+                {
+                    let tmp = self.edges[1];
+                    self.edges[1] = self.edges[7];
+                    self.edges[7] = self.edges[5];
+                    self.edges[5] = self.edges[3];
+                    self.edges[3] = tmp;
                 }
             },
             3 => { self.rotate(1); self.rotate(2); },
@@ -234,7 +254,7 @@ pub fn part_2(input: String) -> String {
         }
     }
 
-    let corner = tiles
+    let mut corner = tiles
         .iter()
         .filter(|tile| {
             let mut connectors = 0;
@@ -245,7 +265,23 @@ pub fn part_2(input: String) -> String {
             }
             connectors == 4
         })
-        .next().unwrap();
+        .next().unwrap().clone();
+
+    corner.rotate(1); // i needed to do this i swear
+
+    // Rotate the corner so that it's two matching edges are in the bottom and right (bad code yikes)
+    loop {
+        let mut found = 0;
+        for tile in tiles.iter() {
+            if tile.id == corner.id { continue; }
+            for edge in tile.edges {
+                if edge == corner.edges[0] { found += 1; }
+                if edge == corner.edges[6] { found += 1; }
+            }
+        }
+        if found == 0 { break; }
+        corner.rotate(2);
+    }
 
     let mut grid: Vec<Vec<Option<Tile2>>> = Vec::new();
     for _ in 0..12 {
@@ -256,13 +292,15 @@ pub fn part_2(input: String) -> String {
         grid.push(row);
     }
 
-    grid[0][0] = Some(corner.clone());
-    let mut stack = Vec::new();
+    grid[0][0] = Some(corner);
+    let mut queue = VecDeque::new();
     let mut placed = HashSet::new();
     let mut queued = HashSet::new();
-    stack.push((0, 0));
+    queue.push_back((0, 0));
+    placed.insert(grid[0][0].clone().unwrap().id);
+    queued.insert((0, 0));
 
-    while let Some((x, y)) = stack.pop() {
+    while let Some((x, y)) = queue.pop_front() {
         for (dx, dy, idx) in [
             (0, -1, 0), (1, 0, 2), (0, 1, 4), (-1, 0, 6),
             (0, -1, 1), (1, 0, 3), (0, 1, 5), (-1, 0, 7),
@@ -273,10 +311,10 @@ pub fn part_2(input: String) -> String {
                 || queued.contains(&(new_x as usize, new_y as usize)) {
                 continue;
             }
-            println!("{x} {y} {idx}");
             let new_x = new_x as usize;
             let new_y = new_y as usize;
             let cur_tile = grid[y][x].clone().unwrap();
+            println!("{new_x} {new_y} {idx} {} {}", cur_tile.id, cur_tile.edges[idx]);
             for tile in tiles.iter() {
                 if tile.id == cur_tile.id {
                     continue;
@@ -295,11 +333,16 @@ pub fn part_2(input: String) -> String {
                     }
                 };
                 if found_edge {
-                    stack.push((new_x, new_y));
+                    queue.push_back((new_x, new_y));
                     queued.insert((new_x, new_y));
                     let mut tile = tile.clone();
+                    println!("Start index {} {:?}", idx, cur_tile.edges);
+                    println!("{:?}", tile.edges);
                     tile.rotate(invert(edge_idx as u32));
-                    tile.rotate(idx as u32 ^ 2);
+                    println!("{:?}", tile.edges);
+                    tile.rotate(idx as u32 ^ 4);
+                    println!("{:?}", tile.edges);
+                    println!("End");
                     placed.insert(tile.id);
                     grid[new_y][new_x] = Some(tile);
                     break;
@@ -307,6 +350,20 @@ pub fn part_2(input: String) -> String {
             }
         }
     }
+
+    //println!("{:?}", grid[0][0]);
+    //println!("{:?}", grid[0][1]);
+    println!("{:?}", grid[0][1]);
+    for tile in tiles.iter() {
+        for edge in tile.edges {
+            if edge == 37 {
+                println!("{:?}", tile);
+            }
+        }
+    }
+
+    let grid2: Vec<Vec<_>> = grid.clone().into_iter().map(|v| v.into_iter().map(|t| t.map(|x| x.edges)).collect()).collect();
+    println!("{:?}", grid2);
 
     let grid: Vec<Vec<_>> = grid.into_iter().map(|v| v.into_iter().map(|t| t.unwrap()).collect()).collect();
     let p: Vec<Vec<_>> = grid.clone().into_iter().map(|v| v.into_iter().map(|t| t.id).collect()).collect();
