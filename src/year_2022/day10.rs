@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut x = 1;
     let mut cycle = 0;
     let mut total = 0;
@@ -191,7 +191,7 @@ fn draw_pixel(x: i32, cycle: i32) {
     }
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut x = 1;
     let mut cycle = 0;
 

@@ -1,4 +1,4 @@
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut floor = 0;
 
     for ch in input.bytes() {
@@ -12,7 +12,7 @@ pub fn part_1(input: String) -> String {
     floor.to_string()
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut floor = 0;
 
     for (i, ch) in input.bytes().enumerate() {

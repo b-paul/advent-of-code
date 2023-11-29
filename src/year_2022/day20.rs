@@ -1,6 +1,6 @@
 use itertools::Itertools;
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut list = Vec::new();
     for num in input.lines() {
         list.push((num.parse::<isize>().unwrap(), false));
@@ -49,7 +49,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut list = Vec::new();
     for (i, num) in input.lines().enumerate() {
         list.push((num.parse::<isize>().unwrap() * 811589153, i));

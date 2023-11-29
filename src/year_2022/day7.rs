@@ -62,7 +62,7 @@ fn sum_small_dirs(dir: &Directory) -> u64 {
     total
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut root_dir = Directory::default();
     let mut current_dir = vec![];
 
@@ -105,7 +105,7 @@ fn smallest_big_enough_dir(dir: &Directory, needed: u64) -> u64 {
     min
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut root_dir = Directory::default();
     let mut current_dir = vec![];
 

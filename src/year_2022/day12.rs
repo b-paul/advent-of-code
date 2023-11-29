@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 use std::collections::HashSet;
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut startpos = (0,0);
     let mut bestpos = (0,0);
     let mut grid = vec![];
@@ -78,7 +78,7 @@ abdefghi".to_string()), 31.to_string()
         );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut bestpos = (0,0);
     let mut grid = vec![];
     for (y, iline) in input.lines().enumerate() {

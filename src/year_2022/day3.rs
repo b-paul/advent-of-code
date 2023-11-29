@@ -41,7 +41,7 @@ fn part1_tests() {
     assert_eq!(priority_of(b's'), 19);
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     input
         .lines()
         .map(|l| priority_of(part1_calculate(l.to_owned())))
@@ -80,7 +80,7 @@ fn part2_tests() {
             "CrZsJsPPZsGzwwsLwLmpwMDw".to_string()), priority_of(b'Z'));
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     input
         .lines()
         .array_chunks::<3>()

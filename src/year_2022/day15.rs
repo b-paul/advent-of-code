@@ -32,7 +32,7 @@ fn remove_dupe_iter(ranges: &Vec<std::ops::Range<isize>>) -> Vec<std::ops::Range
     new_ranges
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut ranges = vec![];
 
     for line in input.lines().map(|l| l.split(' ').collect::<Vec<&str>>()) {
@@ -68,7 +68,7 @@ pub fn part_1(input: String) -> String {
 #[test]
 fn testp1() {}
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut sensors = vec![];
 
     for line in input.lines().map(|l| l.split(' ').collect::<Vec<&str>>()) {
@@ -106,7 +106,7 @@ pub fn part_2(input: String) -> String {
         }
     }
 
-    todo!()
+    "didn't get thet answer :(".to_string()
 }
 
 #[test]

@@ -25,7 +25,7 @@ fn p1_tests() {
     assert_eq!(solve_p1("1x1x10".to_string()), 43);
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut total: u64 = 0;
 
     for line in input.lines() {
@@ -60,7 +60,7 @@ fn p2_tests() {
     assert_eq!(solve_p2("1x1x10".to_string()), 14);
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut total: u64 = 0;
 
     for line in input.lines() {

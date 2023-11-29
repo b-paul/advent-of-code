@@ -26,7 +26,7 @@ fn header_test() {
     assert_eq!(find_idx::<4>("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw".as_bytes()), 11);
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let bytes: Vec<u8> = input.bytes().collect();
 
     find_idx::<4>(&bytes).to_string()
@@ -40,7 +40,7 @@ fn message_test() {
     assert_eq!(find_idx::<14>("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw".as_bytes()), 26);
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let bytes: Vec<u8> = input.bytes().collect();
 
     find_idx::<14>(&bytes).to_string()

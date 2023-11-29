@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let lines = input.lines();
 
     let mut reading_crates = true;
@@ -39,10 +39,10 @@ pub fn part_1(input: String) -> String {
         }
     }
 
-    stack.iter().map(|v| v[0]).collect()
+    stack.iter().map(|v| v[0]).collect::<String>()
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let lines = input.lines();
 
     let mut reading_crates = true;
@@ -85,5 +85,5 @@ pub fn part_2(input: String) -> String {
         }
     }
 
-    stack.iter().map(|v| v[0]).collect()
+    stack.iter().map(|v| v[0]).collect::<String>()
 }

@@ -59,7 +59,7 @@ fn push1(maze: &[[i8; 300]; 300], pos: &mut (usize, usize), facing: usize) {
     }
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut maze = [[-1i8; 300]; 300];
 
     for (y, line) in input.lines().enumerate() {
@@ -309,7 +309,7 @@ fn push2(pos: &mut (isize, isize), facing: &mut usize) {
     }
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut maze = [[-1i8; 300]; 300];
 
     for (y, line) in input.lines().enumerate() {

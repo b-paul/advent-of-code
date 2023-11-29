@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut elves = HashSet::new();
     for (y, line) in input.lines().enumerate() {
         for (x, b) in line.bytes().enumerate() {
@@ -129,7 +129,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut elves = HashSet::new();
     for (y, line) in input.lines().enumerate() {
         for (x, b) in line.bytes().enumerate() {

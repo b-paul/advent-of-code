@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut set = HashSet::new();
     for nums in input.lines().map(|l| l.split(',').collect::<Vec<&str>>()) {
         set.insert((
@@ -82,7 +82,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     // do a floodfill around the outside of the object
     // first we need a bounding box which is 1 extra width than the furthest the thingos stretch
     let mut set = HashSet::new();

@@ -305,7 +305,7 @@ fn most_geodes<const MAX: u8>(blueprint: &Blueprint) -> u32 {
     max_geodes
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     separated_list1(newline, blueprint)(&input)
         .expect("Failed to parse blueprints.")
         .1
@@ -336,7 +336,7 @@ Blueprint 2:
     );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     separated_list1(newline, blueprint)(&input)
         .expect("Failed to parse blueprints.")
         .1

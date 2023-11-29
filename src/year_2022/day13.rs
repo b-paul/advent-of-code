@@ -84,7 +84,7 @@ fn ordered(p1: Packet, p2: Packet) -> Option<bool> {
     }
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut total = 0;
     for (i, lines) in input.split("\n\n").enumerate().map(|(i, l)| (i + 1, l)) {
         let packets: Vec<&str> = lines.split('\n').collect();
@@ -129,7 +129,7 @@ fn testp1() {
     )
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut lines = input
         .lines()
         .filter(|l| !l.is_empty())

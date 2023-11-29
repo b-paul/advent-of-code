@@ -7,7 +7,7 @@ struct Tile1 {
     edges: [u32; 8],
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut tiles = Vec::new();
 
     for lines in input.split("\n\n") {
@@ -193,7 +193,7 @@ fn rotate(vec: &mut BitVec, rotation: u32) {
     }
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut tiles = Vec::new();
 
     for lines in input.split("\n\n") {

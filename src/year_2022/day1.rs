@@ -4,7 +4,7 @@ fn callories(str: &str) -> u64 {
     str.lines().filter_map(|l| l.parse::<u64>().ok()).sum()
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     input
         .split("\n\n")
         .map(callories)
@@ -13,7 +13,7 @@ pub fn part_1(input: String) -> String {
         .to_string()
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     input
         .split("\n\n")
         .map(callories)

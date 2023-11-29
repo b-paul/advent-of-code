@@ -9,7 +9,7 @@ fn is_visible(trees: &Vec<Vec<u8>>, x: usize, y: usize) -> bool {
     visible
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut trees: Vec<Vec<u8>> = vec![];
 
     for line in input.lines() {
@@ -43,7 +43,7 @@ fn scenic_score(trees: &Vec<Vec<u8>>, x: usize, y: usize) -> usize {
     score
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut trees: Vec<Vec<u8>> = vec![];
 
     for line in input.lines() {
