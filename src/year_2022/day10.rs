@@ -174,7 +174,7 @@ addx -6
 addx -11
 noop
 noop
-noop".to_string()), 13140.to_string());
+noop").to_string(), 13140.to_string());
 }
 
 fn draw_pixel(x: i32, cycle: i32) {

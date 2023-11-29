@@ -108,8 +108,7 @@ fn testp1() {
 12
 1=
 122"
-            .to_string()
-        ),
+        ).to_string(),
         "2=-1=0".to_string()
     );
 }

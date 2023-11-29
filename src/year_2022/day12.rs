@@ -74,7 +74,7 @@ fn testp1() {
 abcryxxl
 accszExk
 acctuvwj
-abdefghi".to_string()), 31.to_string()
+abdefghi").to_string(), 31.to_string()
         );
 }
 
@@ -149,6 +149,6 @@ fn testp2() {
 abcryxxl
 accszExk
 acctuvwj
-abdefghi".to_string()), 29.to_string()
+abdefghi").to_string(), 29.to_string()
         );
 }

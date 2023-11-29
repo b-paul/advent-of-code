@@ -145,8 +145,7 @@ fn testp1() {
         ......#.
 
 10R5L5R10L4R5L5"
-                .to_string()
-        ),
+        ).to_string(),
         6032.to_string()
     );
     assert_eq!(
@@ -165,8 +164,7 @@ fn testp1() {
         ......#.
 
 LL1"
-            .to_string()
-        ),
+        ).to_string(),
         1038.to_string()
     );
 }
