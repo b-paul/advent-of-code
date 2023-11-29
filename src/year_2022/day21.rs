@@ -84,8 +84,7 @@ pppw: cczh / lfqf
 lgvd: ljgn * ptdq
 drzm: hmdt - zczc
 hmdt: 32"
-                .to_string()
-        ),
+        ).to_string(),
         152.to_string()
     );
 }
@@ -233,8 +232,7 @@ pppw: cczh / lfqf
 lgvd: ljgn * ptdq
 drzm: hmdt - zczc
 hmdt: 32"
-                .to_string()
-        ),
+        ).to_string(),
         301.to_string()
     );
 }

@@ -189,8 +189,7 @@ fn testp1() {
 #>v.><>#
 #<^v^^>#
 ######.#"
-                .to_string()
-        ),
+        ).to_string(),
         18.to_string()
     );
 }

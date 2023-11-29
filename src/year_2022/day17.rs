@@ -166,7 +166,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 #[test]
 fn testp1() {
     assert_eq!(
-        part_1(">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>".to_string()),
+        part_1(">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>").to_string(),
         3068.to_string()
     );
 }

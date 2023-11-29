@@ -123,8 +123,7 @@ fn testp1() {
 #.###..
 ##.#.##
 .#..#.."
-                .to_string()
-        ),
+        ).to_string(),
         110.to_string()
     );
 }

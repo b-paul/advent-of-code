@@ -43,8 +43,7 @@ fn testp1() {
 -2
 0
 4"
-            .to_string()
-        ),
+        ).to_string(),
         3.to_string()
     );
 }
@@ -94,8 +93,7 @@ fn testp2() {
 -2
 0
 4"
-            .to_string()
-        ),
+        ).to_string(),
         1623178306.to_string()
     );
 }

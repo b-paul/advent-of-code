@@ -76,8 +76,7 @@ fn testp1() {
 3,2,5
 2,1,5
 2,3,5"
-                .to_string()
-        ),
+        ).to_string(),
         64.to_string()
     );
 }
@@ -154,8 +153,7 @@ fn testp2() {
 3,2,5
 2,1,5
 2,3,5"
-                .to_string()
-        ),
+        ).to_string(),
         58.to_string()
     );
 }
