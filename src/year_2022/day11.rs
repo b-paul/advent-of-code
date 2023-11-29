@@ -50,7 +50,7 @@ fn throwtest(i: usize, item: u32) -> usize {
     }
 }
 
-pub fn part_1(_input: String) -> String {
+pub fn part_1(_input: &str) -> impl std::fmt::Display {
     let mut items: Vec<Vec<u32>> = vec![
         vec![62, 92, 50, 63, 62, 93, 73, 50],
         vec![51, 97, 74, 84, 99],
@@ -189,7 +189,7 @@ fn throwtest2(i: usize, item: u64) -> usize {
     }
 }
 
-pub fn part_2(_input: String) -> String {
+pub fn part_2(_input: &str) -> impl std::fmt::Display {
     let mut items: Vec<Vec<u64>> = vec![
         vec![62, 92, 50, 63, 62, 93, 73, 50],
         vec![51, 97, 74, 84, 99],

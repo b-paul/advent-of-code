@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut grid: HashSet<(isize, isize)> = HashSet::new();
     let mut maxy = 0;
 
@@ -83,7 +83,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut grid: HashSet<(isize, isize)> = HashSet::new();
     let mut maxy = 0;
 

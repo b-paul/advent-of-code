@@ -84,7 +84,7 @@ fn step(blizzards: &mut HashSet<(usize, usize, i32)>, width: usize, height: usiz
     *blizzards = new_blizzards.clone();
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut blizzards = HashSet::new();
     let mut width = 0;
     let mut height = 0;
@@ -195,7 +195,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut blizzards = HashSet::new();
     let mut width = 0;
     let mut height = 0;

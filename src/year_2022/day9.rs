@@ -4,7 +4,7 @@ fn mv_tail(head: (i32, i32), tail: (i32, i32)) -> bool {
     (head.0 - tail.0).abs() > 1 || (head.1 - tail.1).abs() > 1
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut head_pos = (0, 0);
     let mut old_head_pos;
     let mut tail_pos = (0, 0);
@@ -91,7 +91,7 @@ fn newpos(k1: (i32, i32), k2: (i32, i32)) -> (i32, i32) {
     unreachable!()
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut knots_pos = [(0, 0); 10];
     let mut old_knots_pos = [(0, 0); 10];
 

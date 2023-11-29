@@ -36,7 +36,7 @@ fn p1_tests() {
     assert_eq!(solve_p1("^v^v^v^v^v".to_string()), 2);
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     solve_p1(input.lines().next().unwrap().to_string()).to_string()
 }
 
@@ -87,6 +87,6 @@ fn p2_tests() {
     assert_eq!(solve_p2("^v^v^v^v^v".to_string()), 11);
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     solve_p2(input.lines().next().unwrap().to_string()).to_string()
 }

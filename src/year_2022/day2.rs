@@ -37,7 +37,7 @@ fn scoring_part1_test() {
     assert_eq!(score_part1("C Z"), 6);
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     input
         .lines()
         .map(score_part1)
@@ -64,7 +64,7 @@ fn scoring_part2_test() {
     assert_eq!(score_part2("C Z"), 7);
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     input
         .lines()
         .map(score_part2)

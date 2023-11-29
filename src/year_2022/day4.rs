@@ -1,4 +1,4 @@
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     input
         .lines()
         .map(|l| {
@@ -16,7 +16,7 @@ pub fn part_1(input: String) -> String {
         .to_string()
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     input
         .lines()
         .map(|l| {

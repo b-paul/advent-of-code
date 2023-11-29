@@ -52,7 +52,7 @@ fn to_snafu(mut num: isize) -> String {
     string
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut total = 0;
     for line in input.lines() {
         total += from_snafu(line.to_string());
@@ -114,7 +114,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(_input: String) -> String {
+pub fn part_2(_input: &str) -> impl std::fmt::Display {
     "got trolled".to_string()
 }
 

@@ -6,7 +6,7 @@
 #![feature(test)]
 extern crate test;
 
-mod day;
+mod year;
 mod year_2015;
 mod year_2016;
 mod year_2017;
@@ -21,16 +21,6 @@ use std::env;
 use std::io::Read;
 
 use clap::Parser;
-
-fn run_part1(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = fs::read_to_string(file)?;
-    Ok((day.part1)(file))
-}
-
-fn run_part2(file: &str, day: &day::Day) -> std::io::Result<String> {
-    let file = fs::read_to_string(file)?;
-    Ok((day.part2)(file))
-}
 
 fn get_input(year: u32, day: u32) -> anyhow::Result<String> {
     let path = format!("input/{year}/{day}.txt");
@@ -47,19 +37,6 @@ fn get_input(year: u32, day: u32) -> anyhow::Result<String> {
         Ok(response)
     })
 }
-
-/*
-macro_rules! run_year {
-    ($year:ident, $year_num:expr) => {
-        for (i, day) in $year::DAYS.iter().enumerate() {
-            let input_file = format!("input/{}/{}.txt", $year_num, i + 1);
-
-            println!("Day {} part 1: {}", i + 1, run_part1(&input_file, day)?);
-            println!("Day {} part 2: {}", i + 1, run_part2(&input_file, day)?);
-        }
-    };
-}
-*/
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -78,30 +55,26 @@ struct Args {
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
-    let day = match args.year {
-        2015 => &year_2015::DAYS[args.day as usize - 1],
-        2016 => &year_2016::DAYS[args.day as usize - 1],
-        2017 => &year_2017::DAYS[args.day as usize - 1],
-        2018 => &year_2018::DAYS[args.day as usize - 1],
-        2019 => &year_2019::DAYS[args.day as usize - 1],
-        2020 => &year_2020::DAYS[args.day as usize - 1],
-        2021 => &year_2021::DAYS[args.day as usize - 1],
-        2022 => &year_2022::DAYS[args.day as usize - 1],
+
+    let file = &get_input(args.year, args.day)?;
+
+    let result = match args.year {
+        2015 => run_year!(file, year_2015, args.day, args.part),
+        2016 => run_year!(file, year_2016, args.day, args.part),
+        2017 => run_year!(file, year_2017, args.day, args.part),
+        2018 => run_year!(file, year_2018, args.day, args.part),
+        2019 => run_year!(file, year_2019, args.day, args.part),
+        2020 => run_year!(file, year_2020, args.day, args.part),
+        2021 => run_year!(file, year_2021, args.day, args.part),
+        2022 => run_year!(file, year_2022, args.day, args.part),
         _ => unreachable!(),
     };
-
-    let part = match args.part {
-        false => day.part1,
-        true => day.part2,
-    };
-
-    let file = get_input(args.year, args.day)?;
 
     println!(
         "Day {} part {}: {}",
         args.day,
         args.part as usize + 1,
-        part(file)
+        result,
     );
 
     Ok(())

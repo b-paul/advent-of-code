@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use std::collections::{HashMap, VecDeque};
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut waiting_list = vec![];
     let mut numbers = HashMap::new();
     for line in input
@@ -104,7 +104,7 @@ enum Monkey {
     Human,
 }
 
-pub fn part_2(input: String) -> String {
+pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut monkeys = Vec::new();
     for line in input
         .lines()
@@ -211,7 +211,7 @@ pub fn part_2(input: String) -> String {
         }
     }
 
-    todo!()
+    "failed to find a solution :(".to_string()
 }
 
 #[test]

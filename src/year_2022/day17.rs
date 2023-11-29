@@ -92,7 +92,7 @@ fn place(board: &mut HashSet<(isize, isize)>, piece: i32, x: isize, y: isize) {
     }
 }
 
-fn run<const N: usize>(input: String) -> String {
+fn run<const N: usize>(input: &str) -> impl std::fmt::Display {
     // Make this a Vec<u8>
     let mut board = HashSet::new();
     let mut maxheight = 0;
@@ -159,7 +159,7 @@ fn run<const N: usize>(input: String) -> String {
     }
 }
 
-pub fn part_1(input: String) -> String {
+pub fn part_1(input: &str) -> impl std::fmt::Display {
     run::<2022>(input)
 }
 
@@ -171,7 +171,7 @@ fn testp1() {
     );
 }
 
-pub fn part_2(_input: String) -> String {
+pub fn part_2(_input: &str) -> impl std::fmt::Display {
     // ok with some print debugging i got the numbers:
     // cycle 1: 2613 height, 1724 pieces
     // cycle 2: 5243 height, 3449 pieces
