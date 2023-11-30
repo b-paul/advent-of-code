@@ -36,18 +36,15 @@ fn nice_2(str: &str) -> bool {
         }
     }
     let mut double = false;
-    for i in 0..(line.len() - 1) {
+    'double: for i in 0..(line.len() - 1) {
         for j in 0..(line.len() - 1) {
             if j + 1 == i || j == i || j == i+1 {
                 continue;
             }
             if line[i] == line[j] && line[i+1] == line[j+1] {
                 double = true;
-                break;
+                break 'double;
             }
-        }
-        if double {
-            break;
         }
     }
     dupe && double
