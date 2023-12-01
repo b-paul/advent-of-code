@@ -53,6 +53,27 @@ pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
     sum
 }
 
+pub(crate) fn part_1_fasterer(input: &str) -> impl std::fmt::Display {
+    let mut sum = 0;
+    let mut start = 0;
+    let mut end = 0;
+    for c in input.bytes() {
+        if c == b'\n' {
+            sum += start * 10 + end;
+            start = 0;
+            end = 0;
+        }
+        if b'0' <= c && c <= b'9' {
+            let m = (c - b'0') as u32;
+            end = m;
+            if start == 0 {
+                start = m;
+            }
+        }
+    }
+    sum
+}
+
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     const NUMS: [(&'static str, u32); 18] = [
         ("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5), ("6", 6), ("7", 7), ("8", 8), ("9", 9),
@@ -122,13 +143,13 @@ pub(crate) fn part_2_faster(input: &str) -> impl std::fmt::Display {
 mod benches {
     use crate::get_input;
     use crate::year_2023::day1::*;
-    use test::Bencher;
+    use test::{Bencher, black_box};
 
     #[bench]
     fn part1_normal(b: &mut Bencher) {
         let input = &get_input(2023, 1).unwrap();
         b.iter(|| {
-            part_1(input);
+            black_box(part_1(input));
         })
     }
 
@@ -137,7 +158,7 @@ mod benches {
         let input = &get_input(2023, 1).unwrap();
         assert_eq!(part_1_old(input).to_string(), part_1(input).to_string());
         b.iter(|| {
-            part_1_old(input);
+            black_box(part_1_old(input));
         })
     }
 
@@ -146,7 +167,16 @@ mod benches {
         let input = &get_input(2023, 1).unwrap();
         assert_eq!(part_1_faster(input).to_string(), part_1(input).to_string());
         b.iter(|| {
-            part_1_faster(input);
+            black_box(part_1_faster(input));
+        })
+    }
+
+    #[bench]
+    fn part1_fasterer(b: &mut Bencher) {
+        let input = &get_input(2023, 1).unwrap();
+        assert_eq!(part_1_fasterer(input).to_string(), part_1(input).to_string());
+        b.iter(|| {
+            black_box(part_1_fasterer(input));
         })
     }
 
@@ -154,7 +184,7 @@ mod benches {
     fn part2_normal(b: &mut Bencher) {
         let input = &get_input(2023, 1).unwrap();
         b.iter(|| {
-            part_2(input);
+            black_box(part_2(input));
         })
     }
 
@@ -163,7 +193,7 @@ mod benches {
         let input = &get_input(2023, 1).unwrap();
         assert_eq!(part_2_faster(input).to_string(), part_2(input).to_string());
         b.iter(|| {
-            part_2_faster(input);
+            black_box(part_2_faster(input));
         })
     }
 }
