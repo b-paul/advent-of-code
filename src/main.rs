@@ -15,6 +15,7 @@ mod year_2019;
 mod year_2020;
 mod year_2021;
 mod year_2022;
+mod year_2023;
 
 use std::fs;
 use std::env;
@@ -41,7 +42,7 @@ fn get_input(year: u32, day: u32) -> anyhow::Result<String> {
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    #[arg(long, default_value_t = 2022, value_parser = clap::value_parser!(u32).range(2015..=2022))]
+    #[arg(long, default_value_t = 2023, value_parser = clap::value_parser!(u32).range(2015..=2023))]
     year: u32,
 
     /// Run part 2 of this problem (runs part 1 if this flag is not given)
@@ -67,6 +68,7 @@ fn main() -> anyhow::Result<()> {
         2020 => run_year!(file, year_2020, args.day, args.part),
         2021 => run_year!(file, year_2021, args.day, args.part),
         2022 => run_year!(file, year_2022, args.day, args.part),
+        2023 => run_year!(file, year_2023, args.day, args.part),
         _ => unreachable!(),
     };
 
