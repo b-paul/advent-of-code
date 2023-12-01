@@ -35,6 +35,24 @@ pub(crate) fn part_1_old(input: &str) -> impl std::fmt::Display {
         }).sum::<u32>()
 }
 
+pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
+    let mut sum = 0;
+    let (mut start, mut end) = (None, None);
+    for c in input.bytes() {
+        if c == b'\n' {
+            sum += start.unwrap() * 10 + end.unwrap();
+            start = None;
+            end = None;
+        }
+        if b'0' <= c && c <= b'9' {
+            let m = (c - b'0') as u32;
+            end = Some(m);
+            start = start.or(Some(m));
+        }
+    }
+    sum
+}
+
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     const NUMS: [(&'static str, u32); 18] = [
         ("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5), ("6", 6), ("7", 7), ("8", 8), ("9", 9),
@@ -124,6 +142,15 @@ mod benches {
     }
 
     #[bench]
+    fn part1_faster(b: &mut Bencher) {
+        let input = &get_input(2023, 1).unwrap();
+        assert_eq!(part_1_faster(input).to_string(), part_1(input).to_string());
+        b.iter(|| {
+            part_1_faster(input);
+        })
+    }
+
+    #[bench]
     fn part2_normal(b: &mut Bencher) {
         let input = &get_input(2023, 1).unwrap();
         b.iter(|| {
@@ -137,17 +164,6 @@ mod benches {
         assert_eq!(part_2_faster(input).to_string(), part_2(input).to_string());
         b.iter(|| {
             part_2_faster(input);
-        })
-    }
-
-    #[bench]
-    fn test(b: &mut Bencher) {
-        let input = &get_input(2023, 1).unwrap();
-        b.iter(|| {
-            input.lines().map(|l| {
-                test::black_box(l);
-                l.len() as u32
-            }).sum::<u32>();
         })
     }
 }
