@@ -6,6 +6,7 @@
 #![feature(test)]
 extern crate test;
 
+mod helper;
 mod year;
 mod year_2015;
 mod year_2016;
@@ -16,6 +17,8 @@ mod year_2020;
 mod year_2021;
 mod year_2022;
 mod year_2023;
+
+use helper::*;
 
 use std::fs;
 use std::env;

@@ -1,3 +1,4 @@
+use crate::adjacent_8;
 use std::collections::BTreeSet;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
@@ -10,26 +11,26 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         schem.push(l);
     }
 
-    let mut mask = schem.iter().map(|l| l.iter().map(|_| false).collect::<Vec<_>>()).collect::<Vec<_>>();
+    let mut mask = schem
+        .iter()
+        .map(|l| l.iter().map(|_| false).collect::<Vec<_>>())
+        .collect::<Vec<_>>();
 
     for (y, l) in schem.iter().enumerate() {
         'next: for (x, c) in l.iter().enumerate() {
-            if !c.is_digit(10) { continue; }
-            for dx in [-1, 0, 1] {
-                for dy in [-1, 0, 1] {
-                    if dx == 0 && dy == 0 { continue; }
-                    let nx = x as i32 + dx;
-                    let ny = y as i32 + dy;
-                    if nx < 0 || ny < 0 || nx >= schem[0].len() as i32 || ny >= schem.len() as i32 {
-                        continue;
-                    }
-                    let d = schem[ny as usize][nx as usize];
-                    if d.is_digit(10) || d == '.' { 
-                        continue;
-                    }
-                    mask[y][x] = true;
-                    continue 'next;
+            if !c.is_digit(10) {
+                continue;
+            }
+            for (nx, ny) in adjacent_8((x as i32, y as i32)) {
+                if nx < 0 || ny < 0 || nx >= schem[0].len() as i32 || ny >= schem.len() as i32 {
+                    continue;
                 }
+                let d = schem[ny as usize][nx as usize];
+                if d.is_digit(10) || d == '.' {
+                    continue;
+                }
+                mask[y][x] = true;
+                continue 'next;
             }
         }
     }
@@ -76,7 +77,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         schem.push(l);
     }
 
-    let mut ids = schem.iter().map(|l| l.iter().map(|_| (0, 0)).collect::<Vec<_>>()).collect::<Vec<_>>();
+    let mut ids = schem
+        .iter()
+        .map(|l| l.iter().map(|_| (0, 0)).collect::<Vec<_>>())
+        .collect::<Vec<_>>();
 
     for (y, l) in schem.iter().enumerate() {
         let mut curstart = 0;
@@ -93,25 +97,23 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     for (y, l) in schem.iter().enumerate() {
         for (x, c) in l.iter().enumerate() {
-            if c.is_digit(10) || *c == '.' { continue; }
+            if *c != '*' {
+                continue;
+            }
             let mut count = 0;
             let mut set = BTreeSet::new();
-            for dx in [-1, 0, 1] {
-                for dy in [-1, 0, 1] {
-                    let nx = x as i32 + dx;
-                    let ny = y as i32 + dy;
-                    if nx < 0 || ny < 0 || nx >= schem[0].len() as i32 || ny >= schem.len() as i32 {
-                        continue;
-                    }
-                    let d = schem[ny as usize][nx as usize];
-                    if !d.is_digit(10) { 
-                        continue;
-                    }
-                    let (nx, ny) = ids[ny as usize][nx as usize];
-                    if !set.contains(&(nx, ny)) {
-                        count += 1;
-                        set.insert((nx, ny));
-                    }
+            for (nx, ny) in adjacent_8((x as i32, y as i32)) {
+                if nx < 0 || ny < 0 || nx >= schem[0].len() as i32 || ny >= schem.len() as i32 {
+                    continue;
+                }
+                let d = schem[ny as usize][nx as usize];
+                if !d.is_digit(10) {
+                    continue;
+                }
+                let (nx, ny) = ids[ny as usize][nx as usize];
+                if !set.contains(&(nx, ny)) {
+                    count += 1;
+                    set.insert((nx, ny));
                 }
             }
             if count == 2 {
@@ -140,7 +142,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 mod benches {
     use crate::get_input;
     use crate::year_2023::day3::*;
-    use test::{Bencher, black_box};
+    use test::{black_box, Bencher};
 
     #[bench]
     fn part1_normal(b: &mut Bencher) {
