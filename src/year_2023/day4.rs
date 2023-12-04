@@ -1,12 +1,10 @@
 use itertools::Itertools;
-use std::collections::VecDeque;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     input.lines().map(|l| {
-        let ns = l.split(": ").collect_vec()[1];
-        let s = ns.split(" | ").collect_vec();
-        let wins: Vec<_> = s[0].trim().split(" ").filter_map(|n| n.parse::<u32>().ok()).collect();
-        let ours: Vec<_> = s[1].trim().split(" ").filter_map(|n| n.parse::<u32>().ok()).collect();
+        let s = l.split(": ").nth(1).unwrap().split(" | ").collect_vec();
+        let wins = s[0].trim().split(' ').filter_map(|n| n.parse::<u32>().ok()).collect_vec();
+        let ours = s[1].trim().split(' ').filter_map(|n| n.parse::<u32>().ok());
         let mut pow = 0;
         for n in ours {
             if wins.contains(&n) { pow += 1; }
@@ -16,41 +14,110 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     }).sum::<u32>()
 }
 
+pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
+    input.lines().map(|l| {
+        let mut s = l.split(": ").nth(1).unwrap().split(" | ");
+
+        let mut wins = 0u128;
+        for n in s.next().unwrap().trim().split(' ').filter_map(|n| n.parse::<u8>().ok()) {
+            wins |= 1 << n
+        }
+
+        let mut ours = 0u128;
+        for n in s.next().unwrap().trim().split(' ').filter_map(|n| n.parse::<u8>().ok()) {
+            ours |= 1 << n
+        }
+
+        let pow = (wins & ours).count_ones();
+
+        1 << pow >> 1
+    }).sum::<u32>()
+}
+
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let cards = input.lines().enumerate().map(|(i, l)| {
-        let ns = l.split(": ").collect_vec()[1];
-        let s = ns.split(" | ").collect_vec();
-        let wins: Vec<_> = s[0].trim().split(" ").filter_map(|n| n.parse::<u32>().ok()).collect();
-        let ours: Vec<_> = s[1].trim().split(" ").filter_map(|n| n.parse::<u32>().ok()).collect();
+        let s = l.split(": ").nth(1).unwrap().split(" | ").collect_vec();
+        let wins = s[0].trim().split(' ').filter_map(|n| n.parse::<u32>().ok()).collect_vec();
+        let ours = s[1].trim().split(' ').filter_map(|n| n.parse::<u32>().ok());
 
-        let mut cars = Vec::new();
-
-        let mut count = i + 1;
-
-        for n in ours.iter() {
-            if wins.contains(&n) {
-                cars.push(count);
-                count += 1;
-            }
-        }
-
-        (wins, ours, cars)
+        let mut count = i;
+        ours.filter(|n| wins.contains(n)).map(|_| {count += 1; count}).collect_vec()
     }).collect_vec();
 
-    let mut sum = 0;
-    let mut queue = VecDeque::new();
-
-    for i in 0..cards.len() {
-        queue.push_back(i);
-    }
-
-    while let Some(i) = queue.pop_front() {
-        println!("{:?}", queue.len());
-        sum += 1;
-        for c in cards[i].2.iter() {
-            queue.push_back(*c);
+    let mut counts = cards.iter().map(|_| 1).collect_vec();
+    for (i, card) in cards.into_iter().enumerate() {
+        for c in card {
+            counts[c] += counts[i];
         }
     }
 
-    sum
+    counts.iter().sum::<u32>()
+}
+
+pub(crate) fn part_2_faster(input: &str) -> impl std::fmt::Display {
+    let cards = input.lines().map(|l| {
+        let mut s = l.split(": ").nth(1).unwrap().split(" | ");
+
+        let mut wins = 0u128;
+        for n in s.next().unwrap().trim().split(' ').filter_map(|n| n.parse::<u8>().ok()) {
+            wins |= 1 << n
+        }
+
+        let mut ours = 0u128;
+        for n in s.next().unwrap().trim().split(' ').filter_map(|n| n.parse::<u8>().ok()) {
+            ours |= 1 << n
+        }
+
+        (wins & ours).count_ones() as usize
+    });
+
+    let mut counts = [1; 197];
+    for (i, cards) in cards.enumerate() {
+        for c in (i+1)..(i + cards + 1) {
+            counts[c] += counts[i];
+        }
+    }
+
+    counts.iter().sum::<u32>()
+}
+
+#[cfg(test)]
+mod benches {
+    use crate::get_input;
+    use crate::year_2023::day4::*;
+    use test::{black_box, Bencher};
+
+    #[bench]
+    fn part1_normal(b: &mut Bencher) {
+        let input = &get_input(2023, 4).unwrap();
+        b.iter(|| {
+            black_box(part_1(input));
+        })
+    }
+
+    #[bench]
+    fn part1_faster(b: &mut Bencher) {
+        let input = &get_input(2023, 4).unwrap();
+        assert_eq!(part_1_faster(input).to_string(), part_1(input).to_string());
+        b.iter(|| {
+            black_box(part_1_faster(input));
+        })
+    }
+
+    #[bench]
+    fn part2_normal(b: &mut Bencher) {
+        let input = &get_input(2023, 4).unwrap();
+        b.iter(|| {
+            black_box(part_2(input));
+        })
+    }
+
+    #[bench]
+    fn part2_faster(b: &mut Bencher) {
+        let input = &get_input(2023, 4).unwrap();
+        assert_eq!(part_2_faster(input).to_string(), part_2(input).to_string());
+        b.iter(|| {
+            black_box(part_2_faster(input));
+        })
+    }
 }
