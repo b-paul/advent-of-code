@@ -34,6 +34,38 @@ pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
     }).sum::<u32>()
 }
 
+fn read_num(b: &[u8]) -> u8 {
+    let a = b[0];
+    let b = b[1];
+    if b'0' <= a && a <= b'9' {
+        (a - b'0') * 10 + b - b'0'
+    } else {
+        b - b'0'
+    }
+}
+
+pub(crate) fn part_1_fasterer(input: &str) -> impl std::fmt::Display {
+    // Observation: the format of each line is exactly the same
+    input.as_bytes().chunks_exact(117)
+        .map(|l| {
+            let mut wins = 0u128;
+            for i in 0..10 {
+                let i = 10 + 3 * i;
+                let n = read_num(&l[i..=i+1]);
+                wins |= 1 << n;
+            }
+            let mut ours = 0u128;
+            for i in 0..25 {
+                let i = 42 + 3 * i;
+                let n = read_num(&l[i..=i+1]);
+                ours |= 1 << n;
+            }
+            let pow = (wins & ours).count_ones();
+            1 << pow >> 1
+        })
+        .sum::<u32>()
+}
+
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let cards = input.lines().enumerate().map(|(i, l)| {
         let s = l.split(": ").nth(1).unwrap().split(" | ").collect_vec();
@@ -81,6 +113,35 @@ pub(crate) fn part_2_faster(input: &str) -> impl std::fmt::Display {
     counts.iter().sum::<u32>()
 }
 
+pub(crate) fn part_2_fasterer(input: &str) -> impl std::fmt::Display {
+    // Observation: the format of each line is exactly the same
+    let cards = input.as_bytes().chunks_exact(117)
+        .map(|l| {
+            let mut wins = 0u128;
+            for i in 0..10 {
+                let i = 10 + 3 * i;
+                let n = read_num(&l[i..=i+1]);
+                wins |= 1 << n;
+            }
+            let mut ours = 0u128;
+            for i in 0..25 {
+                let i = 42 + 3 * i;
+                let n = read_num(&l[i..=i+1]);
+                ours |= 1 << n;
+            }
+            (wins & ours).count_ones() as usize
+        });
+
+    let mut counts = [1; 197];
+    for (i, cards) in cards.enumerate() {
+        for c in (i+1)..(i + cards + 1) {
+            counts[c] += counts[i];
+        }
+    }
+
+    counts.iter().sum::<u32>()
+}
+
 #[cfg(test)]
 mod benches {
     use crate::get_input;
@@ -105,6 +166,15 @@ mod benches {
     }
 
     #[bench]
+    fn part1_fasterer(b: &mut Bencher) {
+        let input = &get_input(2023, 4).unwrap();
+        assert_eq!(part_1_fasterer(input).to_string(), part_1(input).to_string());
+        b.iter(|| {
+            black_box(part_1_fasterer(input));
+        })
+    }
+
+    #[bench]
     fn part2_normal(b: &mut Bencher) {
         let input = &get_input(2023, 4).unwrap();
         b.iter(|| {
@@ -118,6 +188,15 @@ mod benches {
         assert_eq!(part_2_faster(input).to_string(), part_2(input).to_string());
         b.iter(|| {
             black_box(part_2_faster(input));
+        })
+    }
+
+    #[bench]
+    fn part2_fasterer(b: &mut Bencher) {
+        let input = &get_input(2023, 4).unwrap();
+        assert_eq!(part_2_fasterer(input).to_string(), part_2(input).to_string());
+        b.iter(|| {
+            black_box(part_2_fasterer(input));
         })
     }
 }
