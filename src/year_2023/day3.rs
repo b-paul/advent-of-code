@@ -21,8 +21,8 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             if !c.is_digit(10) {
                 continue;
             }
-            for (nx, ny) in adjacent_8((x as i32, y as i32)) {
-                if nx < 0 || ny < 0 || nx >= schem[0].len() as i32 || ny >= schem.len() as i32 {
+            for (nx, ny) in adjacent_8_u(x, y) {
+                if nx >= schem[0].len() || ny >= schem.len() {
                     continue;
                 }
                 let d = schem[ny as usize][nx as usize];
@@ -102,8 +102,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             }
             let mut count = 0;
             let mut set = BTreeSet::new();
-            for (nx, ny) in adjacent_8((x as i32, y as i32)) {
-                if nx < 0 || ny < 0 || nx >= schem[0].len() as i32 || ny >= schem.len() as i32 {
+            for (nx, ny) in adjacent_8_u(x, y) {
+                if nx >= schem[0].len() || ny >= schem.len() {
                     continue;
                 }
                 let d = schem[ny as usize][nx as usize];
