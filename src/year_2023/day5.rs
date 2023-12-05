@@ -3,18 +3,17 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     let mut seeds = data[0].split(' ').skip(1).filter_map(|n| n.parse::<usize>().ok()).collect::<Vec<_>>();
 
-    for di in 1..8 {
-        let data = data[di];
+    for data in &data[1..] {
         let data = data.lines().skip(1);
         let ranges = data.map(|l| {
             let xs = l.split(' ').filter_map(|n| n.parse::<usize>().ok()).collect::<Vec<_>>();
             (xs[0], xs[1], xs[2])
         }).collect::<Vec<_>>();
-        'next: for seed in seeds.iter_mut() {
-            for (dest, source, len) in ranges.iter() {
-                if *seed >= *source && *seed < *source + *len {
+        for seed in seeds.iter_mut() {
+            for (dest, source, len) in ranges.iter().cloned() {
+                if source <= *seed && *seed < source + len {
                     *seed = *seed + dest - source;
-                    continue 'next;
+                    break;
                 }
             }
         }
@@ -34,42 +33,42 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         seeds.push(start..start + len);
     }
 
-    for di in 1..8 {
+    for data in &data[1..] {
         let mut new_seeds = Vec::new();
 
-        let data = data[di];
         let data = data.lines().skip(1);
         let ranges = data.map(|l| {
             let xs = l.split(' ').filter_map(|n| n.parse::<usize>().ok()).collect::<Vec<_>>();
             (xs[0], xs[1], xs[2])
         }).collect::<Vec<_>>();
         'next: while let Some(seed) = seeds.pop() {
-            for (dest, source, len) in ranges.iter() {
-                if seed.start >= *source && seed.start < source + len {
-                    let new_len = (*len).min(seed.len() as usize) as usize;
+            for (dest, source, len) in ranges.iter().cloned() {
+                let end = source + len;
+                if (source..end).contains(&seed.start) {
+                    let new_len = len.min(seed.len());
                     if new_len == seed.len() {
                         let start = seed.start + dest - source;
                         let end = seed.end + dest - source;
                         new_seeds.push(start..end);
                     } else {
-                        seeds.push((seed.start + *len)..seed.end);
+                        seeds.push((seed.start + len)..seed.end);
 
                         let start = seed.start + dest - source;
                         let end = start + len;
                         new_seeds.push(start..end);
                     }
-                    continue 'next;
-                } else if seed.end > *source && seed.end < source + len {
+                } else if (source+1..end).contains(&seed.end) {
                     let len = seed.end - source;
-                    seeds.push(seed.start..*source);
-                    new_seeds.push(*dest..*dest+len);
-                    continue 'next;
-                } else if seed.start < *source && seed.end >= source + len {
-                    seeds.push(seed.start..*source);
-                    seeds.push(*source + *len..seed.end);
-                    new_seeds.push(*dest..*dest+len);
-                    continue 'next;
+                    seeds.push(seed.start..source);
+                    new_seeds.push(dest..dest+len);
+                } else if source > seed.start && seed.end >= end {
+                    seeds.push(seed.start..source);
+                    seeds.push(source + len..seed.end);
+                    new_seeds.push(dest..dest+len);
+                } else {
+                    continue;
                 }
+                continue 'next;
             }
             new_seeds.push(seed);
         }
