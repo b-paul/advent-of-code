@@ -1,9 +1,7 @@
-use itertools::Itertools;
-
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     input.lines().map(|l| {
-        let s = l.split(": ").nth(1).unwrap().split(" | ").collect_vec();
-        let wins = s[0].trim().split(' ').filter_map(|n| n.parse::<u32>().ok()).collect_vec();
+        let s = l.split(": ").nth(1).unwrap().split(" | ").collect::<Vec<_>>();
+        let wins = s[0].trim().split(' ').filter_map(|n| n.parse::<u32>().ok()).collect::<Vec<_>>();
         let ours = s[1].trim().split(' ').filter_map(|n| n.parse::<u32>().ok());
         let mut pow = 0;
         for n in ours {
@@ -68,15 +66,15 @@ pub(crate) fn part_1_fasterer(input: &str) -> impl std::fmt::Display {
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let cards = input.lines().enumerate().map(|(i, l)| {
-        let s = l.split(": ").nth(1).unwrap().split(" | ").collect_vec();
-        let wins = s[0].trim().split(' ').filter_map(|n| n.parse::<u32>().ok()).collect_vec();
+        let s = l.split(": ").nth(1).unwrap().split(" | ").collect::<Vec<_>>();
+        let wins = s[0].trim().split(' ').filter_map(|n| n.parse::<u32>().ok()).collect::<Vec<_>>();
         let ours = s[1].trim().split(' ').filter_map(|n| n.parse::<u32>().ok());
 
         let mut count = i;
-        ours.filter(|n| wins.contains(n)).map(|_| {count += 1; count}).collect_vec()
-    }).collect_vec();
+        ours.filter(|n| wins.contains(n)).map(|_| {count += 1; count}).collect::<Vec<_>>()
+    }).collect::<Vec<_>>();
 
-    let mut counts = cards.iter().map(|_| 1).collect_vec();
+    let mut counts = cards.iter().map(|_| 1).collect::<Vec<_>>();
     for (i, card) in cards.into_iter().enumerate() {
         for c in card {
             counts[c] += counts[i];
