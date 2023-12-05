@@ -173,15 +173,6 @@ mod benches {
     }
 
     #[bench]
-    fn part1_fastererer(b: &mut Bencher) {
-        let input = &get_input(2023, 4).unwrap();
-        assert_eq!(part_1_fastererer(input).to_string(), part_1(input).to_string());
-        b.iter(|| {
-            black_box(part_1_fastererer(input));
-        })
-    }
-
-    #[bench]
     fn part2_normal(b: &mut Bencher) {
         let input = &get_input(2023, 4).unwrap();
         b.iter(|| {

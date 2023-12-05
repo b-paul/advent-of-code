@@ -78,3 +78,25 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     }
     seeds.iter().map(|r| r.start).min().unwrap()
 }
+
+mod benches {
+    use crate::get_input;
+    use crate::year_2023::day5::*;
+    use test::{black_box, Bencher};
+
+    #[bench]
+    fn part1_normal(b: &mut Bencher) {
+        let input = &get_input(2023, 5).unwrap();
+        b.iter(|| {
+            black_box(part_1(input));
+        })
+    }
+
+    #[bench]
+    fn part2_normal(b: &mut Bencher) {
+        let input = &get_input(2023, 5).unwrap();
+        b.iter(|| {
+            black_box(part_2(input));
+        })
+    }
+}
