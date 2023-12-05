@@ -4,6 +4,7 @@
 #![feature(iter_array_chunks)]
 #![feature(array_chunks)]
 #![feature(test)]
+#![feature(portable_simd)]
 extern crate test;
 
 mod helper;

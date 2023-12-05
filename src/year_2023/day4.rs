@@ -66,6 +66,45 @@ pub(crate) fn part_1_fasterer(input: &str) -> impl std::fmt::Display {
         .sum::<u32>()
 }
 
+
+pub(crate) fn part_1_fastererer(input: &str) -> impl std::fmt::Display {
+    use std::simd::prelude::*;
+    // use simd to read numbers
+    let idxs = u8x32::from_array([
+        0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28,
+        31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+    ]);
+    let zero = u8x32::splat(0xf);
+    let ten = u8x32::splat(10);
+    let empty = u8x32::splat(0);
+    input.as_bytes().chunks_exact(117)
+        .map(|l| {
+            let mut wins = u8x32::from_slice(&l[10..]);
+            wins &= zero;
+            wins[31] = 0;
+            let wins = wins.swizzle_dyn(idxs);
+            let (a, b) = Simd::deinterleave(wins, empty);
+            let a = a * ten + b;
+            let ns = a.to_array();
+
+            let mut wins = 0u128;
+            for i in 0..10 {
+                let n = ns[i];
+                wins |= 1 << n;
+            }
+
+            let mut ours = 0u128;
+            for i in 0..25 {
+                let i = 42 + 3 * i;
+                let n = read_num(&l[i..=i+1]);
+                ours |= 1 << n;
+            }
+            let pow = (wins & ours).count_ones();
+            1 << pow >> 1
+        })
+        .sum::<u32>()
+}
+
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let cards = input.lines().enumerate().map(|(i, l)| {
         let s = l.split(": ").nth(1).unwrap().split(" | ").collect_vec();
@@ -171,6 +210,15 @@ mod benches {
         assert_eq!(part_1_fasterer(input).to_string(), part_1(input).to_string());
         b.iter(|| {
             black_box(part_1_fasterer(input));
+        })
+    }
+
+    #[bench]
+    fn part1_fastererer(b: &mut Bencher) {
+        let input = &get_input(2023, 4).unwrap();
+        assert_eq!(part_1_fastererer(input).to_string(), part_1(input).to_string());
+        b.iter(|| {
+            black_box(part_1_fastererer(input));
         })
     }
 
