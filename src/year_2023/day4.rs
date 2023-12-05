@@ -70,15 +70,21 @@ pub(crate) fn part_1_fasterer(input: &str) -> impl std::fmt::Display {
 pub(crate) fn part_1_fastererer(input: &str) -> impl std::fmt::Display {
     use std::simd::prelude::*;
     // use simd to read numbers
+    // PLEASE DONT LOOK AT THIS!!! THIS FUNCTION DOES NOT EXIST!!
     let idxs = u8x32::from_array([
         0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28,
         31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+    ]);
+    let _idxs2 = u8x16::from_array([
+        0, 1, 3, 4, 6, 7, 9, 10, 12, 13,
+        31, 31, 31, 31, 31, 31,
     ]);
     let zero = u8x32::splat(0xf);
     let ten = u8x32::splat(10);
     let empty = u8x32::splat(0);
     input.as_bytes().chunks_exact(117)
         .map(|l| {
+
             let mut wins = u8x32::from_slice(&l[10..]);
             wins &= zero;
             wins[31] = 0;
@@ -94,11 +100,35 @@ pub(crate) fn part_1_fastererer(input: &str) -> impl std::fmt::Display {
             }
 
             let mut ours = 0u128;
-            for i in 0..25 {
+
+            let mut our = u8x32::from_slice(&l[42..]);
+            our &= zero;
+            our[31] = 0;
+            let our = our.swizzle_dyn(idxs);
+            let (a, b) = Simd::deinterleave(our, empty);
+            let a = a * ten + b;
+            let ns = a.to_array();
+            for i in 0..10 {
+                let n = ns[i];
+                ours |= 1 << n;
+            }
+            let mut our = u8x32::from_slice(&l[72..]);
+            our &= zero;
+            our[31] = 0;
+            let our = our.swizzle_dyn(idxs);
+            let (a, b) = Simd::deinterleave(our, empty);
+            let a = a * ten + b;
+            let ns = a.to_array();
+            for i in 0..10 {
+                let n = ns[i];
+                ours |= 1 << n;
+            }
+            for i in 20..25 {
                 let i = 42 + 3 * i;
                 let n = read_num(&l[i..=i+1]);
                 ours |= 1 << n;
             }
+
             let pow = (wins & ours).count_ones();
             1 << pow >> 1
         })
