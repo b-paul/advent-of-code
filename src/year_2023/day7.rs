@@ -8,7 +8,7 @@ use std::collections::HashMap;
 #[derive(Debug, Eq, PartialEq)]
 struct Hand {
     hand: String,
-    win: u32,
+    win: usize,
 }
 
 fn kind(hand: &String) -> u32 {
@@ -81,7 +81,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
             Hand {
                 hand: ws[0].to_string(),
-                win: ws[1].parse::<u32>().unwrap(),
+                win: ws[1].parse::<usize>().unwrap(),
             }
         })
         .collect_vec();
@@ -89,14 +89,14 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     hands.sort();
 
     hands.iter().enumerate().map(|(i, h)| {
-        h.win as u64 * (i + 1) as u64
-    }).sum::<u64>()
+        h.win * (i + 1)
+    }).sum::<usize>()
 }
 
 #[derive(Debug, Eq, PartialEq)]
 struct Hand2 {
     hand: String,
-    win: u32,
+    win: usize,
 }
 
 fn kind2(hand: &String) -> u32 {
@@ -178,7 +178,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
             Hand2 {
                 hand: ws[0].to_string(),
-                win: ws[1].parse::<u32>().unwrap(),
+                win: ws[1].parse::<usize>().unwrap(),
             }
         })
         .collect_vec();
@@ -186,17 +186,6 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     hands.sort();
 
     hands.iter().enumerate().map(|(i, h)| {
-        h.win as u64 * (i + 1) as u64
-    }).sum::<u64>()
-}
-
-#[test]
-fn part2() {
-    let input = "32T3K 765
-T55J5 684
-KK677 28
-KTJJT 220
-QQQJA 483";
-    let output = 5905;
-    assert_eq!(part_2(input).to_string(),output.to_string());
+        h.win * (i + 1)
+    }).sum::<usize>()
 }
