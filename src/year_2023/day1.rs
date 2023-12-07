@@ -19,15 +19,15 @@ pub(crate) fn part_1_old(input: &str) -> impl std::fmt::Display {
         .map(|l| {
             let mut n = 0;
             for c in l.chars() {
-                if c.is_digit(10) {
-                    n += c.to_digit(10).unwrap();
+                if let Some(d) = c.to_digit(10) {
+                    n += d;
                     break;
                 }
             }
             n *= 10;
             for c in l.chars().rev() {
-                if c.is_digit(10) {
-                    n += c.to_digit(10).unwrap();
+                if let Some(d) = c.to_digit(10) {
+                    n += d;
                     break;
                 }
             }
@@ -44,7 +44,7 @@ pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
             start = None;
             end = None;
         }
-        if b'0' <= c && c <= b'9' {
+        if c.is_ascii_digit() {
             let m = (c - b'0') as u32;
             end = Some(m);
             start = start.or(Some(m));
@@ -63,7 +63,7 @@ pub(crate) fn part_1_fasterer(input: &str) -> impl std::fmt::Display {
             start = 0;
             end = 0;
         }
-        if b'0' <= c && c <= b'9' {
+        if c.is_ascii_digit() {
             let m = (c - b'0') as u32;
             end = m;
             if start == 0 {

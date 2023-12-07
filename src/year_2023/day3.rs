@@ -18,15 +18,15 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     for (y, l) in schem.iter().enumerate() {
         'next: for (x, c) in l.iter().enumerate() {
-            if !c.is_digit(10) {
+            if !c.is_ascii_digit() {
                 continue;
             }
             for (nx, ny) in adjacent_8_u(x, y) {
                 if nx >= schem[0].len() || ny >= schem.len() {
                     continue;
                 }
-                let d = schem[ny as usize][nx as usize];
-                if d.is_digit(10) || d == '.' {
+                let d = schem[ny][nx];
+                if d.is_ascii_digit() || d == '.' {
                     continue;
                 }
                 mask[y][x] = true;
@@ -44,9 +44,9 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             if mask[y][x] {
                 allowed = true;
             }
-            if c.is_digit(10) {
+            if let Some(d) = c.to_digit(10) {
                 n *= 10;
-                n += c.to_digit(10).unwrap();
+                n += d;
             } else {
                 if allowed {
                     sum += n;
@@ -85,7 +85,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     for (y, l) in schem.iter().enumerate() {
         let mut curstart = 0;
         for (x, c) in l.iter().enumerate() {
-            if c.is_digit(10) {
+            if c.is_ascii_digit() {
                 ids[y][x] = (curstart, y);
             } else {
                 curstart = x + 1;
@@ -106,11 +106,11 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 if nx >= schem[0].len() || ny >= schem.len() {
                     continue;
                 }
-                let d = schem[ny as usize][nx as usize];
-                if !d.is_digit(10) {
+                let d = schem[ny][nx];
+                if !d.is_ascii_digit() {
                     continue;
                 }
-                let (nx, ny) = ids[ny as usize][nx as usize];
+                let (nx, ny) = ids[ny][nx];
                 if !set.contains(&(nx, ny)) {
                     count += 1;
                     set.insert((nx, ny));
@@ -121,7 +121,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 for (x, y) in set {
                     let mut n = 0;
                     for dx in 0.. {
-                        if x + dx >= schem[0].len() || !schem[y][x + dx].is_digit(10) {
+                        if x + dx >= schem[0].len() || !schem[y][x + dx].is_ascii_digit() {
                             break;
                         }
                         n *= 10;
