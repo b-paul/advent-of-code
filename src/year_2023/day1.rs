@@ -75,7 +75,7 @@ pub(crate) fn part_1_fasterer(input: &str) -> impl std::fmt::Display {
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    const NUMS: [(&'static str, u32); 18] = [
+    const NUMS: [(&str, u32); 18] = [
         ("1", 1), ("2", 2), ("3", 3), ("4", 4), ("5", 5), ("6", 6), ("7", 7), ("8", 8), ("9", 9),
         ("one", 1), ("two", 2), ("three", 3), ("four", 4), ("five", 5), ("six", 6), ("seven", 7), ("eight", 8), ("nine", 9),
     ];
@@ -101,7 +101,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
 // this is uglier too though :(
 pub(crate) fn part_2_faster(input: &str) -> impl std::fmt::Display {
-    const NUMS: [&'static str; 9] = [
+    const NUMS: [&str; 9] = [
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];
     input

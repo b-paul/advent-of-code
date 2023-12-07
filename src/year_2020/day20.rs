@@ -18,7 +18,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         }
         let id: u32 = lines[0].split(' ').nth(1).unwrap()[0..4].parse().unwrap();
         let tile: Vec<Vec<bool>> = lines[1..]
-            .into_iter()
+            .iter()
             .map(|s| {
                 s.chars()
                     .map(|c| match c {
@@ -52,11 +52,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     for tile in tiles.iter() {
         for edge in tile.edges {
-            if !edges.contains_key(&edge) {
-                edges.insert(edge, 1);
-            } else if let Some(i) = edges.get_mut(&edge) {
-                *i += 1;
-            }
+            *edges.entry(edge).or_default() += 1;
         }
     }
 
@@ -109,16 +105,14 @@ impl Tile2 {
                 // flip
                 for y in 0..4 {
                     for x in 0..8 {
-                        let tmp = self.inside[y][x];
-                        self.inside[y][x] = self.inside[y][7-x];
-                        self.inside[y][7-x] = tmp;
+                        self.inside[y].swap(x, 7-x);
                     }
                 }
                 // flip the edges
-                { let tmp = self.edges[0]; self.edges[0] = self.edges[1]; self.edges[1] = tmp; }
-                { let tmp = self.edges[4]; self.edges[4] = self.edges[5]; self.edges[5] = tmp; }
-                { let tmp = self.edges[2]; self.edges[2] = self.edges[7]; self.edges[7] = tmp; }
-                { let tmp = self.edges[3]; self.edges[3] = self.edges[6]; self.edges[6] = tmp; }
+                self.edges.swap(0, 1);
+                self.edges.swap(4, 5);
+                self.edges.swap(2, 7);
+                self.edges.swap(3, 6);
             },
             2 => {
                 // rotate
@@ -204,7 +198,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         }
         let id: u32 = lines[0].split(' ').nth(1).unwrap()[0..4].parse().unwrap();
         let tile: Vec<Vec<bool>> = lines[1..]
-            .into_iter()
+            .iter()
             .map(|s| {
                 s.chars()
                     .map(|c| match c {
@@ -231,10 +225,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             edges[7] |= tile[9 - i][9] as u32;
         }
         let mut inside = Vec::new();
-        for x in 1..9 {
+        for tx in tile.iter().take(9).skip(1) {
             let mut row = Vec::new();
-            for y in 1..9 {
-                row.push(tile[x][y]);
+            for t in tx.iter().take(9).skip(1) {
+                row.push(*t);
             }
             inside.push(row);
         }
@@ -246,17 +240,13 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     for tile in tiles.iter() {
         for edge in tile.edges {
-            if !edges.contains_key(&edge) {
-                edges.insert(edge, 1);
-            } else if let Some(i) = edges.get_mut(&edge) {
-                *i += 1;
-            }
+            *edges.entry(edge).or_default() += 1;
         }
     }
 
     let mut corner = tiles
         .iter()
-        .filter(|tile| {
+        .find(|tile| {
             let mut connectors = 0;
             for edge in tile.edges {
                 if edges.get(&edge) == Some(&2) {
@@ -265,7 +255,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             }
             connectors == 4
         })
-        .next().unwrap().clone();
+        .unwrap().clone();
 
     corner.rotate(1); // i needed to do this i swear
 
@@ -307,7 +297,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         ] {
             let new_x = x as i32 + dx;
             let new_y = y as i32 + dy;
-            if new_x < 0 || new_x >= 12 || new_y < 0 || new_y >= 12
+            if !(0..12).contains(&new_x) || !(0..12).contains(&new_y)
                 || queued.contains(&(new_x as usize, new_y as usize)) {
                 continue;
             }
@@ -371,10 +361,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     let mut bits = bitvec![];
 
-    for y in 0..12 {
+    for grid_row in grid.iter().take(12) {
         for row in 0..8 {
-            for x in 0..12 {
-                let vec = &grid[y][x].inside[row];
+            for grid_square in grid_row.iter().take(12) {
+                let vec = &grid_square.inside[row];
                 for square in vec {
                     bits.push(*square);
                 }

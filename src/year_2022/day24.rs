@@ -128,7 +128,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
             let insert = (0, 0, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
@@ -142,35 +142,35 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         if x < width - 1 && !has(&blizzards, x + 1, y) {
             let insert = (x + 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if x > 0 && !has(&blizzards, x - 1, y) {
             let insert = (x - 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y < height - 1 && !has(&blizzards, x, y + 1) {
             let insert = (x, y + 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y > 0 && !has(&blizzards, x, y - 1) {
             let insert = (x, y - 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if !has(&blizzards, x, y) {
             let insert = (x, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
@@ -240,7 +240,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
             let insert = (0, 0, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
@@ -253,35 +253,35 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         if x < width - 1 && !has(&blizzards, x + 1, y) {
             let insert = (x + 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if x > 0 && !has(&blizzards, x - 1, y) {
             let insert = (x - 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y < height - 1 && !has(&blizzards, x, y + 1) {
             let insert = (x, y + 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y > 0 && !has(&blizzards, x, y - 1) {
             let insert = (x, y - 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if !has(&blizzards, x, y) {
             let insert = (x, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
@@ -300,7 +300,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
             let insert = (width-1, height-1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
@@ -313,35 +313,35 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         if x < width - 1 && !has(&blizzards, x + 1, y) {
             let insert = (x + 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if x > 0 && !has(&blizzards, x - 1, y) {
             let insert = (x - 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y < height - 1 && !has(&blizzards, x, y + 1) {
             let insert = (x, y + 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y > 0 && !has(&blizzards, x, y - 1) {
             let insert = (x, y - 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if !has(&blizzards, x, y) {
             let insert = (x, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
@@ -361,7 +361,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
             let insert = (0, 0, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
@@ -374,35 +374,35 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         if x < width - 1 && !has(&blizzards, x + 1, y) {
             let insert = (x + 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if x > 0 && !has(&blizzards, x - 1, y) {
             let insert = (x - 1, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y < height - 1 && !has(&blizzards, x, y + 1) {
             let insert = (x, y + 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if y > 0 && !has(&blizzards, x, y - 1) {
             let insert = (x, y - 1, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }
         if !has(&blizzards, x, y) {
             let insert = (x, y, depth + 1);
             if !visited.contains(&insert) {
-                visited.insert(insert.clone());
+                visited.insert(insert);
                 queue.push_back(insert);
             }
         }

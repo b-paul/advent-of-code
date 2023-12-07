@@ -203,7 +203,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             }
         }
 
-        if new_state.len() == 0 {
+        if new_state.is_empty() {
             return (round + 1).to_string();
         }
 
