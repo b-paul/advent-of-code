@@ -1,8 +1,8 @@
 use itertools::Itertools;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 fn kind(hand: &str) -> u32 {
-    let mut map = HashMap::new();
+    let mut map = BTreeMap::new();
     for c in hand.as_bytes() {
         let e = map.entry(c).or_default();
         *e += 1u32;
