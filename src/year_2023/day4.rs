@@ -35,7 +35,7 @@ pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
 fn read_num(b: &[u8]) -> u8 {
     let a = b[0];
     let b = b[1];
-    if b'0' <= a && a <= b'9' {
+    if a.is_ascii_digit() {
         (a - b'0') * 10 + b - b'0'
     } else {
         b - b'0'
