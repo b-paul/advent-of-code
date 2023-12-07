@@ -306,7 +306,7 @@ fn most_geodes<const MAX: u8>(blueprint: &Blueprint) -> u32 {
 }
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    separated_list1(newline, blueprint)(&input)
+    separated_list1(newline, blueprint)(input)
         .expect("Failed to parse blueprints.")
         .1
         .iter()
@@ -336,12 +336,12 @@ Blueprint 2:
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    separated_list1(newline, blueprint)(&input)
+    separated_list1(newline, blueprint)(input)
         .expect("Failed to parse blueprints.")
         .1
         .iter()
         .take(3)
-        .map(|blueprint| most_geodes::<32>(blueprint))
+        .map(most_geodes::<32>)
         .product::<u32>()
         .to_string()
 }

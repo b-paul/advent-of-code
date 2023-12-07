@@ -22,22 +22,24 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         for i in 0..points.len() - 1 {
             let p1 = points[i];
             let p2 = points[i + 1];
-            if p1.0 == p2.0 {
-                if p2.1 > p1.1 {
-                    for y in p1.1..=p2.1 {
-                        grid.insert((p1.0, y));
-                    }
-                } else {
-                    for y in p2.1..=p1.1 {
-                        grid.insert((p1.0, y));
+            match p1.0.cmp(&p2.0) {
+                std::cmp::Ordering::Equal => {
+                    if p2.1 > p1.1 {
+                        for y in p1.1..=p2.1 {
+                            grid.insert((p1.0, y));
+                        }
+                    } else {
+                        for y in p2.1..=p1.1 {
+                            grid.insert((p1.0, y));
+                        }
                     }
                 }
-            } else {
-                if p2.0 > p1.0 {
+                std::cmp::Ordering::Less => {
                     for x in p1.0..=p2.0 {
                         grid.insert((x, p1.1));
                     }
-                } else {
+                }
+                std::cmp::Ordering::Greater => {
                     for x in p2.0..=p1.0 {
                         grid.insert((x, p1.1));
                     }
@@ -77,7 +79,8 @@ fn testp1() {
         part_1(
             "498,4 -> 498,6 -> 496,6
 503,4 -> 502,4 -> 502,9 -> 494,9"
-        ).to_string(),
+        )
+        .to_string(),
         24.to_string()
     );
 }
@@ -104,22 +107,24 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         for i in 0..points.len() - 1 {
             let p1 = points[i];
             let p2 = points[i + 1];
-            if p1.0 == p2.0 {
-                if p2.1 > p1.1 {
-                    for y in p1.1..=p2.1 {
-                        grid.insert((p1.0, y));
-                    }
-                } else {
-                    for y in p2.1..=p1.1 {
-                        grid.insert((p1.0, y));
+            match p1.0.cmp(&p2.0) {
+                std::cmp::Ordering::Equal => {
+                    if p2.1 > p1.1 {
+                        for y in p1.1..=p2.1 {
+                            grid.insert((p1.0, y));
+                        }
+                    } else {
+                        for y in p2.1..=p1.1 {
+                            grid.insert((p1.0, y));
+                        }
                     }
                 }
-            } else {
-                if p2.0 > p1.0 {
+                std::cmp::Ordering::Less => {
                     for x in p1.0..=p2.0 {
                         grid.insert((x, p1.1));
                     }
-                } else {
+                }
+                std::cmp::Ordering::Greater => {
                     for x in p2.0..=p1.0 {
                         grid.insert((x, p1.1));
                     }
@@ -163,7 +168,8 @@ fn testp2() {
         part_2(
             "498,4 -> 498,6 -> 496,6
 503,4 -> 502,4 -> 502,9 -> 494,9"
-        ).to_string(),
+        )
+        .to_string(),
         93.to_string()
     );
 }

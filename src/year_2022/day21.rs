@@ -13,40 +13,36 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         // Number case
         if line.len() == 2 {
             numbers.insert(name, line[1].parse::<isize>().unwrap());
+        } else if numbers.contains_key(line[1]) && numbers.contains_key(line[3]) {
+            let n1 = numbers.get(line[1]).unwrap();
+            let n2 = numbers.get(line[3]).unwrap();
+            numbers.insert(
+                name,
+                match line[2] {
+                    "+" => n1 + n2,
+                    "-" => n1 - n2,
+                    "*" => n1 * n2,
+                    "/" => n1 / n2,
+                    _ => unreachable!(),
+                },
+            );
         } else {
-            if numbers.contains_key(line[1]) && numbers.contains_key(line[3]) {
-                let n1 = numbers.get(line[1]).unwrap();
-                let n2 = numbers.get(line[3]).unwrap();
-                numbers.insert(
-                    name,
-                    match line[2] {
-                        "+" => n1 + n2,
-                        "-" => n1 - n2,
-                        "*" => n1 * n2,
-                        "/" => n1 / n2,
-                        _ => unreachable!(),
-                    },
-                );
-            } else {
-                waiting_list.push((line[1], line[3], line[2], name));
-            }
+            waiting_list.push((line[1], line[3], line[2], name));
         }
 
         let mut abort = false;
         while !abort {
             abort = true;
             let mut remove = vec![];
-            for i in 0..waiting_list.len() {
-                if numbers.contains_key(waiting_list[i].0)
-                    && numbers.contains_key(waiting_list[i].1)
-                {
+            for (i, (a, b, c, d)) in waiting_list.iter().enumerate() {
+                if numbers.contains_key(a) && numbers.contains_key(b) {
                     remove.push(i);
                     abort = false;
-                    let n1 = numbers.get(waiting_list[i].0).unwrap();
-                    let n2 = numbers.get(waiting_list[i].1).unwrap();
+                    let n1 = numbers.get(a).unwrap();
+                    let n2 = numbers.get(b).unwrap();
                     numbers.insert(
-                        waiting_list[i].3,
-                        match waiting_list[i].2 {
+                        d,
+                        match *c {
                             "+" => n1 + n2,
                             "-" => n1 - n2,
                             "*" => n1 * n2,
@@ -84,7 +80,8 @@ pppw: cczh / lfqf
 lgvd: ljgn * ptdq
 drzm: hmdt - zczc
 hmdt: 32"
-        ).to_string(),
+        )
+        .to_string(),
         152.to_string()
     );
 }
@@ -232,7 +229,8 @@ pppw: cczh / lfqf
 lgvd: ljgn * ptdq
 drzm: hmdt - zczc
 hmdt: 32"
-        ).to_string(),
+        )
+        .to_string(),
         301.to_string()
     );
 }

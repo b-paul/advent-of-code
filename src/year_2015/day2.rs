@@ -1,7 +1,6 @@
 use std::cmp::min;
 
 fn solve_p1(line: String) -> u64 {
-    let line = line;
     // Goes LxWxH
     let mut parts = line.split('x');
     let length: u64 = parts.next().unwrap().parse().unwrap();
@@ -36,7 +35,6 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 }
 
 fn solve_p2(line: String) -> u64 {
-    let line = line;
     // Goes LxWxH
     let mut parts = line.split('x');
     let length: u64 = parts.next().unwrap().parse().unwrap();

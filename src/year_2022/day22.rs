@@ -31,8 +31,8 @@ fn push1(maze: &[[i8; 300]; 300], pos: &mut (usize, usize), facing: usize) {
                 }
             }
             1 => {
-                for y in 0..300 {
-                    if maze[y][pos.0] != -1 {
+                for (y, row) in maze.iter().enumerate().take(300) { // sorry clippy said so
+                    if row[pos.0] != -1 {
                         pos.1 = y;
                         break;
                     }

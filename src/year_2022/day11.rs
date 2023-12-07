@@ -12,7 +12,7 @@ fn apply_oper(i: usize, item: &mut u32) {
         7 => *item + 1,
         _ => unreachable!(),
     };
-    *item = *item / 3;
+    *item /= 3;
 }
 
 fn opertest(i: usize, item: &mut u32) {
@@ -23,7 +23,7 @@ fn opertest(i: usize, item: &mut u32) {
         3 => *item + 3,
         _ => unreachable!()
     };
-    *item = *item / 3;
+    *item /= 3;
 }
 
 fn throw(i: usize, item: u32) -> usize {

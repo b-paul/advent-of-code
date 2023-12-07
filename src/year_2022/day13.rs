@@ -72,12 +72,10 @@ fn ordered(p1: Packet, p2: Packet) -> Option<bool> {
         Packet::Num(n1) => match p2 {
             Packet::List(l2) => ordered(Packet::List(vec![Packet::Num(n1)]), Packet::List(l2)),
             Packet::Num(n2) => {
-                if n1 < n2 {
-                    Some(true)
-                } else if n1 > n2 {
-                    Some(false)
-                } else {
-                    None
+                match n1.cmp(&n2) {
+                    std::cmp::Ordering::Less => Some(true),
+                    std::cmp::Ordering::Greater => Some(false),
+                    std::cmp::Ordering::Equal => None,
                 }
             }
         },

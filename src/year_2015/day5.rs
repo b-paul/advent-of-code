@@ -2,10 +2,10 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     input
         .lines()
         .filter(|line| {
-            let substr = line.find("ab").is_none()
-                && line.find("cd").is_none()
-                && line.find("pq").is_none()
-                && line.find("xy").is_none();
+            let substr = !line.contains("ab")
+                && !line.contains("cd")
+                && !line.contains("pq")
+                && !line.contains("xy");
             let line: Vec<_> = line.chars().collect();
             let mut vowel_count = 0;
             for char in line.iter() {
@@ -53,7 +53,7 @@ fn nice_2(str: &str) -> bool {
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     input
         .lines()
-        .filter(|l| nice_2(&l))
+        .filter(|l| nice_2(l))
         .count()
 }
 

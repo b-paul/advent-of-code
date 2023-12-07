@@ -1,9 +1,9 @@
-use std::collections::VecDeque;
 use std::collections::HashSet;
+use std::collections::VecDeque;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    let mut startpos = (0,0);
-    let mut bestpos = (0,0);
+    let mut startpos = (0, 0);
+    let mut bestpos = (0, 0);
     let mut grid = vec![];
     for (y, iline) in input.lines().enumerate() {
         let mut line = vec![];
@@ -42,27 +42,19 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
         visited.insert((x, y));
 
-        if x != 0 {
-            if grid[y][x] - grid[y][x-1] >= -1 {
-                stack.push_back(((x-1, y), depth+1));
-            }
+        if x != 0 && grid[y][x] - grid[y][x - 1] >= -1 {
+            stack.push_back(((x - 1, y), depth + 1));
         }
-        if x != (grid[0].len()-1) {
-            if grid[y][x] - grid[y][x+1] >= -1 {
-                stack.push_back(((x+1, y), depth+1));
-            }
+        if x != (grid[0].len() - 1) && grid[y][x] - grid[y][x + 1] >= -1 {
+            stack.push_back(((x + 1, y), depth + 1));
         }
-        if y != 0 {
-            if grid[y][x] - grid[y-1][x] >= -1 {
-                stack.push_back(((x, y-1), depth+1));
-            }
+        if y != 0 && grid[y][x] - grid[y - 1][x] >= -1 {
+            stack.push_back(((x, y - 1), depth + 1));
         }
-        if y != (grid.len()-1) {
-            if grid[y][x] - grid[y+1][x] >= -1 {
-                stack.push_back(((x, y+1), depth+1));
-            }
+        if y != (grid.len() - 1) && grid[y][x] - grid[y + 1][x] >= -1 {
+            stack.push_back(((x, y + 1), depth + 1));
         }
-    };
+    }
 
     bdepth.to_string()
 }
@@ -70,16 +62,20 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 #[test]
 fn testp1() {
     assert_eq!(
-        part_1("Sabqponm
+        part_1(
+            "Sabqponm
 abcryxxl
 accszExk
 acctuvwj
-abdefghi").to_string(), 31.to_string()
-        );
+abdefghi"
+        )
+        .to_string(),
+        31.to_string()
+    );
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    let mut bestpos = (0,0);
+    let mut bestpos = (0, 0);
     let mut grid = vec![];
     for (y, iline) in input.lines().enumerate() {
         let mut line = vec![];
@@ -117,27 +113,19 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
         visited.insert((x, y));
 
-        if x != 0 {
-            if grid[y][x] - grid[y][x-1] <= 1 {
-                stack.push_back(((x-1, y), depth+1));
-            }
+        if x != 0 && grid[y][x] - grid[y][x - 1] <= 1 {
+            stack.push_back(((x - 1, y), depth + 1));
         }
-        if x != (grid[0].len()-1) {
-            if grid[y][x] - grid[y][x+1] <= 1 {
-                stack.push_back(((x+1, y), depth+1));
-            }
+        if x != (grid[0].len() - 1) && grid[y][x] - grid[y][x + 1] <= 1 {
+            stack.push_back(((x + 1, y), depth + 1));
         }
-        if y != 0 {
-            if grid[y][x] - grid[y-1][x] <= 1 {
-                stack.push_back(((x, y-1), depth+1));
-            }
+        if y != 0 && grid[y][x] - grid[y - 1][x] <= 1 {
+            stack.push_back(((x, y - 1), depth + 1));
         }
-        if y != (grid.len()-1) {
-            if grid[y][x] - grid[y+1][x] <= 1 {
-                stack.push_back(((x, y+1), depth+1));
-            }
+        if y != (grid.len() - 1) && grid[y][x] - grid[y + 1][x] <= 1 {
+            stack.push_back(((x, y + 1), depth + 1));
         }
-    };
+    }
 
     bdepth.to_string()
 }
@@ -145,10 +133,14 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 #[test]
 fn testp2() {
     assert_eq!(
-        part_2("Sabqponm
+        part_2(
+            "Sabqponm
 abcryxxl
 accszExk
 acctuvwj
-abdefghi").to_string(), 29.to_string()
-        );
+abdefghi"
+        )
+        .to_string(),
+        29.to_string()
+    );
 }
