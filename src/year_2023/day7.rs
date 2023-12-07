@@ -1,10 +1,6 @@
 use itertools::Itertools;
 use std::collections::HashMap;
 
-/*
-.filter_map(|n| n.parse::<u64>().ok())
-*/
-
 #[derive(Debug, Eq, PartialEq)]
 struct Hand {
     hand: String,
