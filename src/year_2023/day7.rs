@@ -1,14 +1,7 @@
 use itertools::Itertools;
-use std::collections::BTreeMap;
 
 fn kind(hand: &str) -> u32 {
-    let mut map = BTreeMap::new();
-    for c in hand.as_bytes() {
-        let e = map.entry(c).or_default();
-        *e += 1u32;
-    }
-
-    let mut counts = map.into_values().collect::<Vec<_>>();
+    let mut counts = hand.bytes().counts().into_values().collect::<Vec<_>>();
     counts.sort();
     match counts[..] {
         [.., 5] => 6,
@@ -47,12 +40,11 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
 fn kind2(hand: &str) -> u32 {
     if hand.contains('J') {
-        let mut max = 0;
-        for c in "AKQT98765432".chars() {
-            let hand2 = hand.replacen('J', &c.to_string(), 1);
-            max = max.max(kind2(&hand2));
-        }
-        max
+        "AKQT98765432"
+            .chars()
+            .map(|c| kind2(&hand.replacen('J', &c.to_string(), 1)))
+            .max()
+            .unwrap()
     } else {
         kind(hand)
     }
