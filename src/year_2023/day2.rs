@@ -26,7 +26,6 @@ pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
     loop {
         if i >= bytes.len() || bytes[i] == b'\n' {
             if !bad {
-                println!("{id}");
                 sum += id;
             }
             id += 1;
