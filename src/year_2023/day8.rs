@@ -21,22 +21,16 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     let mut cur = "AAA".to_string();
     let mut r = 0;
-    'l: loop {
-        for c in pattern.chars() {
-            if cur == "ZZZ".to_string() {
-                break 'l;
-            }
-            r += 1;
-            match c {
-                'L' => {
-                    cur = matches.get(&cur).unwrap().0.clone();
-                }
-                'R' => {
-                    cur = matches.get(&cur).unwrap().1.clone();
-                }
-                _ => (),
-            }
+    for c in pattern.chars().cycle() {
+        if cur == "ZZZ".to_string() {
+            break;
         }
+        r += 1;
+        cur = match c {
+            'L' => matches.get(&cur).unwrap().0.clone(),
+            'R' => matches.get(&cur).unwrap().1.clone(),
+            _ => cur,
+        };
     }
 
     r
@@ -76,7 +70,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         .map(|(name, (l, r))| {
             (
                 mappings.get(name).unwrap().clone(),
-                (mappings.get(l).unwrap().clone(), mappings.get(r).unwrap().clone()),
+                (
+                    mappings.get(l).unwrap().clone(),
+                    mappings.get(r).unwrap().clone(),
+                ),
             )
         })
         .collect::<HashMap<_, _>>();
@@ -89,28 +86,26 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         }
         curs.push(cur);
     }
-    let counts = curs.clone().into_iter().map(|mut cur| {
-        let mut res = 0;
-        'l: loop {
-            for c in pattern.chars() {
+    let counts = curs
+        .clone()
+        .into_iter()
+        .map(|mut cur| {
+            let mut res = 0;
+            for c in pattern.chars().cycle() {
                 if cur.0 == 'Z' {
-                    break 'l;
+                    break;
                 }
 
                 res += 1;
-                match c {
-                    'L' => {
-                        cur = matches.get(&cur).unwrap().0.clone();
-                    }
-                    'R' => {
-                        cur = matches.get(&cur).unwrap().1.clone();
-                    }
-                    _ => (),
-                }
+                cur = match c {
+                    'L' => matches.get(&cur).unwrap().0.clone(),
+                    'R' => matches.get(&cur).unwrap().1.clone(),
+                    _ => cur,
+                };
             }
-        }
-        res
-    }).collect_vec();
+            res
+        })
+        .collect_vec();
 
     format!("Ask wolfram alpha for the lcm of {counts:?}")
 }
