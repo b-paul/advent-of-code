@@ -22,7 +22,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut cur = "AAA".to_string();
     let mut r = 0;
     for c in pattern.chars().cycle() {
-        if cur == "ZZZ".to_string() {
+        if cur == *"ZZZ" {
             break;
         }
         r += 1;
@@ -69,10 +69,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         .iter()
         .map(|(name, (l, r))| {
             (
-                mappings.get(name).unwrap().clone(),
+                mappings.get(name).unwrap(),
                 (
-                    mappings.get(l).unwrap().clone(),
-                    mappings.get(r).unwrap().clone(),
+                    mappings.get(l).unwrap(),
+                    mappings.get(r).unwrap(),
                 ),
             )
         })
@@ -98,8 +98,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
                 res += 1;
                 cur = match c {
-                    'L' => matches.get(&cur).unwrap().0.clone(),
-                    'R' => matches.get(&cur).unwrap().1.clone(),
+                    'L' => *matches.get(&cur).unwrap().0,
+                    'R' => *matches.get(&cur).unwrap().1,
                     _ => cur,
                 };
             }
