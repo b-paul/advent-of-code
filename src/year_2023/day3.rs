@@ -1,4 +1,4 @@
-use crate::helper::*;
+use crate::helper::adjacency::adjacent_8_u;
 use std::collections::BTreeSet;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {

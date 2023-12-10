@@ -11,4 +11,5 @@ bitvec = "1.0.1"
 clap = { version = "4.4.8", features = ["derive"] }
 itertools = "0.10.5"
 nom = "7.1.3"
+thiserror = "1.0.50"
 ureq = "2.9.1"
