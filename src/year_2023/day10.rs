@@ -1,6 +1,4 @@
 use crate::helper::prelude::*;
-use itertools::Itertools;
-use std::collections::*;
 
 fn format_chars(c: char) -> char {
     match c {
@@ -25,7 +23,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     println!("{pgrid}");
 
     let mut max_depth = 0;
-    grid.bfs4(
+    grid.bfs_4(
         start,
         |_, d| max_depth = max_depth.max(d),
         |dir, from, to| {
@@ -57,7 +55,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     println!("{pgrid}");
 
     let mut main = grid.clone().map(|_| false);
-    grid.bfs4(
+    grid.bfs_4(
         start,
         |p, _| main[p] = true,
         |dir, from, to| {
