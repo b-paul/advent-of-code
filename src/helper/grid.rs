@@ -6,6 +6,8 @@ use std::ops::{Index, IndexMut};
 use std::str::FromStr;
 use thiserror::Error;
 
+// TODO bfs/dfs_mut
+
 pub struct Grid<T> {
     entries: Vec<T>,
     width: usize,
@@ -227,7 +229,7 @@ impl<T: PartialEq> Grid<T> {
 
 impl<T: PartialEq + Copy> Grid<T> {
     /// start must be in the bounds of the grid
-    pub fn floodfill_4(&mut self, with: T, empty: T, start: (usize, usize)) {
+    pub fn floodfill_4(&mut self, empty: T, with: T, start: (usize, usize)) {
         let mut set = HashSet::new();
         let mut stack = Vec::new();
         stack.push(start);

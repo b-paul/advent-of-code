@@ -86,7 +86,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     println!("{adjusted_grid}");
 
-    adjusted_grid.floodfill_4('@', '.', (0, 0));
+    adjusted_grid.floodfill_4('.', '@', (0, 0));
 
     println!("{adjusted_grid}");
 
