@@ -84,7 +84,7 @@ impl<T> Grid<T> {
 impl<T: Copy + Eq + Hash> Grid<T> {
     /// F takes a point, depth
     /// P takes a direction, from and to
-    pub fn dfs4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn dfs_4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
         F: FnMut((usize, usize), usize),
         P: Fn(Direction4, T, T) -> bool,
@@ -108,7 +108,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, depth
     /// P takes a direction, from and to
-    pub fn dfs8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn dfs_8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
         F: FnMut((usize, usize), usize),
         P: Fn(Direction8, T, T) -> bool,
@@ -132,7 +132,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, depth
     /// P takes a direction, from and to
-    pub fn bfs4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn bfs_4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
         F: FnMut((usize, usize), usize),
         P: Fn(Direction4, T, T) -> bool,
@@ -156,7 +156,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, depth
     /// P takes a direction, from and to
-    pub fn bfs8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn bfs_8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
         F: FnMut((usize, usize), usize),
         P: Fn(Direction8, T, T) -> bool,
