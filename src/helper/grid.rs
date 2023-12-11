@@ -29,7 +29,7 @@ impl<T> Grid<T> {
         let mut line = Vec::new();
         for (i, x) in self.entries.into_iter().enumerate() {
             line.push(x);
-            if i % self.width == 0 {
+            if i % self.width == self.width - 1 {
                 grid.push(line);
                 line = Vec::new();
             }
