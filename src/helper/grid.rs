@@ -7,6 +7,9 @@ use std::str::FromStr;
 use thiserror::Error;
 
 // TODO bfs/dfs_mut
+// TODO impl Debug
+// TODO insert row/col
+// maybe want a deque like grid or something :grimacing:
 
 pub struct Grid<T> {
     entries: Vec<T>,
@@ -24,7 +27,7 @@ impl<T> Grid<T> {
     }
 
     /// returns (VecVec, width, height)
-    pub fn to_vecvec(self) -> (Vec<Vec<T>>, usize, usize) {
+    pub fn into_vecvec(self) -> (Vec<Vec<T>>, usize, usize) {
         let mut grid = Vec::new();
         let mut line = Vec::new();
         for (i, x) in self.entries.into_iter().enumerate() {
@@ -72,7 +75,7 @@ impl<T> Grid<T> {
 
     pub fn iter_idx(&self) -> GridIdxIterator<T> {
         GridIdxIterator {
-            grid: &self,
+            grid: self,
             cur_x: 0,
             cur_y: 0,
         }
@@ -80,6 +83,20 @@ impl<T> Grid<T> {
 
     pub fn contains_point(&self, (x, y): (usize, usize)) -> bool {
         x < self.width && y < self.height
+    }
+
+    pub fn iter_rows(&self) -> GridRowIter<T> {
+        GridRowIter {
+            grid: self,
+            index: 0,
+        }
+    }
+
+    pub fn iter_cols(&self) -> GridColIter<T> {
+        GridColIter {
+            grid: self,
+            index: 0,
+        }
     }
 }
 
@@ -200,6 +217,29 @@ impl<T: Copy> Grid<T> {
         for y in 0..h {
             self[(0, y)] = val;
             self[(w - 1, y)] = val;
+        }
+    }
+
+    pub fn get_row(&self, index: usize) -> Option<Vec<T>> {
+        if index >= self.height {
+            None
+        } else {
+            let start = index * self.width;
+            Some(self.entries[start..start + self.width].to_vec())
+        }
+    }
+
+    pub fn get_col(&self, index: usize) -> Option<Vec<T>> {
+        if index >= self.width {
+            None
+        } else {
+            let mut col = Vec::new();
+            let mut i = index;
+            for _ in 0..self.height {
+                col.push(self.entries[i]);
+                i += self.width;
+            }
+            Some(col)
         }
     }
 }
@@ -347,6 +387,90 @@ impl<'a, T> Iterator for GridIdxIterator<'a, T> {
                 (self.cur_x, self.cur_y),
                 &self.grid[(self.cur_x, self.cur_y)],
             ))
+        }
+    }
+}
+
+pub struct Row<'a, T> {
+    grid: &'a Grid<T>,
+    index: usize,
+    end: usize,
+}
+
+impl<'a, T> Iterator for Row<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index > self.end {
+            None
+        } else {
+            let val = &self.grid.entries[self.index];
+            self.index += 1;
+            Some(val)
+        }
+    }
+}
+
+pub struct GridRowIter<'a, T> {
+    grid: &'a Grid<T>,
+    index: usize,
+}
+
+impl<'a, T> Iterator for GridRowIter<'a, T> {
+    type Item = Row<'a, T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index >= self.grid.height {
+            None
+        } else {
+            let row = Row {
+                grid: self.grid,
+                index: self.index * self.grid.width,
+                end: (self.index + 1) * self.grid.width - 1,
+            };
+            self.index += 1;
+            Some(row)
+        }
+    }
+}
+
+pub struct Col<'a, T> {
+    grid: &'a Grid<T>,
+    index: usize,
+}
+
+impl<'a, T> Iterator for Col<'a, T> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index >= self.grid.entries.len() {
+            None
+        } else {
+            let val = &self.grid.entries[self.index];
+            self.index += self.grid.width;
+            Some(val)
+        }
+    }
+}
+
+pub struct GridColIter<'a, T> {
+    grid: &'a Grid<T>,
+    index: usize,
+}
+
+impl<'a, T> Iterator for GridColIter<'a, T> {
+    type Item = Col<'a, T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.index >= self.grid.width {
+            None
+        } else {
+            let col = Col {
+                grid: self.grid,
+                index: self.index,
+            };
+            self.index += 1;
+            Some(col)
         }
     }
 }
