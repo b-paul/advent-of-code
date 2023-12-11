@@ -1,4 +1,5 @@
-use crate::helper::prelude::*;
+use crate::helper::grid::Grid;
+use crate::helper::adjacency::adjacent_4_ud;
 
 fn format_chars(c: char) -> char {
     match c {
@@ -25,7 +26,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut max_depth = 0;
     grid.bfs_4(
         start,
-        |_, d| max_depth = max_depth.max(d),
+        |_, _, d| max_depth = max_depth.max(d),
         |dir, from, to| {
             STRS[dir as usize].contains(from) && STRS[dir.opposite() as usize].contains(to)
         },
@@ -57,7 +58,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut main = grid.clone().map(|_| false);
     grid.bfs_4(
         start,
-        |p, _| main[p] = true,
+        |p, _, _| main[p] = true,
         |dir, from, to| {
             STRS[dir as usize].contains(from) && STRS[dir.opposite() as usize].contains(to)
         },
@@ -90,8 +91,17 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     println!("{adjusted_grid}");
 
+    let grid = grid.map_i(|(x, y), c| {
+        match adjusted_grid[(2*x + 1, 2*y + 1)] {
+            '.' => 'I',
+            '@' => 'O',
+            _ => c,
+        }
+    }).map(format_chars);
+    println!("{grid}");
+
     grid.iter_idx()
-        .filter(|((x, y), _)| adjusted_grid[(2 * x + 1, 2 * y + 1)] == '.')
+        .filter(|((_, _), c)| **c == 'I')
         .count()
 }
 
@@ -109,4 +119,5 @@ L.L7LFJ|||||FJL7||LJ
 L7JLJL-JLJLJL--JLJ.L";
     let output = 10;
     assert_eq!(part_2(input).to_string(), output.to_string());
+    assert!(false);
 }

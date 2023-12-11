@@ -84,59 +84,59 @@ impl<T> Grid<T> {
 }
 
 impl<T: Copy + Eq + Hash> Grid<T> {
-    /// F takes a point, depth
+    /// F takes a point, entry
     /// P takes a direction, from and to
     pub fn dfs_4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
-        F: FnMut((usize, usize), usize),
+        F: FnMut((usize, usize), T),
         P: Fn(Direction4, T, T) -> bool,
     {
         let mut stack = Vec::new();
         let mut visited = HashSet::new();
-        stack.push((start, 0));
+        stack.push(start);
         visited.insert(start);
 
-        while let Some((from, depth)) = stack.pop() {
-            f(from, depth);
+        while let Some(from) = stack.pop() {
+            f(from, self[from]);
             for (to, dir) in adjacent_4_ud(from.0, from.1) {
                 if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
-                    stack.push((to, depth + 1));
+                    stack.push(to);
                     visited.insert(to);
                 }
             }
         }
     }
 
-    /// F takes a point, depth
+    /// F takes a point, entry
     /// P takes a direction, from and to
     pub fn dfs_8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
-        F: FnMut((usize, usize), usize),
+        F: FnMut((usize, usize), T),
         P: Fn(Direction8, T, T) -> bool,
     {
         let mut stack = Vec::new();
         let mut visited = HashSet::new();
-        stack.push((start, 0));
+        stack.push(start);
         visited.insert(start);
 
-        while let Some((from, depth)) = stack.pop() {
-            f(from, depth);
+        while let Some(from) = stack.pop() {
+            f(from, self[from]);
             for (to, dir) in adjacent_8_ud(from.0, from.1) {
                 if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
-                    stack.push((to, depth + 1));
+                    stack.push(to);
                     visited.insert(to);
                 }
             }
         }
     }
 
-    /// F takes a point, depth
+    /// F takes a point, entry, depth
     /// P takes a direction, from and to
     pub fn bfs_4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
-        F: FnMut((usize, usize), usize),
+        F: FnMut((usize, usize), T, usize),
         P: Fn(Direction4, T, T) -> bool,
     {
         let mut queue = VecDeque::new();
@@ -145,7 +145,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         visited.insert(start);
 
         while let Some((from, depth)) = queue.pop_front() {
-            f(from, depth);
+            f(from, self[from], depth);
             for (to, dir) in adjacent_4_ud(from.0, from.1) {
                 if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
@@ -156,11 +156,11 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         }
     }
 
-    /// F takes a point, depth
+    /// F takes a point, entry, depth
     /// P takes a direction, from and to
     pub fn bfs_8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
     where
-        F: FnMut((usize, usize), usize),
+        F: FnMut((usize, usize), T, usize),
         P: Fn(Direction8, T, T) -> bool,
     {
         let mut queue = VecDeque::new();
@@ -169,7 +169,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         visited.insert(start);
 
         while let Some((from, depth)) = queue.pop_front() {
-            f(from, depth);
+            f(from, self[from], depth);
             for (to, dir) in adjacent_8_ud(from.0, from.1) {
                 if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
