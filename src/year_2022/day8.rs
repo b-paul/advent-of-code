@@ -1,4 +1,4 @@
-fn is_visible(trees: &Vec<Vec<u8>>, x: usize, y: usize) -> bool {
+fn is_visible(trees: &[Vec<u8>], x: usize, y: usize) -> bool {
     let height = trees[y][x];
     let mut visible = false;
     visible |= !(0..x).any(|x| trees[y][x]>=height);
@@ -33,7 +33,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     total.to_string()
 }
 
-fn scenic_score(trees: &Vec<Vec<u8>>, x: usize, y: usize) -> usize {
+fn scenic_score(trees: &[Vec<u8>], x: usize, y: usize) -> usize {
     let height = trees[y][x];
     let mut score = 1;
     score *= (0..x).rev().position(|x| trees[y][x] >= height).map(|n|n+1).unwrap_or(x);
