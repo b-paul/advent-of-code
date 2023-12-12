@@ -6,16 +6,16 @@ fn solve<const GROWTH: usize>(input: &str) -> impl std::fmt::Display {
 
     let empty_rows = grid
         .iter_rows()
-        .map(|mut r| r.all(|c| *c == '.'))
+        .map(|mut r| r.all(|&c| c == '.'))
         .collect::<Vec<_>>();
     let empty_cols = grid
         .iter_cols()
-        .map(|mut r| r.all(|c| *c == '.'))
+        .map(|mut r| r.all(|&c| c == '.'))
         .collect::<Vec<_>>();
 
     let galaxies = grid
         .iter_idx()
-        .filter(|(_, c)| **c == '#')
+        .filter(|(_, &c)| c == '#')
         .map(|(p, _)| p)
         .collect::<Vec<_>>();
 
