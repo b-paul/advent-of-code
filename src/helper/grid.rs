@@ -242,6 +242,20 @@ impl<T: Copy> Grid<T> {
             Some(col)
         }
     }
+
+    pub fn transpose(&self) -> Grid<T> {
+        let mut entries = Vec::with_capacity(self.width * self.height);
+        for col in self.iter_cols() {
+            for x in col {
+                entries.push(*x);
+            }
+        }
+        Grid {
+            entries,
+            width: self.height,
+            height: self.width,
+        }
+    }
 }
 
 impl<T: Clone> Clone for Grid<T> {
