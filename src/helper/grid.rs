@@ -260,6 +260,38 @@ impl<T: Copy> Grid<T> {
             height: self.width,
         }
     }
+
+    pub fn rotate_cw(&self) -> Grid<T> {
+        let mut entries = Vec::with_capacity(self.width * self.height);
+
+        for y in 0..self.width {
+            for x in 0..self.height {
+                entries.push(self[(y, self.width - x - 1)]);
+            }
+        }
+
+        Grid {
+            entries,
+            width: self.height,
+            height: self.width,
+        }
+    }
+
+    pub fn rotate_acw(&self) -> Grid<T> {
+        let mut entries = Vec::with_capacity(self.width * self.height);
+
+        for y in 0..self.width {
+            for x in 0..self.height {
+                entries.push(self[(self.height - y - 1, x)]);
+            }
+        }
+
+        Grid {
+            entries,
+            width: self.height,
+            height: self.width,
+        }
+    }
 }
 
 impl<T: Clone> Clone for Grid<T> {
@@ -277,6 +309,8 @@ impl<T: PartialEq> PartialEq for Grid<T> {
         self.entries == other.entries && self.width == other.width && self.height == other.height
     }
 }
+
+impl<T: Eq> Eq for Grid<T> {}
 
 impl<T: PartialEq> Grid<T> {
     pub fn find(&self, elem: &T) -> Option<(usize, usize)> {
@@ -386,6 +420,14 @@ impl<T> IndexMut<(usize, usize)> for Grid<T> {
             y
         );
         self.entries.index_mut(y * self.width + x)
+    }
+}
+
+impl<T: Hash> Hash for Grid<T> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.entries.hash(state);
+        self.width.hash(state);
+        self.height.hash(state);
     }
 }
 
