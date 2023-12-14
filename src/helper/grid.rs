@@ -98,6 +98,10 @@ impl<T> Grid<T> {
             index: 0,
         }
     }
+
+    pub fn to_vec(self) -> Vec<T> {
+        self.entries
+    }
 }
 
 impl<T: Copy + Eq + Hash> Grid<T> {
@@ -265,6 +269,12 @@ impl<T: Clone> Clone for Grid<T> {
             width: self.width,
             height: self.height,
         }
+    }
+}
+
+impl<T: PartialEq> PartialEq for Grid<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.entries == other.entries && self.width == other.width && self.height == other.height
     }
 }
 
