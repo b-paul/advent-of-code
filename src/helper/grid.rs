@@ -451,10 +451,7 @@ impl<'a, T> Iterator for GridIdxIterator<'a, T> {
         if y >= self.grid.height {
             None
         } else {
-            Some((
-                (x, y),
-                &self.grid[(x, y)],
-            ))
+            Some(((x, y), &self.grid[(x, y)]))
         }
     }
 }
