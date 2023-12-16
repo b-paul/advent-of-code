@@ -441,17 +441,19 @@ impl<'a, T> Iterator for GridIdxIterator<'a, T> {
     type Item = ((usize, usize), &'a T);
 
     fn next(&mut self) -> Option<Self::Item> {
+        let x = self.cur_x;
+        let y = self.cur_y;
         self.cur_x += 1;
         if self.cur_x >= self.grid.width {
             self.cur_x = 0;
             self.cur_y += 1;
         }
-        if self.cur_y >= self.grid.height {
+        if y >= self.grid.height {
             None
         } else {
             Some((
-                (self.cur_x, self.cur_y),
-                &self.grid[(self.cur_x, self.cur_y)],
+                (x, y),
+                &self.grid[(x, y)],
             ))
         }
     }
