@@ -1,3 +1,5 @@
+// TODO utils to manipulate directions
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Direction4 {
     Left,
@@ -13,6 +15,51 @@ impl Direction4 {
             Direction4::Up => Direction4::Down,
             Direction4::Down => Direction4::Up,
             Direction4::Right => Direction4::Left,
+        }
+    }
+
+    pub fn movei(self, (x, y): (isize, isize)) -> (isize, isize) {
+        let (dx, dy) = DIRECTIONS4[self as usize];
+        (x + dx, y + dy)
+    }
+
+    pub fn moveib(
+        self,
+        (x, y): (isize, isize),
+        bound_ul: (isize, isize),
+        bound_dr: (isize, isize),
+    ) -> Option<(isize, isize)> {
+        let (blx, bly) = bound_ul;
+        let (brx, bry) = bound_dr;
+        let (dx, dy) = DIRECTIONS4[self as usize];
+        let (x, y) = (x + dx, y + dy);
+        if x < blx || x >= brx || y < bly || y >= bry {
+            None
+        } else {
+            Some((x, y))
+        }
+    }
+
+    pub fn moveu(self, point: (usize, usize)) -> Option<(usize, usize)> {
+        let (x, y) = point;
+        let (dx, dy) = DIRECTIONS4[self as usize];
+        let (x, y) = (x as isize + dx, y as isize + dy);
+        if x < 0 || y < 0 {
+            None
+        } else {
+            Some((x as usize, y as usize))
+        }
+    }
+
+    pub fn moveub(self, point: (usize, usize), bounds: (usize, usize)) -> Option<(usize, usize)> {
+        let (x, y) = point;
+        let (bx, by) = bounds;
+        let (dx, dy) = DIRECTIONS4[self as usize];
+        let (x, y) = (x as isize + dx, y as isize + dy);
+        if x < 0 || x >= bx as isize || y < 0 || y >= by as isize {
+            None
+        } else {
+            Some((x as usize, y as usize))
         }
     }
 }
