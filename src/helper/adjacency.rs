@@ -1,6 +1,6 @@
 // TODO utils to manipulate directions
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
 pub enum Direction4 {
     Left,
     Up,
