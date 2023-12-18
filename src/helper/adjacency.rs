@@ -23,6 +23,11 @@ impl Direction4 {
         (x + dx, y + dy)
     }
 
+    pub fn moveic(self, (x, y): (isize, isize), c: isize) -> (isize, isize) {
+        let (dx, dy) = DIRECTIONS4[self as usize];
+        (x + dx * c, y + dy * c)
+    }
+
     pub fn moveib(
         self,
         (x, y): (isize, isize),
