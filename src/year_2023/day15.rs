@@ -91,6 +91,7 @@ mod benches {
             black_box(part_1_faster(input));
         })
     }
+
     #[bench]
     fn part2_normal(b: &mut Bencher) {
         let input = &get_input(2023, 15).unwrap();
