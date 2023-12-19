@@ -1,6 +1,4 @@
-use crate::helper::prelude::*;
-use itertools::Itertools;
-use std::collections::*;
+use std::collections::HashMap;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut s = input.split("\n\n");
@@ -11,9 +9,9 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         .map(|l| {
             let mut s = l.split('{');
             let name = s.next().unwrap().to_string();
-            let end = s.next().unwrap().split('}').next().unwrap();
+            let end = s.next().unwrap().strip_suffix('}').unwrap();
 
-            let rules = end.split(',').collect_vec();
+            let rules = end.split(',').collect::<Vec<_>>();
 
             let last = rules[rules.len() - 1].to_string();
             let rules = rules[0..rules.len() - 1].to_vec();
@@ -124,9 +122,9 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         .map(|l| {
             let mut s = l.split('{');
             let name = s.next().unwrap().to_string();
-            let end = s.next().unwrap().split('}').next().unwrap();
+            let end = s.next().unwrap().strip_suffix('}').unwrap();
 
-            let rules = end.split(',').collect_vec();
+            let rules = end.split(',').collect::<Vec<_>>();
 
             let last = rules[rules.len() - 1].to_string();
             let rules = rules[0..rules.len() - 1].to_vec();
@@ -161,7 +159,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             continue;
         }
         if name == "A".to_string() {
-            ans += cats.into_iter().map(|r| r.end-r.start).product::<i64>();
+            ans += cats.into_iter().map(|r| r.end - r.start).product::<i64>();
             continue;
         }
 
@@ -178,27 +176,19 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             };
             match op {
                 '<' => {
-                    if n <= cats[i].start+1 {
-                        ()
-                    } else if n <= cats[i].end {
+                    if n <= cats[i].end {
                         let mut cats2 = cats.clone();
                         cats2[i] = cats[i].start..n;
                         stack.push((name.clone(), cats2));
                         cats[i] = n..cats[i].end;
-                    } else {
-                        stack.push((name.clone(), cats.clone()));
                     }
                 }
                 '>' => {
-                    if n >= cats[i].end-1 {
-                        ()
-                    } else if n >= cats[i].start {
+                    if n >= cats[i].start {
                         let mut cats2 = cats.clone();
-                        cats2[i] = n+1..cats[i].end;
+                        cats2[i] = n + 1..cats[i].end;
                         stack.push((name.clone(), cats2));
-                        cats[i] = cats[i].start..n+1;
-                    } else {
-                        stack.push((name.clone(), cats.clone()));
+                        cats[i] = cats[i].start..n + 1;
                     }
                 }
                 _ => panic!(),
