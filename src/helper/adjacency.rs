@@ -18,6 +18,24 @@ impl Direction4 {
         }
     }
 
+    pub fn cw(self) -> Direction4 {
+        match self {
+            Direction4::Left => Direction4::Up,
+            Direction4::Up => Direction4::Right,
+            Direction4::Down => Direction4::Left,
+            Direction4::Right => Direction4::Down,
+        }
+    }
+
+    pub fn acw(self) -> Direction4 {
+        match self {
+            Direction4::Left => Direction4::Down,
+            Direction4::Up => Direction4::Left,
+            Direction4::Down => Direction4::Right,
+            Direction4::Right => Direction4::Up,
+        }
+    }
+
     pub fn movei(self, (x, y): (isize, isize)) -> (isize, isize) {
         let (dx, dy) = DIRECTIONS4[self as usize];
         (x + dx, y + dy)
