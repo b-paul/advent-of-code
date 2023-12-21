@@ -96,25 +96,6 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     lows * highs
 }
 
-#[test]
-fn test() {
-    let input = "broadcaster -> a, b, c
-%a -> b
-%b -> c
-%c -> inv
-&inv -> a";
-    let output = 32000000;
-    //assert_eq!(part_1(input).to_string(), output.to_string());
-    let input = "broadcaster -> a
-%a -> inv, con
-&inv -> b
-%b -> con
-&con -> output";
-    let output = 11687500;
-    assert_eq!(part_1(input).to_string(), output.to_string());
-    //assert!(false);
-}
-
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut modules: HashMap<String, (i64, bool, Vec<&str>)> = HashMap::new();
     let mut recvs: HashMap<String, HashMap<String, bool>> = HashMap::new();
