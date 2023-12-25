@@ -62,69 +62,58 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     visited.insert(start);
 
     while let Some(from) = stack.pop() {
-        for (_, dir) in DIRECTIONS4D {
-            let mut to = from;
-            'grid: while grid[to] != '#' {
-                let t = dir.moveub(to, bounds);
-                match t {
-                    Some(t) => {
-                        if grid[t] == '#' {
-                            break;
-                        } else {
-                            for (a, d) in adjacent_4_ud(t.0, t.1) {
-                                if !grid.contains_point(a) {
-                                    continue;
-                                }
-                                if dir == d || dir == d.opposite() {
-                                    continue;
-                                }
-                                if grid[a] != '#' {
-                                    to = t;
-                                    break 'grid;
-                                }
-                            }
-                            to = t;
-                        }
-                    }
-                    None => break,
-                }
+        for (_, mut dir) in DIRECTIONS4D {
+            let Some(mut to) = dir.moveub(from, bounds) else {
+                continue;
+            };
+            if grid.get(to) == Some(&'#') {
+                continue;
             }
-            if to != from {
-                graph
-                    .entry(from)
-                    .or_default()
-                    .insert(to, manhattan_u(from, to));
-                if !visited.contains(&to) {
-                    stack.push(to);
-                    visited.insert(to);
+            let mut dist = 1;
+            loop {
+                let mut nexts = adjacent_4_ud(to.0, to.1).into_iter().filter(|&(p, dir2)| {
+                    dir2 != dir.opposite() && grid.contains_point(p) && grid[p] != '#'
+                });
+                let Some((next_to, next_dir)) = nexts.next() else {
+                    break;
+                };
+                if nexts.next().is_some() {
+                    break;
                 }
+                to = next_to;
+                dir = next_dir;
+                dist += 1;
+            }
+            graph.entry(from).or_default().insert(to, dist);
+            if !visited.contains(&to) {
+                stack.push(to);
+                visited.insert(to);
             }
         }
     }
 
-    'simplification: loop {
-        for (key, val) in graph.clone().iter() {
-            if val.len() == 2 {
-                let mut i = val.iter();
-                let (a, d1) = i.next().unwrap();
-                let (b, d2) = i.next().unwrap();
-                let dist = d1 + d2;
-
-                //println!("{a:?} {key:?} {b:?}");
-
-                graph.remove(key);
-
-                graph.get_mut(&a).unwrap().remove(key);
-                graph.get_mut(&a).unwrap().insert(*b, dist);
-                graph.get_mut(&b).unwrap().remove(key);
-                graph.get_mut(&b).unwrap().insert(*a, dist);
-
-                continue 'simplification;
-            }
+    /*
+    println!("graph {{");
+    for (v1, map) in graph.iter() {
+        print!("\"{v1:?}\" -- {{ ");
+        for (v2, _) in map.iter() {
+            print!("\"{v2:?}\" ");
         }
-
-        break;
+        println!("}}");
     }
+    */
+    // Conclusion:
+    // This graph is tiled as a lattice! so like
+    // o - o - o - o
+    // |   |   |   |
+    // o - o - o - o
+    // |   |   |   |
+    // o - o - o - o
+    // |   |   |   |
+    // o - o - o - o
+    // where o are vertices and - or | are edges
+    // on the actual input, it was 6x6
+    // also the corners get simplified but whatever
 
     let mut max = 0;
 
@@ -133,7 +122,11 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     set.insert(start);
     stack.push((set, start, 0));
 
+    let mut ops = 0;
+
     while let Some((set, from, depth)) = stack.pop() {
+        ops += 1;
+        dbg!(ops);
         if from == end {
             max = max.max(depth);
         }

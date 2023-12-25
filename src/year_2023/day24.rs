@@ -32,7 +32,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut count = 0;
 
     for (i, (pa, va)) in hailstones.iter().enumerate() {
-        for (j, (pb, vb)) in hailstones[i + 1..].iter().enumerate() {
+        for (pb, vb) in hailstones[i + 1..].iter() {
             // x(t) = px + t vx
             // y(t) = py + t vy
             // pxa + t vxa = pxb + t vxb

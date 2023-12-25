@@ -102,6 +102,10 @@ impl<T> Grid<T> {
     pub fn to_vec(self) -> Vec<T> {
         self.entries
     }
+
+    pub fn get(&self, idx: (usize, usize)) -> Option<&T> {
+        self.contains_point(idx).then(|| &self[idx])
+    }
 }
 
 impl<T: Copy + Eq + Hash> Grid<T> {
