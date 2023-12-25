@@ -112,6 +112,6 @@ frs: qnr lhk lsr";
     assert_eq!(part_1(input).to_string(), output.to_string());
 }
 
-pub fn part_2(input: &str) -> impl std::fmt::Display {
-    "todo"
+pub fn part_2(_input: &str) -> impl std::fmt::Display {
+    "Press the red button!"
 }
