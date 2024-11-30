@@ -17,6 +17,7 @@ mod year_2020;
 mod year_2021;
 mod year_2022;
 mod year_2023;
+mod year_2024;
 
 use std::fs;
 use std::env;
