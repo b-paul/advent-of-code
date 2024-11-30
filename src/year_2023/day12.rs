@@ -3,7 +3,7 @@ use std::collections::HashMap;
 fn valid(cs: &[char], ns: &[usize]) -> bool {
     let mut i = 0;
     let mut probably_false = false;
-    for g in cs.group_by(|a, b| a == b) {
+    for g in cs.chunk_by(|a, b| a == b) {
         if g[0] == '.' {
             if probably_false {
                 return false;

@@ -1,7 +1,5 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
-#![feature(slice_group_by)]
-#![feature(exclusive_range_pattern)]
 #![feature(iter_array_chunks)]
 #![feature(array_chunks)]
 #![feature(test)]
