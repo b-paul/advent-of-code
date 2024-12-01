@@ -3,19 +3,20 @@ use itertools::Itertools;
 use std::collections::*;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    let mut va = Vec::new();
-    let mut vb = Vec::new();
-    for (a, b) in input.lines().map(|str| {
-        let ns = str.split_whitespace().map(p::<u32>).collect::<Vec<_>>();
-        (ns[0], ns[1])
-    }) {
-        va.push(a);
-        vb.push(b);
-    }
+    let (mut va, mut vb): (Vec<_>, Vec<_>) = input
+        .lines()
+        .map(|str| {
+            let ns = str.split_whitespace().map(p::<u32>).collect::<Vec<_>>();
+            (ns[0], ns[1])
+        })
+        .unzip();
     va.sort();
     vb.sort();
 
-    va.into_iter().zip(vb.into_iter()).map(|(a, b)| a.abs_diff(b)).sum::<u32>()
+    va.into_iter()
+        .zip(vb.into_iter())
+        .map(|(a, b)| a.abs_diff(b))
+        .sum::<u32>()
 }
 
 #[test]
@@ -31,15 +32,16 @@ fn test() {
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    let mut va = Vec::new();
-    let mut vb = Vec::new();
-    for (a, b) in input.lines().map(|str| {
-        let ns = str.split_whitespace().map(p::<u32>).collect::<Vec<_>>();
-        (ns[0], ns[1])
-    }) {
-        va.push(a);
-        vb.push(b);
-    }
+    let (va, vb): (Vec<_>, Vec<_>) = input
+        .lines()
+        .map(|str| {
+            let ns = str.split_whitespace().map(p::<u32>).collect::<Vec<_>>();
+            (ns[0], ns[1])
+        })
+        .unzip();
+    let count = vb.into_iter().counts();
 
-    va.into_iter().map(|n| n * vb.iter().filter(|&&m| m == n).count() as u32).sum::<u32>()
+    va.into_iter()
+        .map(|n| n * count.get(&n).copied().unwrap_or_default() as u32)
+        .sum::<u32>()
 }
