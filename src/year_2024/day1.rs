@@ -1,6 +1,5 @@
 use crate::helper::prelude::*;
 use itertools::Itertools;
-use std::collections::*;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     let (mut va, mut vb): (Vec<_>, Vec<_>) = input
