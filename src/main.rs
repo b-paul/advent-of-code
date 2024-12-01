@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 #![feature(iter_array_chunks)]
+#![feature(iter_next_chunk)]
 #![feature(array_chunks)]
 #![feature(test)]
 #![feature(portable_simd)]
