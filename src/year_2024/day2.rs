@@ -48,3 +48,26 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         })
     }).count()
 }
+
+#[cfg(test)]
+mod benches {
+    use crate::get_input;
+    use crate::year_2024::day2::*;
+    use test::{black_box, Bencher};
+
+    #[bench]
+    fn part1_normal(b: &mut Bencher) {
+        let input = &get_input(2024, 2).unwrap();
+        b.iter(|| {
+            black_box(part_1(input));
+        })
+    }
+
+    #[bench]
+    fn part2_normal(b: &mut Bencher) {
+        let input = &get_input(2024, 2).unwrap();
+        b.iter(|| {
+            black_box(part_2(input));
+        })
+    }
+}
