@@ -1,7 +1,3 @@
-use crate::helper::prelude::*;
-use itertools::Itertools;
-use std::collections::*;
-
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     input
         .split("mul(")
@@ -9,14 +5,13 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             let (a, b) = substr.split_once(",")?;
             let (b, _) = b.split_once(')')?;
 
-            if !(1..=3).contains(&a.len()) {
+            if !(1..=3).contains(&a.len()) || !(1..=3).contains(&b.len()) {
                 return None;
             }
-            if !(1..=3).contains(&b.len()) {
-                return None;
-            }
+
             let a = a.parse::<u32>().ok()?;
             let b = b.parse::<u32>().ok()?;
+
             Some(a * b)
         })
         .sum::<u32>()
@@ -44,18 +39,18 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 let (a, b) = input.split_once(",")?;
                 let (b, _) = b.split_once(')')?;
 
-                if !(1..=3).contains(&a.len()) {
+                if !(1..=3).contains(&a.len()) || !(1..=3).contains(&b.len()) {
                     return None;
                 }
-                if !(1..=3).contains(&b.len()) {
-                    return None;
-                }
+
                 let a = a.parse::<u32>().ok()?;
                 let b = b.parse::<u32>().ok()?;
+
                 Some(a * b)
-            })() else { continue };
+            })() else {
+                continue;
+            };
             if mul {
-                println!("{prod} {i}");
                 sum += prod;
             }
         }
