@@ -20,8 +20,8 @@ mod year_2022;
 mod year_2023;
 mod year_2024;
 
-use std::fs;
 use std::env;
+use std::fs;
 use std::io::Read;
 
 use clap::Parser;
@@ -42,6 +42,17 @@ fn get_input(year: u32, day: u32) -> anyhow::Result<String> {
     })
 }
 
+fn submit_answer(year: u32, day: u32, part: u32, answer: String) -> anyhow::Result<String> {
+    let url = format!("https://adventofcode.com/{year}/day/{day}/answer");
+    let aoc_cookie = env::var("AOCCOOKIE")?;
+    let response = ureq::post(&url)
+        .set("Cookie", &aoc_cookie)
+        .set("Content-Type", "application/x-www-form-urlencoded")
+        .send_string(&format!("level={part}&answer={answer}"))?
+        .into_string()?;
+    Ok(response)
+}
+
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -52,13 +63,16 @@ struct Args {
     #[arg(short = '2')]
     part: bool,
 
+    /// Submit the answer with a http(s) request
+    #[arg(short = 's')]
+    submit: bool,
+
     #[arg(value_parser = clap::value_parser!(u32).range(1..=25))]
     day: u32,
 }
 
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
-
 
     let file = &get_input(args.year, args.day)?;
 
@@ -82,6 +96,18 @@ fn main() -> anyhow::Result<()> {
         args.part as usize + 1,
         result,
     );
+
+    if args.submit {
+        println!("submitting");
+        let response = submit_answer(args.year, args.day, args.part as u32 + 1, result)?;
+        let (_, response) = response
+            .split_once("<main>")
+            .expect("Response did not have a main body?!");
+        let (response, _) = response
+            .split_once("</main>")
+            .expect("Response did not have a main body?!");
+        println!("Response: {response}");
+    }
 
     Ok(())
 }
