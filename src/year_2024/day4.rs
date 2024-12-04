@@ -1,46 +1,24 @@
 use crate::helper::prelude::*;
 use itertools::Itertools;
-use std::collections::*;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    let grid = input.parse::<Grid<char>>().unwrap();
-    let mut count = 0;
+    let grid = input
+        .parse::<Grid<char>>()
+        .expect("Failed to parse grid input");
 
-    for ((yb, xb), _) in grid.iter_idx() {
-        const S: &str = "XMAS";
-
-        for ((dy, dx), _) in DIRECTIONS8D {
-            let (mut x, mut y) = (xb, yb);
-            let mut no = false;
-            for i in 0..4usize {
-                if grid.get((x, y)) != S.chars().nth(i).as_ref() {
-                    no = true;
-                    break;
-                }
-                if i == 3 {
-                    break;
-                }
-                let Some((xp, yp)) = ({
-                    let (x, y) = (x as isize + dx, y as isize + dy);
-                    if x < 0 || y < 0 {
-                        None
-                    } else {
-                        Some((x as usize, y as usize))
-                    }
-                }) else {
-                    no = true;
-                    break;
-                };
-                x = xp;
-                y = yp;
-            }
-            if !no {
-                count += 1;
-            }
-        }
-    }
-
-    count
+    grid.iter_idx()
+        .map(|(p, _)| {
+            Direction8::dir_list()
+                .into_iter()
+                .filter(|dir| {
+                    (0..4usize).all(|i| {
+                        dir.moveuc(p, i)
+                            .is_some_and(|p| grid.get(p) == "XMAS".chars().nth(i).as_ref())
+                    })
+                })
+                .count()
+        })
+        .sum::<usize>()
 }
 
 #[test]
@@ -60,32 +38,25 @@ MXMXAXMASX";
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    let grid = input.parse::<Grid<char>>().unwrap();
-    let mut count = 0;
+    let grid = input
+        .parse::<Grid<char>>()
+        .expect("Failed to parse grid input");
 
-    for ((x, y), c) in grid.iter_idx() {
-        if *c == 'A' {
-            let s = "SSMMSSMM";
-            'outer: for i in 0..4 {
-                for (j, (dy, dx)) in [(1, 1), (1, -1), (-1, -1), (-1, 1)].into_iter().enumerate() {
-                    let Some((x, y)) = ({
-                        let (x, y) = (x as isize + dx, y as isize + dy);
-                        if x < 0 || y < 0 {
-                            None
-                        } else {
-                            Some((x as usize, y as usize))
-                        }
-                    }) else {
-                        continue 'outer;
-                    };
-                    if grid.get((x, y)) != s.chars().nth(j + i).as_ref() {
-                        continue 'outer;
-                    }
-                }
-                count += 1;
-            }
-        }
-    }
-
-    count
+    grid.iter_idx()
+        .filter_map(|(p, &c)| (c == 'A').then_some(p))
+        .map(|p| {
+            (0..4)
+                .filter(|i| {
+                    DirectionDiag4::dir_list()
+                        .into_iter()
+                        .enumerate()
+                        .all(|(j, dir)| {
+                            dir.moveu(p).is_some_and(|p| {
+                                grid.get(p) == "SSMMSSMM".chars().nth(j + i).as_ref()
+                            })
+                        })
+                })
+                .count()
+        })
+        .sum::<usize>()
 }
