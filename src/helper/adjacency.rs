@@ -1,52 +1,39 @@
 // TODO utils to manipulate directions
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
-pub enum Direction4 {
-    Left,
-    Up,
-    Down,
-    Right,
-}
+/// Trait for a direction. The purpose of this trait is to avoid having to implement the various
+/// move functions multiple times.
+pub trait Direction: Copy {
+    /// The dirrection opposite to this one.
+    fn opposite(self) -> Self;
+    /// The direction a clockwise rotation from this one.
+    fn cw(self) -> Self;
+    /// The direction an anti-clockwise rotation from this one.
+    fn acw(self) -> Self;
+    /// The (x, y) offset this direction gives.
+    fn offset(self) -> (isize, isize);
 
-impl Direction4 {
-    pub fn opposite(self) -> Direction4 {
-        match self {
-            Direction4::Left => Direction4::Right,
-            Direction4::Up => Direction4::Down,
-            Direction4::Down => Direction4::Up,
-            Direction4::Right => Direction4::Left,
-        }
-    }
+    /* I would do this however it needs const_generic_exprs :(
+    const COUNT: usize;
+    const DIRS: [Self; Self::COUNT];
+    */
+    fn dir_list() -> Vec<Self>;
 
-    pub fn cw(self) -> Direction4 {
-        match self {
-            Direction4::Left => Direction4::Up,
-            Direction4::Up => Direction4::Right,
-            Direction4::Down => Direction4::Left,
-            Direction4::Right => Direction4::Down,
-        }
-    }
-
-    pub fn acw(self) -> Direction4 {
-        match self {
-            Direction4::Left => Direction4::Down,
-            Direction4::Up => Direction4::Left,
-            Direction4::Down => Direction4::Right,
-            Direction4::Right => Direction4::Up,
-        }
-    }
-
-    pub fn movei(self, (x, y): (isize, isize)) -> (isize, isize) {
-        let (dx, dy) = DIRECTIONS4[self as usize];
+    /// Move the point in this direction, assuming the point is an isize.
+    fn movei(self, (x, y): (isize, isize)) -> (isize, isize) {
+        let (dx, dy) = self.offset();
         (x + dx, y + dy)
     }
 
-    pub fn moveic(self, (x, y): (isize, isize), c: isize) -> (isize, isize) {
-        let (dx, dy) = DIRECTIONS4[self as usize];
+    /// Move the point in this direction c times, assuming the point is an isize.
+    fn moveic(self, (x, y): (isize, isize), c: isize) -> (isize, isize) {
+        let (dx, dy) = self.offset();
         (x + dx * c, y + dy * c)
     }
 
-    pub fn moveib(
+    /// Move the point in this direction, assuming the point is an isize, within the bounds of
+    /// bound_ul (giving the top left of the bounding box) and bound_dr (the bottom right of the
+    /// bounding box).
+    fn moveib(
         self,
         (x, y): (isize, isize),
         bound_ul: (isize, isize),
@@ -54,7 +41,7 @@ impl Direction4 {
     ) -> Option<(isize, isize)> {
         let (blx, bly) = bound_ul;
         let (brx, bry) = bound_dr;
-        let (dx, dy) = DIRECTIONS4[self as usize];
+        let (dx, dy) = self.offset();
         let (x, y) = (x + dx, y + dy);
         if x < blx || x >= brx || y < bly || y >= bry {
             None
@@ -63,9 +50,11 @@ impl Direction4 {
         }
     }
 
-    pub fn moveu(self, point: (usize, usize)) -> Option<(usize, usize)> {
+    /// Move the point in this direction, assuming the point is a usize, returning None if we
+    /// underflow.
+    fn moveu(self, point: (usize, usize)) -> Option<(usize, usize)> {
         let (x, y) = point;
-        let (dx, dy) = DIRECTIONS4[self as usize];
+        let (dx, dy) = self.offset();
         let (x, y) = (x as isize + dx, y as isize + dy);
         if x < 0 || y < 0 {
             None
@@ -74,10 +63,26 @@ impl Direction4 {
         }
     }
 
-    pub fn moveub(self, point: (usize, usize), bounds: (usize, usize)) -> Option<(usize, usize)> {
+    /// Move the point in this direction c times, assuming the point is a usize, returning None if
+    /// we underflow.
+    fn moveuc(self, point: (usize, usize), c: usize) -> Option<(usize, usize)> {
+        let (x, y) = point;
+        let (dx, dy) = self.offset();
+        let (x, y) = (x as isize + dx * c as isize, y as isize + dy * c as isize);
+        if x < 0 || y < 0 {
+            None
+        } else {
+            Some((x as usize, y as usize))
+        }
+    }
+
+    /// Move the point in this direction, assuming the point is a usize, within the bounds given by
+    /// bounds, which gives a bottom right bound (we assume that we are bounded in the top left by
+    /// (0, 0)), returning None if we underflow.
+    fn moveub(self, point: (usize, usize), bounds: (usize, usize)) -> Option<(usize, usize)> {
         let (x, y) = point;
         let (bx, by) = bounds;
-        let (dx, dy) = DIRECTIONS4[self as usize];
+        let (dx, dy) = self.offset();
         let (x, y) = (x as isize + dx, y as isize + dy);
         if x < 0 || x >= bx as isize || y < 0 || y >= by as isize {
             None
@@ -85,16 +90,120 @@ impl Direction4 {
             Some((x as usize, y as usize))
         }
     }
+
+    // TODO
+    // unsized bounded top left?
+    // unsized with count?
+    // bounds + counts?
 }
 
-impl From<Direction4> for usize {
-    fn from(value: Direction4) -> Self {
-        match value {
-            Direction4::Left => 0,
-            Direction4::Up => 1,
-            Direction4::Down => 2,
-            Direction4::Right => 3,
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
+pub enum Direction4 {
+    Left,
+    Up,
+    Down,
+    Right,
+}
+
+impl Direction for Direction4 {
+    fn opposite(self) -> Direction4 {
+        match self {
+            Direction4::Left => Direction4::Right,
+            Direction4::Up => Direction4::Down,
+            Direction4::Down => Direction4::Up,
+            Direction4::Right => Direction4::Left,
         }
+    }
+
+    fn cw(self) -> Direction4 {
+        match self {
+            Direction4::Left => Direction4::Up,
+            Direction4::Up => Direction4::Right,
+            Direction4::Down => Direction4::Left,
+            Direction4::Right => Direction4::Down,
+        }
+    }
+
+    fn acw(self) -> Direction4 {
+        match self {
+            Direction4::Left => Direction4::Down,
+            Direction4::Up => Direction4::Left,
+            Direction4::Down => Direction4::Right,
+            Direction4::Right => Direction4::Up,
+        }
+    }
+
+    fn offset(self) -> (isize, isize) {
+        match self {
+            Direction4::Left => (-1, 0),
+            Direction4::Up => (0, -1),
+            Direction4::Down => (0, 1),
+            Direction4::Right => (1, 0),
+        }
+    }
+
+    fn dir_list() -> Vec<Direction4> {
+        vec![
+            Direction4::Left,
+            Direction4::Up,
+            Direction4::Down,
+            Direction4::Right,
+        ]
+    }
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
+pub enum DirectionDiag4 {
+    UpLeft,
+    UpRight,
+    DownRight,
+    DownLeft,
+}
+
+impl Direction for DirectionDiag4 {
+    fn opposite(self) -> DirectionDiag4 {
+        match self {
+            DirectionDiag4::UpLeft => DirectionDiag4::DownRight,
+            DirectionDiag4::UpRight => DirectionDiag4::DownLeft,
+            DirectionDiag4::DownRight => DirectionDiag4::UpLeft,
+            DirectionDiag4::DownLeft => DirectionDiag4::UpRight,
+        }
+    }
+
+    fn cw(self) -> DirectionDiag4 {
+        match self {
+            DirectionDiag4::UpLeft => DirectionDiag4::UpRight,
+            DirectionDiag4::UpRight => DirectionDiag4::DownRight,
+            DirectionDiag4::DownRight => DirectionDiag4::DownLeft,
+            DirectionDiag4::DownLeft => DirectionDiag4::UpLeft,
+        }
+    }
+
+    fn acw(self) -> DirectionDiag4 {
+        match self {
+            DirectionDiag4::UpLeft => DirectionDiag4::DownLeft,
+            DirectionDiag4::UpRight => DirectionDiag4::UpLeft,
+            DirectionDiag4::DownRight => DirectionDiag4::UpRight,
+            DirectionDiag4::DownLeft => DirectionDiag4::DownRight,
+        }
+    }
+
+    fn offset(self) -> (isize, isize) {
+        match self {
+            DirectionDiag4::UpLeft => (-1, -1),
+            DirectionDiag4::UpRight => (-1, 1),
+            DirectionDiag4::DownRight => (1, 1),
+            DirectionDiag4::DownLeft => (1, -1),
+        }
+    }
+
+    fn dir_list() -> Vec<Self> {
+        vec![
+            DirectionDiag4::UpLeft,
+            DirectionDiag4::UpRight,
+            DirectionDiag4::DownRight,
+            DirectionDiag4::DownLeft,
+        ]
     }
 }
 
@@ -110,6 +219,74 @@ pub enum Direction8 {
     DownRight,
 }
 
+impl Direction for Direction8 {
+    fn opposite(self) -> Self {
+        match self {
+            Direction8::UpLeft => Direction8::DownRight,
+            Direction8::Up => Direction8::Down,
+            Direction8::UpRight => Direction8::DownLeft,
+            Direction8::Right => Direction8::Left,
+            Direction8::Left => Direction8::Right,
+            Direction8::DownLeft => Direction8::UpRight,
+            Direction8::Down => Direction8::Up,
+            Direction8::DownRight => Direction8::UpLeft,
+        }
+    }
+
+    fn cw(self) -> Self {
+        match self {
+            Direction8::UpLeft => Direction8::UpRight,
+            Direction8::Up => Direction8::Right,
+            Direction8::UpRight => Direction8::DownRight,
+            Direction8::Right => Direction8::Down,
+            Direction8::Left => Direction8::Up,
+            Direction8::DownLeft => Direction8::UpLeft,
+            Direction8::Down => Direction8::Left,
+            Direction8::DownRight => Direction8::DownLeft,
+        }
+    }
+
+    fn acw(self) -> Self {
+        match self {
+            Direction8::UpLeft => Direction8::DownLeft,
+            Direction8::Up => Direction8::Left,
+            Direction8::UpRight => Direction8::UpLeft,
+            Direction8::Right => Direction8::Up,
+            Direction8::Left => Direction8::Down,
+            Direction8::DownLeft => Direction8::DownRight,
+            Direction8::Down => Direction8::Right,
+            Direction8::DownRight => Direction8::UpRight,
+        }
+    }
+
+    fn offset(self) -> (isize, isize) {
+        match self {
+            Direction8::UpLeft => (-1, -1),
+            Direction8::Up => (0, -1),
+            Direction8::UpRight => (-1, 1),
+            Direction8::Right => (1, 0),
+            Direction8::Left => (-1, 0),
+            Direction8::DownLeft => (1, -1),
+            Direction8::Down => (0, 1),
+            Direction8::DownRight => (1, 1),
+        }
+    }
+
+    fn dir_list() -> Vec<Self> {
+        vec![
+            Direction8::UpLeft,
+            Direction8::Up,
+            Direction8::UpRight,
+            Direction8::Right,
+            Direction8::Left,
+            Direction8::DownLeft,
+            Direction8::Down,
+            Direction8::DownRight,
+        ]
+    }
+}
+
+// TODO get rid of these or something
 pub const DIRECTIONS4: [(isize, isize); 4] = [(-1, 0), (0, -1), (0, 1), (1, 0)];
 pub const DIRECTIONS4D: [((isize, isize), Direction4); 4] = [
     ((-1, 0), Direction4::Left),
@@ -137,6 +314,8 @@ pub const DIRECTIONS8D: [((isize, isize), Direction8); 8] = [
     ((1, 0), Direction8::Down),
     ((1, 1), Direction8::DownRight),
 ];
+
+// TODO replace these methods with associated methods in the Direction trait
 
 // Iterates in order:
 // Left Up Down Right

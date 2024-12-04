@@ -1,5 +1,5 @@
 use crate::helper::grid::Grid;
-use crate::helper::adjacency::adjacent_4_ud;
+use crate::helper::adjacency::{adjacent_4_ud, Direction};
 
 fn format_chars(c: char) -> char {
     match c {

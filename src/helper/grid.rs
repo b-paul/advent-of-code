@@ -10,6 +10,9 @@ use thiserror::Error;
 // TODO impl Debug
 // TODO insert row/col
 // maybe want a deque like grid or something :grimacing:
+// GridPoint struct
+// Trajectory for length n at point p in direction dir
+// Move GridPoint by offset or by direction
 
 pub struct Grid<T> {
     entries: Vec<T>,

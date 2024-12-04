@@ -1,4 +1,4 @@
-// TODO graph algos, range arithmetic, 3d grid ?!
+// TODO graph algos, range arithmetic, 3d grid ?!, counter
 pub mod adjacency;
 pub mod grid;
 pub mod point;
