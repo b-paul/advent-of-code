@@ -10,11 +10,12 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         .map(|(p, _)| {
             Direction8::dir_list()
                 .into_iter()
-                .filter(|dir| {
-                    (0..4usize).all(|i| {
-                        dir.moveuc(p, i)
-                            .is_some_and(|p| grid.get(p) == "XMAS".chars().nth(i).as_ref())
-                    })
+                .filter(|&dir| {
+                    grid.point(p)
+                        .expect("This point better be in bounds")
+                        .trajectory(dir, 4)
+                        .copied()
+                        .eq("XMAS".chars())
                 })
                 .count()
         })
@@ -45,16 +46,17 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     grid.iter_idx()
         .filter_map(|(p, &c)| (c == 'A').then_some(p))
         .map(|p| {
-            (0..4)
-                .filter(|i| {
-                    DirectionDiag4::dir_list()
-                        .into_iter()
-                        .enumerate()
-                        .all(|(j, dir)| {
-                            dir.moveu(p).is_some_and(|p| {
-                                grid.get(p) == "SSMMSSMM".chars().nth(j + i).as_ref()
+            DirectionDiag4::dir_list()
+                .into_iter()
+                .filter(|&dir| {
+                    [dir, dir.cw()].into_iter().all(|dir| {
+                        grid.point(p)
+                            .expect("This point better be in bounds")
+                            .move_dir(dir)
+                            .is_some_and(|p| {
+                                p.trajectory(dir.opposite(), 3).copied().eq("MAS".chars())
                             })
-                        })
+                    })
                 })
                 .count()
         })
