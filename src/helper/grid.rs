@@ -513,7 +513,7 @@ impl<'a, T> GridEntry<'a, T> {
     }
 }
 
-impl<'a, T: Debug> Debug for GridEntry<'a, T> {
+impl<T: Debug> Debug for GridEntry<'_, T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("GridEntry")
             .field("pos", &self.pos)
