@@ -3,7 +3,7 @@ fn find_idx<const WIDTH: usize>(buf: &[u8]) -> usize {
     for byte in buf.iter().take(WIDTH) {
         mask ^= 1 << (byte - b'a');
     }
-    if mask.count_ones() == WIDTH as _ {
+    if mask.count_ones() == WIDTH as u32 {
         return 1;
     }
 
@@ -11,7 +11,7 @@ fn find_idx<const WIDTH: usize>(buf: &[u8]) -> usize {
         // This compiles to a btc instruction
         mask ^= 1 << (buf[i - WIDTH] - b'a');
         mask ^= 1 << (buf[i] - b'a');
-        if mask.count_ones() == WIDTH as _ {
+        if mask.count_ones() == WIDTH as u32 {
             return i + 1;
         }
     }
