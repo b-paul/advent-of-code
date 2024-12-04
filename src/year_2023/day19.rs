@@ -50,7 +50,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
         let mut name = "in".to_string();
 
-        'next: while name != "A".to_string() && name != "R".to_string() {
+        'next: while name != *"A" && name != *"R" {
             let (rulev, last) = rules.get(&name).unwrap();
 
             for (cat, op, n, name2) in rulev {
@@ -82,7 +82,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             name = last.clone();
         }
 
-        if name == "A".to_string() {
+        if name == *"A" {
             ans += cats.iter().sum::<i64>();
         }
     }
@@ -155,10 +155,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut ans = 0;
 
     while let Some((name, mut cats)) = stack.pop() {
-        if name == "R".to_string() {
+        if name == *"R" {
             continue;
         }
-        if name == "A".to_string() {
+        if name == *"A" {
             ans += cats.into_iter().map(|r| r.end - r.start).product::<i64>();
             continue;
         }

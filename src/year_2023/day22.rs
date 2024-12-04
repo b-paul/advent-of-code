@@ -2,7 +2,7 @@ use crate::helper::prelude::*;
 use itertools::Itertools;
 use std::collections::*;
 
-fn intersects(b1: &Vec<Vec<isize>>, b2: &Vec<Vec<isize>>) -> bool {
+fn intersects(b1: &[Vec<isize>], b2: &[Vec<isize>]) -> bool {
     let x1a = b1[0][0];
     let x2a = b1[1][0];
     let xaa = x1a.min(x2a);
@@ -119,7 +119,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             let z1 = b2[0][2];
             let z2 = b2[1][2];
             let zm = z1.max(z2);
-            if intersects(&b, &b2) && zma - zm == 1 {
+            if intersects(b, b2) && zma - zm == 1 {
                 supports.get_mut(&j).unwrap().insert(i);
                 supported.get_mut(&i).unwrap().insert(j);
             }
@@ -131,7 +131,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     let ok = supports
         .into_iter()
-        .filter(|(_, vec)| vec.into_iter().all(|j| supported[&j].len() > 1))
+        .filter(|(_, vec)| vec.iter().all(|j| supported[j].len() > 1))
         .collect_vec();
     //println!("{ok:?}");
 
@@ -220,7 +220,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             let z1 = b2[0][2];
             let z2 = b2[1][2];
             let zm = z1.max(z2);
-            if intersects(&b, &b2) && zma - zm == 1 {
+            if intersects(b, b2) && zma - zm == 1 {
                 supports.get_mut(&j).unwrap().insert(i);
                 supported.get_mut(&i).unwrap().insert(j);
             }
@@ -232,7 +232,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     supports
         .iter()
-        .filter(|(_, vec)| !vec.into_iter().all(|j| supported[&j].len() > 1))
+        .filter(|(_, vec)| !vec.iter().all(|j| supported[j].len() > 1))
         .map(|(j, vec)| {
             let mut res = 0;
             let mut queue = vec.iter()
@@ -249,7 +249,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                     continue;
                 }
                 visited.insert(i);
-                let s = supported[&i]
+                let s = supported[i]
                     .iter()
                     .filter(|i| !removed.contains(i))
                     .collect::<VecDeque<_>>();
@@ -257,7 +257,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 if s.is_empty() {
                     removed.push(i);
                     res += 1;
-                    let mut s = supports[&i]
+                    let mut s = supports[i]
                         .iter()
                         .filter(|i| !removed.contains(i))
                         .map(|i| (-bricks[*i][0][2].max(bricks[*i][1][2]), i))

@@ -102,7 +102,7 @@ impl<T> Grid<T> {
         }
     }
 
-    pub fn to_vec(self) -> Vec<T> {
+    pub fn into_vec(self) -> Vec<T> {
         self.entries
     }
 
