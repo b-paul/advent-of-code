@@ -13,7 +13,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     vb.sort();
 
     va.into_iter()
-        .zip(vb.into_iter())
+        .zip(vb)
         .map(|(a, b)| a.abs_diff(b))
         .sum::<u32>()
 }
@@ -48,7 +48,7 @@ pub fn part_1_faster(input: &str) -> impl std::fmt::Display {
     vb.sort_unstable();
 
     va.into_iter()
-        .zip(vb.into_iter())
+        .zip(vb)
         .map(|(a, b)| a.abs_diff(b))
         .sum::<u32>()
 }

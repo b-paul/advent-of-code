@@ -151,7 +151,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 lows += 1;
             }
 
-            if name == "rx".to_string() && !pulse {
+            if name == *"rx" && !pulse {
                 return i;
             }
 

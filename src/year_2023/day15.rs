@@ -1,8 +1,7 @@
 fn hash(s: &str) -> usize {
     s.bytes().fold(0u8, |a, c| {
         let a = a.wrapping_add(c);
-        let a = a.wrapping_mul(17);
-        a
+        a.wrapping_mul(17)
     }) as usize
 }
 
@@ -28,7 +27,7 @@ pub(crate) fn part_1_faster(input: &str) -> impl std::fmt::Display {
         cur &= 0xFF & !comma_mask;
     }
 
-    sum + cur as u32
+    sum + cur
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
