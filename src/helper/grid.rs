@@ -1,6 +1,6 @@
-use crate::helper::adjacency::{adjacent_4_ud, adjacent_8_ud, Direction4, Direction8};
+use crate::helper::adjacency::{adjacent_4_ud, adjacent_8_ud, Direction, Direction4, Direction8};
 use std::collections::{HashSet, VecDeque};
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 use std::hash::Hash;
 use std::ops::{Index, IndexMut};
 use std::str::FromStr;
@@ -10,9 +10,8 @@ use thiserror::Error;
 // TODO impl Debug
 // TODO insert row/col
 // maybe want a deque like grid or something :grimacing:
-// GridPoint struct
-// Trajectory for length n at point p in direction dir
 // Move GridPoint by offset or by direction
+// Trajectory for length n at point p in direction dir
 
 pub struct Grid<T> {
     entries: Vec<T>,
@@ -108,6 +107,12 @@ impl<T> Grid<T> {
 
     pub fn get(&self, idx: (usize, usize)) -> Option<&T> {
         self.contains_point(idx).then(|| &self[idx])
+    }
+
+    /// Return the entry at the given point.
+    pub fn point(&self, pos: (usize, usize)) -> Option<GridEntry<T>> {
+        self.contains_point(pos)
+            .then_some(GridEntry { pos, grid: self })
     }
 }
 
@@ -366,6 +371,16 @@ impl Display for Grid<char> {
     }
 }
 
+impl<T: Debug> Debug for Grid<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Grid")
+            .field("entries", &self.entries)
+            .field("width", &self.width)
+            .field("height", &self.height)
+            .finish()
+    }
+}
+
 #[derive(Debug, Error)]
 pub enum GridParseError {
     #[error("The provided input did not have a straight edge")]
@@ -435,6 +450,75 @@ impl<T: Hash> Hash for Grid<T> {
         self.entries.hash(state);
         self.width.hash(state);
         self.height.hash(state);
+    }
+}
+
+/// A "pointer into a cell in a grid"
+#[derive(Clone, Copy)]
+pub struct GridEntry<'a, T> {
+    /// The cell we are pointin at
+    pos: (usize, usize),
+    /// The grid
+    grid: &'a Grid<T>,
+}
+
+impl<'a, T> GridEntry<'a, T> {
+    /// Get the value at this point on the grid.
+    pub fn val(&self) -> &T {
+        self.grid
+            .get(self.pos)
+            .expect("Invalid GridEntry was created")
+    }
+
+    /// Get the entry at (pos + offset) on the grid, if it is in bounds.
+    pub fn move_off(&self, offset: (isize, isize)) -> Option<GridEntry<'a, T>> {
+        let (x, y) = self.pos;
+        let (dx, dy) = offset;
+        let (x, y) = (x as isize + dx, y as isize + dy);
+        (x >= 0 && y >= 0).then_some(GridEntry {
+            pos: (x as usize, y as usize),
+            grid: self.grid,
+        })
+    }
+
+    /// Get the point at the position found by moving in the direction dir, if it is in bounds.
+    pub fn move_dir<D: Direction>(&self, dir: D) -> Option<GridEntry<'a, T>> {
+        let pos = dir.moveu(self.pos)?;
+        self.grid.contains_point(pos).then_some(GridEntry {
+            pos,
+            grid: self.grid,
+        })
+    }
+
+    /// Get the point at the position found by moving in the direction dir c times, if it is in
+    /// bounds.
+    pub fn move_dirc<D: Direction>(&self, dir: D, c: usize) -> Option<GridEntry<'a, T>> {
+        let pos = dir.moveuc(self.pos, c)?;
+        self.grid.contains_point(pos).then_some(GridEntry {
+            pos,
+            grid: self.grid,
+        })
+    }
+
+    /// Returns an iterator of entries into the grid found by following the direction dir len
+    /// steps. We count this current point as step 0, meaning that if len = 1, we will not move to
+    /// another point.
+    pub fn trajectory<D: Direction>(&self, dir: D, len: usize) -> Trajectory<'a, T, D> {
+        Trajectory {
+            pos: self.pos,
+            steps: len,
+            dir,
+            grid: self.grid,
+        }
+    }
+}
+
+impl<'a, T: Debug> Debug for GridEntry<'a, T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("GridEntry")
+            .field("pos", &self.pos)
+            .field("grid", &self.grid)
+            .finish()
     }
 }
 
@@ -543,6 +627,38 @@ impl<'a, T> Iterator for GridColIter<'a, T> {
             };
             self.index += 1;
             Some(col)
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+pub struct Trajectory<'a, T, D: Direction> {
+    pos: (usize, usize),
+    /// The number of values left to return
+    steps: usize,
+    dir: D,
+    grid: &'a Grid<T>,
+}
+
+impl<'a, T, D: Direction> Iterator for Trajectory<'a, T, D> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.steps == 0 {
+            None
+        } else {
+            let val = self.grid.get(self.pos)?;
+            // Move to the next position, but if it is invalid then set steps to 0 (so that we
+            // always return None)
+            self.steps -= 1;
+            self.pos = match self.dir.moveu(self.pos) {
+                Some(p) => p,
+                None => {
+                    self.steps = 0;
+                    self.pos
+                }
+            };
+            Some(val)
         }
     }
 }

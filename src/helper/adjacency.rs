@@ -1,4 +1,5 @@
 // TODO utils to manipulate directions
+// TODO account for isize -> usize overflow maybe????
 
 /// Trait for a direction. The purpose of this trait is to avoid having to implement the various
 /// move functions multiple times.
@@ -56,11 +57,7 @@ pub trait Direction: Copy {
         let (x, y) = point;
         let (dx, dy) = self.offset();
         let (x, y) = (x as isize + dx, y as isize + dy);
-        if x < 0 || y < 0 {
-            None
-        } else {
-            Some((x as usize, y as usize))
-        }
+        (x >= 0 && y >= 0).then_some((x as usize, y as usize))
     }
 
     /// Move the point in this direction c times, assuming the point is a usize, returning None if
