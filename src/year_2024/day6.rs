@@ -187,7 +187,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     // Now that we have computed this new representation, we iterate over each square in the path
     // of our original search, and recompute the grid placing an obstacle on that square. We then
     // determine whether there is a cycle.
-    squares
+    let faster = squares
         .clone()
         .into_iter()
         .filter(|&pos| grid.get(pos) != Some(&'^'))
@@ -240,9 +240,12 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                     pos = new_pos;
                 }
             }
-        }).count()
+        }).collect::<HashSet<_>>();
+
+    faster.len()
 }
 
+/*
 #[cfg(test)]
 mod benches {
     use crate::get_input;
@@ -265,3 +268,4 @@ mod benches {
         })
     }
 }
+*/
