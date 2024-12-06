@@ -96,55 +96,66 @@ pub trait Direction: Copy {
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
 pub enum Direction4 {
-    Left,
     Up,
-    Down,
     Right,
+    Down,
+    Left,
+}
+
+impl From<Direction4> for usize {
+    fn from(value: Direction4) -> Self {
+        match value {
+            Direction4::Up => 0,
+            Direction4::Right => 1,
+            Direction4::Down => 2,
+            Direction4::Left => 4,
+        }
+    }
 }
 
 impl Direction for Direction4 {
     fn opposite(self) -> Direction4 {
         match self {
-            Direction4::Left => Direction4::Right,
             Direction4::Up => Direction4::Down,
-            Direction4::Down => Direction4::Up,
             Direction4::Right => Direction4::Left,
+            Direction4::Down => Direction4::Up,
+            Direction4::Left => Direction4::Right,
         }
     }
 
     fn cw(self) -> Direction4 {
         match self {
-            Direction4::Left => Direction4::Up,
             Direction4::Up => Direction4::Right,
-            Direction4::Down => Direction4::Left,
             Direction4::Right => Direction4::Down,
+            Direction4::Down => Direction4::Left,
+            Direction4::Left => Direction4::Up,
         }
     }
 
     fn acw(self) -> Direction4 {
         match self {
-            Direction4::Left => Direction4::Down,
             Direction4::Up => Direction4::Left,
-            Direction4::Down => Direction4::Right,
             Direction4::Right => Direction4::Up,
+            Direction4::Down => Direction4::Right,
+            Direction4::Left => Direction4::Down,
         }
     }
 
     fn offset(self) -> (isize, isize) {
         match self {
-            Direction4::Left => (-1, 0),
             Direction4::Up => (0, -1),
-            Direction4::Down => (0, 1),
             Direction4::Right => (1, 0),
+            Direction4::Down => (0, 1),
+            Direction4::Left => (-1, 0),
         }
     }
 
     fn dir_list() -> Vec<Direction4> {
         vec![
-            Direction4::Left,
             Direction4::Up,
-            Direction4::Down,
             Direction4::Right,
+            Direction4::Down,
+            Direction4::Left,
         ]
     }
 }

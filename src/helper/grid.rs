@@ -273,6 +273,7 @@ impl<T: Copy> Grid<T> {
         }
     }
 
+    // TODO should this really take an &self ???
     pub fn rotate_cw(&self) -> Grid<T> {
         let mut entries = Vec::with_capacity(self.width * self.height);
 
@@ -468,6 +469,11 @@ impl<'a, T> GridEntry<'a, T> {
         self.grid
             .get(self.pos)
             .expect("Invalid GridEntry was created")
+    }
+
+    /// Get the position of this point on the grid.
+    pub fn pos(&self) -> (usize, usize) {
+        self.pos
     }
 
     /// Get the entry at (pos + offset) on the grid, if it is in bounds.
