@@ -14,10 +14,11 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
         while let Some((num, i)) = stack.pop() {
             if i == nums.len() && num == goal {
-                return goal;
-            }
-            if i == nums.len() {
-                continue;
+                if num == goal {
+                    return goal;
+                } else {
+                    continue;
+                }
             }
             stack.push((num + nums[i], i+1));
             stack.push((num * nums[i], i+1));
@@ -53,10 +54,14 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         stack.push((nums[0], 1));
 
         while let Some((num, i)) = stack.pop() {
-            if i == nums.len() && num == goal {
-                return goal;
-            }
             if i == nums.len() {
+                if num == goal {
+                    return goal;
+                } else {
+                    continue;
+                }
+            }
+            if num > goal {
                 continue;
             }
             stack.push((num + nums[i], i+1));
