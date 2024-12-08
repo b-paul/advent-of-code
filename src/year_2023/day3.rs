@@ -21,7 +21,8 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             if !c.is_ascii_digit() {
                 continue;
             }
-            for (nx, ny) in adjacent_8_u(x, y) {
+            for p in adjacent_8_u(x, y) {
+                let (nx, ny) = p.pair();
                 if nx >= schem[0].len() || ny >= schem.len() {
                     continue;
                 }
@@ -102,7 +103,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             }
             let mut count = 0;
             let mut set = BTreeSet::new();
-            for (nx, ny) in adjacent_8_u(x, y) {
+            for p in adjacent_8_u(x, y) {
+                let (nx, ny) = p.pair();
                 if nx >= schem[0].len() || ny >= schem.len() {
                     continue;
                 }

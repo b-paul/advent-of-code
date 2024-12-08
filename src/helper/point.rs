@@ -41,6 +41,14 @@ impl Point {
             y: y as usize,
         })
     }
+
+    /// Returns the relative offset from this point to another point.
+    pub fn rel_off(self, other: Point) -> Offset {
+        Offset {
+            dx: self.x as isize - other.x as isize,
+            dy: self.y as isize - other.y as isize
+        }
+    }
 }
 
 impl Offset {
@@ -74,8 +82,8 @@ impl Bound {
     }
 
     /// Determine whether a given point sits inside this bounding box.
-    pub fn contains_point(&self, (x, y): (usize, usize)) -> bool {
-        x < self.width && y < self.height
+    pub fn contains_point(&self, p: Point) -> bool {
+        p.x < self.width && p.y < self.height
     }
 }
 

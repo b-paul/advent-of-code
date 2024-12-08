@@ -1,7 +1,7 @@
 use crate::helper::adjacency::{
     adjacent_4_ud, adjacent_8_ud, move_off, Direction, Direction4, Direction8,
 };
-use crate::helper::point::{Bound, Point};
+use crate::helper::point::{Bound, Offset, Point};
 use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Display};
 use std::hash::Hash;
@@ -32,7 +32,7 @@ impl<T> Grid<T> {
         self.bound.height
     }
 
-    pub fn bound(&self) -> Bound {
+    pub fn bounds(&self) -> Bound {
         self.bound
     }
 
@@ -90,7 +90,7 @@ impl<T> Grid<T> {
         }
     }
 
-    pub fn contains_point(&self, p: (usize, usize)) -> bool {
+    pub fn contains_point(&self, p: Point) -> bool {
         self.bound.contains_point(p)
     }
 
@@ -112,23 +112,25 @@ impl<T> Grid<T> {
         self.entries
     }
 
-    pub fn get(&self, idx: (usize, usize)) -> Option<&T> {
+    pub fn get(&self, idx: Point) -> Option<&T> {
         self.contains_point(idx).then(|| &self[idx])
     }
 
     /// Return the entry at the given point.
-    pub fn point(&self, pos: (usize, usize)) -> Option<GridEntry<T>> {
-        self.contains_point(pos)
-            .then_some(GridEntry { pos, grid: self })
+    pub fn point(&self, pos: Point) -> Option<GridEntry<T>> {
+        self.contains_point(pos).then_some(GridEntry {
+            pos,
+            grid: self,
+        })
     }
 }
 
 impl<T: Copy + Eq + Hash> Grid<T> {
     /// F takes a point, entry
     /// P takes a direction, from and to
-    pub fn dfs_4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn dfs_4<F, P>(&self, start: Point, mut f: F, p: P)
     where
-        F: FnMut((usize, usize), T),
+        F: FnMut(Point, T),
         P: Fn(Direction4, T, T) -> bool,
     {
         let mut stack = Vec::new();
@@ -138,8 +140,10 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
         while let Some(from) = stack.pop() {
             f(from, self[from]);
-            for (to, dir) in adjacent_4_ud(from.0, from.1) {
-                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
+            for (to, dir) in adjacent_4_ud(from.x, from.y) {
+                if self.contains_point(to)
+                    && p(dir, self[from], self[to])
+                    && !visited.contains(&to)
                 {
                     stack.push(to);
                     visited.insert(to);
@@ -150,9 +154,9 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, entry
     /// P takes a direction, from and to
-    pub fn dfs_8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn dfs_8<F, P>(&self, start: Point, mut f: F, p: P)
     where
-        F: FnMut((usize, usize), T),
+        F: FnMut(Point, T),
         P: Fn(Direction8, T, T) -> bool,
     {
         let mut stack = Vec::new();
@@ -162,8 +166,10 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
         while let Some(from) = stack.pop() {
             f(from, self[from]);
-            for (to, dir) in adjacent_8_ud(from.0, from.1) {
-                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
+            for (to, dir) in adjacent_8_ud(from.x, from.y) {
+                if self.contains_point(to)
+                    && p(dir, self[from], self[to])
+                    && !visited.contains(&to)
                 {
                     stack.push(to);
                     visited.insert(to);
@@ -174,9 +180,9 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, entry, depth
     /// P takes a direction, from and to
-    pub fn bfs_4<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn bfs_4<F, P>(&self, start: Point, mut f: F, p: P)
     where
-        F: FnMut((usize, usize), T, usize),
+        F: FnMut(Point, T, usize),
         P: Fn(Direction4, T, T) -> bool,
     {
         let mut queue = VecDeque::new();
@@ -186,8 +192,10 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
         while let Some((from, depth)) = queue.pop_front() {
             f(from, self[from], depth);
-            for (to, dir) in adjacent_4_ud(from.0, from.1) {
-                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
+            for (to, dir) in adjacent_4_ud(from.x, from.y) {
+                if self.contains_point(to)
+                    && p(dir, self[from], self[to])
+                    && !visited.contains(&to)
                 {
                     queue.push_back((to, depth + 1));
                     visited.insert(to);
@@ -198,9 +206,9 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, entry, depth
     /// P takes a direction, from and to
-    pub fn bfs_8<F, P>(&self, start: (usize, usize), mut f: F, p: P)
+    pub fn bfs_8<F, P>(&self, start: Point, mut f: F, p: P)
     where
-        F: FnMut((usize, usize), T, usize),
+        F: FnMut(Point, T, usize),
         P: Fn(Direction8, T, T) -> bool,
     {
         let mut queue = VecDeque::new();
@@ -210,8 +218,10 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
         while let Some((from, depth)) = queue.pop_front() {
             f(from, self[from], depth);
-            for (to, dir) in adjacent_8_ud(from.0, from.1) {
-                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
+            for (to, dir) in adjacent_8_ud(from.x, from.y) {
+                if self.contains_point(to)
+                    && p(dir, self[from], self[to])
+                    && !visited.contains(&to)
                 {
                     queue.push_back((to, depth + 1));
                     visited.insert(to);
@@ -329,23 +339,23 @@ impl<T: PartialEq> PartialEq for Grid<T> {
 impl<T: Eq> Eq for Grid<T> {}
 
 impl<T: PartialEq> Grid<T> {
-    pub fn find(&self, elem: &T) -> Option<(usize, usize)> {
+    pub fn find(&self, elem: &T) -> Option<Point> {
         self.iter_idx()
-            .filter_map(|(p, val)| (val == elem).then_some(p.pair()))
+            .filter_map(|(p, val)| (val == elem).then_some(p))
             .next()
     }
 }
 
 impl<T: PartialEq + Copy> Grid<T> {
     /// start must be in the bounds of the grid
-    pub fn floodfill_4(&mut self, empty: T, with: T, start: (usize, usize)) {
+    pub fn floodfill_4(&mut self, empty: T, with: T, start: Point) {
         let mut set = HashSet::new();
         let mut stack = Vec::new();
         stack.push(start);
         set.insert(start);
-        while let Some((x, y)) = stack.pop() {
-            self[(x, y)] = with;
-            for p in super::adjacency::adjacent_4_u(x, y) {
+        while let Some(p) = stack.pop() {
+            self[p] = with;
+            for p in super::adjacency::adjacent_4_u(p.x, p.y) {
                 if !self.contains_point(p) {
                     continue;
                 }
@@ -414,8 +424,9 @@ impl<T> Index<(usize, usize)> for Grid<T> {
     type Output = T;
 
     fn index(&self, (x, y): (usize, usize)) -> &Self::Output {
+        let p = Point { x, y };
         assert!(
-            self.contains_point((x, y)),
+            self.contains_point(p),
             "index out of bounds: (width,height) = ({},{}) but index is ({},{})",
             self.bound.width,
             self.bound.height,
@@ -428,8 +439,9 @@ impl<T> Index<(usize, usize)> for Grid<T> {
 
 impl<T> IndexMut<(usize, usize)> for Grid<T> {
     fn index_mut(&mut self, (x, y): (usize, usize)) -> &mut Self::Output {
+        let p = Point { x, y };
         assert!(
-            self.contains_point((x, y)),
+            self.contains_point(p),
             "index out of bounds: (width,height) = ({},{}) but index is ({},{})",
             self.bound.width,
             self.bound.height,
@@ -465,7 +477,7 @@ impl<T: Hash> Hash for Grid<T> {
 #[derive(Clone, Copy)]
 pub struct GridEntry<'a, T> {
     /// The cell we are pointin at
-    pos: (usize, usize),
+    pos: Point,
     /// The grid
     grid: &'a Grid<T>,
 }
@@ -479,17 +491,14 @@ impl<'a, T> GridEntry<'a, T> {
     }
 
     /// Get the position of this point on the grid.
-    pub fn pos(&self) -> (usize, usize) {
+    pub fn pos(&self) -> Point {
         self.pos
     }
 
     /// Get the entry at (pos + offset) on the grid, if it is in bounds.
-    pub fn move_off(&self, offset: (isize, isize)) -> Option<GridEntry<'a, T>> {
-        let (x, y) = self.pos;
-        let (dx, dy) = offset;
-        let (x, y) = (x as isize + dx, y as isize + dy);
-        (x >= 0 && y >= 0).then_some(GridEntry {
-            pos: (x as usize, y as usize),
+    pub fn move_off(&self, offset: Offset) -> Option<GridEntry<'a, T>> {
+        self.pos.move_off(offset).map(|pos| GridEntry {
+            pos,
             grid: self.grid,
         })
     }
@@ -516,7 +525,7 @@ impl<'a, T> GridEntry<'a, T> {
     /// Returns an iterator of entries into the grid found by moving by the offset off for len
     /// steps. We count this current point as step 0, meaning that if len = 1, we will not move to
     /// another point.
-    pub fn trajectory(&self, off: (isize, isize), len: usize) -> Trajectory<'a, T> {
+    pub fn trajectory(&self, off: Offset, len: usize) -> Trajectory<'a, T> {
         Trajectory {
             pos: self.pos,
             steps: len,
@@ -663,10 +672,10 @@ impl<'a, T> Iterator for GridColIter<'a, T> {
 
 #[derive(Clone)]
 pub struct Trajectory<'a, T> {
-    pos: (usize, usize),
+    pos: Point,
     /// The number of values left to return
     steps: usize,
-    off: (isize, isize),
+    off: Offset,
     grid: &'a Grid<T>,
 }
 
@@ -681,7 +690,7 @@ impl<'a, T> Iterator for Trajectory<'a, T> {
             // Move to the next position, but if it is invalid then set steps to 0 (so that we
             // always return None)
             self.steps -= 1;
-            self.pos = match move_off(self.pos, self.off) {
+            self.pos = match self.pos.move_off(self.off) {
                 Some(p) => p,
                 None => {
                     self.steps = 0;

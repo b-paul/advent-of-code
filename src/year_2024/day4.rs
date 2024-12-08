@@ -11,7 +11,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             Direction8::dir_list()
                 .into_iter()
                 .filter(|&dir| {
-                    grid.point(p.pair())
+                    grid.point(p)
                         .expect("This point better be in bounds")
                         .trajectory_dir(dir, 4)
                         .copied()
@@ -50,7 +50,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 .into_iter()
                 .filter(|&dir| {
                     [dir, dir.cw()].into_iter().all(|dir| {
-                        grid.point(p.pair())
+                        grid.point(p)
                             .expect("This point better be in bounds")
                             .move_dir(dir)
                             .is_some_and(|p| {
