@@ -51,7 +51,7 @@ fn test() {
 ............
 ............";
     let output = 34;
-    assert_eq!(part_1(input).to_string(), output.to_string());
+    assert_eq!(part_2(input).to_string(), output.to_string());
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
