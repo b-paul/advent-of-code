@@ -67,7 +67,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             stack.push((num + nums[i], i+1));
             stack.push((num * nums[i], i+1));
             let n = nums[i];
-            stack.push((num * 10u64.pow(n.ilog10()+1) + n, i+1));
+            stack.push((p::<u64>(&(num.to_string() + &n.to_string())), i+1));
         }
 
         0
