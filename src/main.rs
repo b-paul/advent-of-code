@@ -23,6 +23,7 @@ mod year_2024;
 use std::env;
 use std::fs;
 use std::io::Read;
+use std::time::Instant;
 
 use clap::Parser;
 
@@ -63,6 +64,10 @@ struct Args {
     #[arg(short = '2')]
     part: bool,
 
+    /// Print how long the program took to execute
+    #[arg(short = 't')]
+    time: bool,
+
     /// Submit the answer with a http(s) request
     #[arg(short = 's')]
     submit: bool,
@@ -75,6 +80,8 @@ fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
     let file = &get_input(args.year, args.day)?;
+
+    let now = Instant::now();
 
     let result = match args.year {
         2015 => run_year!(file, year_2015, args.day, args.part),
@@ -90,12 +97,18 @@ fn main() -> anyhow::Result<()> {
         _ => unreachable!(),
     };
 
+    let elapsed = now.elapsed();
+
     println!(
         "Day {} part {}: {}",
         args.day,
         args.part as usize + 1,
         result,
     );
+
+    if args.time {
+        println!("Ran for {elapsed:?}");
+    }
 
     if args.submit {
         println!("submitting");
