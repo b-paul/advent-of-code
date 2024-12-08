@@ -245,7 +245,6 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     faster.len()
 }
 
-/*
 #[cfg(test)]
 mod benches {
     use crate::get_input;
@@ -268,4 +267,3 @@ mod benches {
         })
     }
 }
-*/

@@ -10,18 +10,22 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         let nums = nums.split_whitespace().map(p::<u64>).collect_vec();
 
         let mut stack = Vec::new();
-        stack.push((nums[0], 1));
+        stack.push((goal, nums.len() - 1));
 
         while let Some((num, i)) = stack.pop() {
-            if i == nums.len() && num == goal {
-                if num == goal {
+            if i == 0 {
+                if num == nums[0] {
                     return goal;
                 } else {
                     continue;
                 }
             }
-            stack.push((num + nums[i], i+1));
-            stack.push((num * nums[i], i+1));
+            if let Some(sub) = num.checked_sub(nums[i]) {
+                stack.push((sub, i-1));
+            }
+            if num % nums[i] == 0 {
+                stack.push((num / nums[i], i-1));
+            }
         }
 
         0
@@ -51,25 +55,52 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         let nums = nums.split_whitespace().map(p::<u64>).collect_vec();
 
         let mut stack = Vec::new();
-        stack.push((nums[0], 1));
+        stack.push((goal, nums.len() - 1));
 
         while let Some((num, i)) = stack.pop() {
-            if i == nums.len() {
-                if num == goal {
+            if i == 0 {
+                if num == nums[0] {
                     return goal;
                 } else {
                     continue;
                 }
             }
-            if num > goal {
-                continue;
+            if let Some(sub) = num.checked_sub(nums[i]) {
+                stack.push((sub, i-1));
             }
-            stack.push((num + nums[i], i+1));
-            stack.push((num * nums[i], i+1));
+            if num % nums[i] == 0 {
+                stack.push((num / nums[i], i-1));
+            }
             let n = nums[i];
-            stack.push((p::<u64>(&(num.to_string() + &n.to_string())), i+1));
+            let digits = (n as f64).log10().floor() as u32 + 1;
+            if num % 10u64.pow(digits) == n {
+                stack.push((num / 10u64.pow(digits), i-1));
+            }
         }
 
         0
     }).sum::<u64>()
+}
+
+#[cfg(test)]
+mod benches {
+    use crate::get_input;
+    use crate::year_2024::day7::*;
+    use test::{black_box, Bencher};
+
+    #[bench]
+    fn part1_normal(b: &mut Bencher) {
+        let input = &get_input(2024, 7).unwrap();
+        b.iter(|| {
+            black_box(part_1(input));
+        })
+    }
+
+    #[bench]
+    fn part2_normal(b: &mut Bencher) {
+        let input = &get_input(2024, 7).unwrap();
+        b.iter(|| {
+            black_box(part_2(input));
+        })
+    }
 }
