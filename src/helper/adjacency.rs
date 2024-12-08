@@ -332,6 +332,13 @@ pub fn move_off(point: (usize, usize), off: (isize, isize)) -> Option<(usize, us
     (x >= 0 && y >= 0).then_some((x as usize, y as usize))
 }
 
+pub fn rel_off(p1: (usize, usize), p2: (usize, usize)) -> (isize, isize) {
+    (
+        p1.0 as isize - p2.0 as isize,
+        p1.1 as isize - p2.1 as isize,
+    )
+}
+
 // Iterates in order:
 // Left Up Down Right
 pub fn adjacent_4_i(x: isize, y: isize) -> Vec<(isize, isize)> {
