@@ -7,20 +7,22 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     let mut antinodes = grid.clone().map(|_| false);
 
+    // Potential optimistions:
+    // For each frequency, store a list of points on the grid that the frequency exists at.
+    // This way, when we do this n^2 loop, n is much much smaller.
+
     for (a, b) in grid
         .iter_idx()
         .cartesian_product(grid.iter_idx())
-        .filter_map(|((posa, c1), (posb, c2))| {
-            (posa != posb && c1.is_alphanumeric() && c1 == c2).then_some((posa, posb))
+        .filter_map(|((a, c1), (b, c2))| {
+            (a != b && c1.is_alphanumeric() && c1 == c2).then_some((a, b))
         })
     {
-        let a = a;
-        let b = b;
         let d = a.rel_off(b);
         // We do the other direction when doing the (b, a) step
-        if let Some(pa) = a.move_off(d) {
-            if antinodes.contains_point(pa) {
-                antinodes[pa] = true;
+        if let Some(p) = a.move_off(d) {
+            if antinodes.contains_point(p) {
+                antinodes[p] = true;
             }
         }
     }
@@ -62,12 +64,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     for (a, b) in grid
         .iter_idx()
         .cartesian_product(grid.iter_idx())
-        .filter_map(|((posa, c1), (posb, c2))| {
-            (posa != posb && c1.is_alphanumeric() && c1 == c2).then_some((posa, posb))
+        .filter_map(|((a, c1), (b, c2))| {
+            (a != b && c1.is_alphanumeric() && c1 == c2).then_some((a, b))
         })
     {
-        let a = a;
-        let b = b;
         let d = a.rel_off(b);
         let mut p = a;
         while antinodes.contains_point(p) {
