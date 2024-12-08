@@ -250,7 +250,7 @@ pub(crate) fn part_2_faster(input: &str) -> impl std::fmt::Display {
     let mut rocks = grid
         .iter_idx()
         .filter(|(_, &c)| c == 'O')
-        .map(|(p, _)| p)
+        .map(|(p, _)| p.pair())
         .collect::<Vec<_>>();
 
     let mut set = HashMap::new();
@@ -281,7 +281,7 @@ pub(crate) fn part_2_brent(input: &str) -> impl std::fmt::Display {
     let mut rocks = grid
         .iter_idx()
         .filter(|(_, &c)| c == 'O')
-        .map(|(p, _)| p)
+        .map(|(p, _)| p.pair())
         .collect::<Vec<_>>();
 
     let floors = floors(&grid);
@@ -377,7 +377,7 @@ mod benches {
         let mut rocks = grid
             .iter_idx()
             .filter(|(_, &c)| c == 'O')
-            .map(|(p, _)| p)
+            .map(|(p, _)| p.pair())
             .collect::<Vec<_>>();
 
         let floors = floors(&grid);

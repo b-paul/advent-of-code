@@ -325,6 +325,7 @@ pub const DIRECTIONS8D: [((isize, isize), Direction8); 8] = [
 
 // TODO replace these methods with associated methods in the Direction trait
 
+// TODO make a point and an offset struct, and have this functionality sit in that
 pub fn move_off(point: (usize, usize), off: (isize, isize)) -> Option<(usize, usize)> {
     let (x, y) = point;
     let (dx, dy) = off;

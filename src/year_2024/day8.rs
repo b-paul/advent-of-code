@@ -14,6 +14,8 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             (posa != posb && c1.is_alphanumeric() && c1 == c2).then_some((posa, posb))
         })
     {
+        let a = a.pair();
+        let b = b.pair();
         let d = rel_off(a, b);
         // We do the other direction when doing the (b, a) step
         if let Some(pa) = move_off(a, d) {
@@ -61,6 +63,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             (posa != posb && c1.is_alphanumeric() && c1 == c2).then_some((posa, posb))
         })
     {
+        let a = a.pair();
+        let b = b.pair();
         let d = rel_off(a, b);
         let mut p = a;
         while antinodes.contains_point(p) {
