@@ -13,7 +13,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
                 .filter(|&dir| {
                     grid.point(p)
                         .expect("This point better be in bounds")
-                        .trajectory(dir, 4)
+                        .trajectory_dir(dir, 4)
                         .copied()
                         .eq("XMAS".chars())
                 })
@@ -54,7 +54,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                             .expect("This point better be in bounds")
                             .move_dir(dir)
                             .is_some_and(|p| {
-                                p.trajectory(dir.opposite(), 3).copied().eq("MAS".chars())
+                                p.trajectory_dir(dir.opposite(), 3).copied().eq("MAS".chars())
                             })
                     })
                 })

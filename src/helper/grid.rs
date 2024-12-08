@@ -1,4 +1,6 @@
-use crate::helper::adjacency::{adjacent_4_ud, adjacent_8_ud, Direction, Direction4, Direction8};
+use crate::helper::adjacency::{
+    adjacent_4_ud, adjacent_8_ud, move_off, Direction, Direction4, Direction8,
+};
 use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Display};
 use std::hash::Hash;
@@ -506,14 +508,26 @@ impl<'a, T> GridEntry<'a, T> {
         })
     }
 
-    /// Returns an iterator of entries into the grid found by following the direction dir len
+    /// Returns an iterator of entries into the grid found by moving by the offset off for len
     /// steps. We count this current point as step 0, meaning that if len = 1, we will not move to
     /// another point.
-    pub fn trajectory<D: Direction>(&self, dir: D, len: usize) -> Trajectory<'a, T, D> {
+    pub fn trajectory(&self, off: (isize, isize), len: usize) -> Trajectory<'a, T> {
         Trajectory {
             pos: self.pos,
             steps: len,
-            dir,
+            off,
+            grid: self.grid,
+        }
+    }
+
+    /// Returns an iterator of entries into the grid found by following the direction dir len
+    /// steps. We count this current point as step 0, meaning that if len = 1, we will not move to
+    /// another point.
+    pub fn trajectory_dir<D: Direction>(&self, dir: D, len: usize) -> Trajectory<'a, T> {
+        Trajectory {
+            pos: self.pos,
+            steps: len,
+            off: dir.offset(),
             grid: self.grid,
         }
     }
@@ -528,6 +542,7 @@ impl<T: Debug> Debug for GridEntry<'_, T> {
     }
 }
 
+#[derive(Clone)]
 pub struct GridIdxIterator<'a, T> {
     grid: &'a Grid<T>,
     cur_x: usize,
@@ -553,6 +568,7 @@ impl<'a, T> Iterator for GridIdxIterator<'a, T> {
     }
 }
 
+#[derive(Clone)]
 pub struct Row<'a, T> {
     grid: &'a Grid<T>,
     index: usize,
@@ -573,6 +589,7 @@ impl<'a, T> Iterator for Row<'a, T> {
     }
 }
 
+#[derive(Clone)]
 pub struct GridRowIter<'a, T> {
     grid: &'a Grid<T>,
     index: usize,
@@ -596,6 +613,7 @@ impl<'a, T> Iterator for GridRowIter<'a, T> {
     }
 }
 
+#[derive(Clone)]
 pub struct Col<'a, T> {
     grid: &'a Grid<T>,
     index: usize,
@@ -615,6 +633,7 @@ impl<'a, T> Iterator for Col<'a, T> {
     }
 }
 
+#[derive(Clone)]
 pub struct GridColIter<'a, T> {
     grid: &'a Grid<T>,
     index: usize,
@@ -637,16 +656,16 @@ impl<'a, T> Iterator for GridColIter<'a, T> {
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct Trajectory<'a, T, D: Direction> {
+#[derive(Clone)]
+pub struct Trajectory<'a, T> {
     pos: (usize, usize),
     /// The number of values left to return
     steps: usize,
-    dir: D,
+    off: (isize, isize),
     grid: &'a Grid<T>,
 }
 
-impl<'a, T, D: Direction> Iterator for Trajectory<'a, T, D> {
+impl<'a, T> Iterator for Trajectory<'a, T> {
     type Item = &'a T;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -657,7 +676,7 @@ impl<'a, T, D: Direction> Iterator for Trajectory<'a, T, D> {
             // Move to the next position, but if it is invalid then set steps to 0 (so that we
             // always return None)
             self.steps -= 1;
-            self.pos = match self.dir.moveu(self.pos) {
+            self.pos = match move_off(self.pos, self.off) {
                 Some(p) => p,
                 None => {
                     self.steps = 0;
