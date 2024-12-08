@@ -325,6 +325,13 @@ pub const DIRECTIONS8D: [((isize, isize), Direction8); 8] = [
 
 // TODO replace these methods with associated methods in the Direction trait
 
+pub fn move_off(point: (usize, usize), off: (isize, isize)) -> Option<(usize, usize)> {
+    let (x, y) = point;
+    let (dx, dy) = off;
+    let (x, y) = (x as isize + dx, y as isize + dy);
+    (x >= 0 && y >= 0).then_some((x as usize, y as usize))
+}
+
 // Iterates in order:
 // Left Up Down Right
 pub fn adjacent_4_i(x: isize, y: isize) -> Vec<(isize, isize)> {
