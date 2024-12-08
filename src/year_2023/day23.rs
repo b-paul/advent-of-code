@@ -5,21 +5,24 @@ use std::collections::*;
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     let grid = input.parse::<Grid<char>>().unwrap();
 
-    let end = (grid.width() - 2, grid.height() - 1);
+    let end = Point {
+        x: grid.width() - 2,
+        y: grid.height() - 1,
+    };
 
     let mut max = 0;
 
     let mut stack = Vec::new();
     let mut set = HashSet::new();
-    set.insert((1, 0));
-    stack.push((set, (1, 0), 0));
+    set.insert(Point { x: 1, y: 0 });
+    stack.push((set, Point { x: 1, y: 0 }, 0));
 
-    while let Some((set, (x, y), depth)) = stack.pop() {
-        if (x, y) == end {
+    while let Some((set, p, depth)) = stack.pop() {
+        if p == end {
             max = max.max(depth);
         }
 
-        for (to, dir) in adjacent_4_ud(x, y) {
+        for (to, dir) in adjacent_4_ud(p.x, p.y) {
             if !grid.contains_point(to) {
                 continue;
             }
@@ -49,12 +52,15 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let grid = input.parse::<Grid<char>>().unwrap();
 
-    let bounds = (grid.width(), grid.height());
+    let bounds = grid.bounds();
 
-    let start = (1, 0);
-    let end = (grid.width() - 2, grid.height() - 1);
+    let start = Point { x: 1, y: 0 };
+    let end = Point {
+        x: grid.width() - 2,
+        y: grid.height() - 1,
+    };
 
-    let mut graph = HashMap::<(usize, usize), BTreeMap<(usize, usize), usize>>::new();
+    let mut graph = HashMap::<Point, BTreeMap<Point, usize>>::new();
 
     let mut stack = Vec::new();
     let mut visited = HashSet::new();
@@ -71,7 +77,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             }
             let mut dist = 1;
             loop {
-                let mut nexts = adjacent_4_ud(to.0, to.1).into_iter().filter(|&(p, dir2)| {
+                let mut nexts = adjacent_4_ud(to.x, to.y).into_iter().filter(|&(p, dir2)| {
                     dir2 != dir.opposite() && grid.contains_point(p) && grid[p] != '#'
                 });
                 let Some((next_to, next_dir)) = nexts.next() else {

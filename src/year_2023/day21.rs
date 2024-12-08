@@ -20,7 +20,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             grid[from] = 'O';
             continue;
         }
-        for to in adjacent_4_u(from.0, from.1) {
+        for to in adjacent_4_u(from.x, from.y) {
             if grid.contains_point(to) && grid[to] != '#' && !visited.contains(&(to, depth + 1)) {
                 queue.push_back((to, depth + 1));
                 visited.insert((to, depth + 1));
@@ -69,7 +69,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             full_count_a += 1;
             continue;
         }
-        for to in adjacent_4_u(from.0, from.1) {
+        for to in adjacent_4_u(from.x, from.y) {
             if grid.contains_point(to) && grid[to] != '#' && !visited.contains(&(to, depth + 1)) {
                 queue.push_back((to, depth + 1));
                 visited.insert((to, depth + 1));
@@ -88,7 +88,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             full_count_b += 1;
             continue;
         }
-        for to in adjacent_4_u(from.0, from.1) {
+        for to in adjacent_4_u(from.x, from.y) {
             if grid.contains_point(to) && grid[to] != '#' && !visited.contains(&(to, depth + 1)) {
                 queue.push_back((to, depth + 1));
                 visited.insert((to, depth + 1));
@@ -98,7 +98,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     println!("{full_count_a} {full_count_b}");
 
-    let start = (start.0 as isize, start.1 as isize);
+    let start = (start.x as isize, start.y as isize);
 
     let mut res = 0;
 
@@ -194,7 +194,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     ];
 
     for start in dubm {
-        let start = (start.0 as usize, start.1 as usize);
+        let start = Point {
+            x: start.0 as usize,
+            y: start.1 as usize,
+        };
         let x = X as isize - 131 * width + 65;
         println!("{x} {start:?}");
         let mut count = 0;
@@ -209,7 +212,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 count += 1;
                 continue;
             }
-            for to in adjacent_4_u(from.0, from.1) {
+            for to in adjacent_4_u(from.x, from.y) {
                 if grid.contains_point(to) && grid[to] != '#' && !visited.contains(&(to, depth + 1))
                 {
                     queue.push_back((to, depth + 1));
@@ -230,7 +233,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         (0, grid.height() as isize - 1),
     ];
     for start in dubm {
-        let start = (start.0 as usize, start.1 as usize);
+        let start = Point {
+            x: start.0 as usize,
+            y: start.1 as usize,
+        };
         //let x = X as isize - 131 * width + 130;
         let x = 195;
         println!("{x} {start:?}");
@@ -246,7 +252,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 count += 1;
                 continue;
             }
-            for to in adjacent_4_u(from.0, from.1) {
+            for to in adjacent_4_u(from.x, from.y) {
                 if grid.contains_point(to) && grid[to] != '#' && !visited.contains(&(to, depth + 1))
                 {
                     queue.push_back((to, depth + 1));
@@ -265,7 +271,10 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         (0, grid.height() as isize - 1),
     ];
     for start in dubm {
-        let start = (start.0 as usize, start.1 as usize);
+        let start = Point {
+            x: start.0 as usize,
+            y: start.1 as usize,
+        };
         //let x = X as isize - 131 * width + 130;
         let x = 195 - 131;
         println!("{x} {start:?}");
@@ -281,7 +290,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 count += 1;
                 continue;
             }
-            for to in adjacent_4_u(from.0, from.1) {
+            for to in adjacent_4_u(from.x, from.y) {
                 if grid.contains_point(to) && grid[to] != '#' && !visited.contains(&(to, depth + 1))
                 {
                     queue.push_back((to, depth + 1));

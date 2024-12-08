@@ -11,7 +11,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     loop {
         squares.insert(pos);
-        let Some(posp) = dir.moveub(pos, (grid.width(), grid.height())) else {
+        let Some(posp) = dir.moveub(pos, grid.bounds()) else {
             break;
         };
         if grid.get(posp) == Some(&'#') {
@@ -50,7 +50,7 @@ fn part_2_slower(input: &str) -> impl std::fmt::Display {
 
         loop {
             squares.insert(pos);
-            let Some(posp) = dir.moveub(pos, (grid.width(), grid.height())) else {
+            let Some(posp) = dir.moveub(pos, grid.bounds()) else {
                 break;
             };
             if grid.get(posp) == Some(&'#') {
@@ -79,7 +79,7 @@ fn part_2_slower(input: &str) -> impl std::fmt::Display {
                     return true;
                 }
                 squares.insert((pos, dir));
-                let Some(posp) = dir.moveub(pos, (grid.width(), grid.height())) else {
+                let Some(posp) = dir.moveub(pos, grid.bounds()) else {
                     return false;
                 };
                 if grid.get(posp) == Some(&'#') {
@@ -92,18 +92,16 @@ fn part_2_slower(input: &str) -> impl std::fmt::Display {
         .count()
 }
 
-fn adjust_pos(
-    (col, row): (usize, usize),
-    dir: Direction4,
-    width: usize,
-    height: usize,
-) -> (usize, usize) {
-    match dir {
+// TODO maybe this should be a library function?
+fn adjust_pos(p: Point, dir: Direction4, width: usize, height: usize) -> Point {
+    let (col, row) = p.pair();
+    let (x, y) = match dir {
         Direction4::Up => (col, row),
         Direction4::Right => (height - 1 - row, col),
         Direction4::Down => (width - 1 - col, height - 1 - row),
         Direction4::Left => (row, width - 1 - col),
-    }
+    };
+    Point { x, y }
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
@@ -118,7 +116,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
         loop {
             squares.push(pos);
-            let Some(posp) = dir.moveub(pos, (grid.width(), grid.height())) else {
+            let Some(posp) = dir.moveub(pos, grid.bounds()) else {
                 break;
             };
             if grid.get(posp) == Some(&'#') {
@@ -134,13 +132,13 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     // We compute, per square, and per direction on that square, the square that you would reach
     // after moving forwards continuously. The three cases we have to consider is when we stay put
     // by running into an obstacle, when we move out of bounds, and when we are currently an
-    // obstacle. This can be represented as a Grid<[Option<(usize, usize)>; 4]. If we stay put,
+    // obstacle. This can be represented as a Grid<[Option<Point>; 4]. If we stay put,
     // store this square as the destination. If we are an obstacle, we store some uninitialised
     // value, and just always check beforehand. If we are moving out of bounds, store a None. In
     // this representation, finding cycles/exits is much faster. The idea is that we can place an
     // obstacle on the grid, and recompute only the row and column that that square is in.
     // Hopefully this will be faster!
-    let mut move_grid: Grid<[Option<(usize, usize)>; 4]> = grid.clone().map(|_| [None; 4]);
+    let mut move_grid: Grid<[Option<Point>; 4]> = grid.clone().map(|_| [None; 4]);
 
     let width = grid.width();
     let height = grid.height();
@@ -155,7 +153,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             // Row 0 will always have None, since we are moving upwards (and if we are an obstacle
             // then the value doesn't matter). Thus we skip and start at row 1.
             for row in 1..height {
-                let pos = (col, row);
+                let pos = Point { x: col, y: row };
                 let adjusted_pos = adjust_pos(pos, dir, width, height);
                 let square = grid
                     .get(adjusted_pos)
@@ -232,7 +230,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                     Some(p) => p,
                     None => {
                         return false;
-                    },
+                    }
                 };
                 if new_pos == pos {
                     dir = dir.cw();
@@ -240,7 +238,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                     pos = new_pos;
                 }
             }
-        }).collect::<HashSet<_>>();
+        })
+        .collect::<HashSet<_>>();
 
     faster.len()
 }

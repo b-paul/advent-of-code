@@ -4,21 +4,22 @@ use std::collections::*;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     let grid = input.parse::<Grid<char>>().unwrap();
-    let bounds = (grid.width(), grid.height());
+    let bounds = grid.bounds();
 
     let mut pqueue = BinaryHeap::new();
     let mut set = HashSet::new();
 
     // Distance, (x, y), dir, dircount
-    pqueue.push((0i32, (1, 0), Direction4::Right, 1));
-    pqueue.push((0i32, (0, 1), Direction4::Down, 1));
+    pqueue.push((0i32, Point{x:1, y:0}, Direction4::Right, 1));
+    pqueue.push((0i32, Point{x:0, y:1}, Direction4::Down, 1));
 
-    while let Some((dist, (x, y), dir, dircount)) = pqueue.pop() {
-        if set.contains(&((x, y), dir, dircount)) {
+    while let Some((dist, p, dir, dircount)) = pqueue.pop() {
+        let (x, y) = p.pair();
+        if set.contains(&(p, dir, dircount)) {
             continue;
         }
-        set.insert(((x, y), dir, dircount));
-        let dist = dist - grid[(x, y)].to_digit(10).unwrap() as i32;
+        set.insert((p, dir, dircount));
+        let dist = dist - grid[p].to_digit(10).unwrap() as i32;
         if x == grid.width() - 1 && y == grid.height() - 1 {
             return -dist;
         }
@@ -29,12 +30,12 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             if dircount >= 3 && dir == dir2 {
                 continue;
             }
-            let Some((x, y)) = dir2.moveub((x, y), bounds) else {
+            let Some(p) = dir2.moveub(p, bounds) else {
                 continue;
             };
             let dircount = if dir == dir2 { dircount + 1 } else { 1 };
 
-            pqueue.push((dist, (x, y), dir2, dircount));
+            pqueue.push((dist, p, dir2, dircount));
         }
     }
 
@@ -43,20 +44,21 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let grid = input.parse::<Grid<char>>().unwrap();
-    let bounds = (grid.width(), grid.height());
+    let bounds = grid.bounds();
 
     let mut pqueue = BinaryHeap::new();
     let mut set = HashSet::new();
 
     // Distance, (x, y), dir, dircount
-    pqueue.push((0i32, (1, 0), Direction4::Right, 1));
-    pqueue.push((0i32, (0, 1), Direction4::Down, 1));
+    pqueue.push((0i32, Point{x:1, y:0}, Direction4::Right, 1));
+    pqueue.push((0i32, Point{x:0, y:1}, Direction4::Down, 1));
 
-    while let Some((dist, (x, y), dir, dircount)) = pqueue.pop() {
-        if set.contains(&((x, y), dir, dircount)) {
+    while let Some((dist, p, dir, dircount)) = pqueue.pop() {
+        let (x, y) = p.pair();
+        if set.contains(&(p, dir, dircount)) {
             continue;
         }
-        set.insert(((x, y), dir, dircount));
+        set.insert((p, dir, dircount));
         let dist = dist - grid[(x, y)].to_digit(10).unwrap() as i32;
         if x == grid.width() - 1 && y == grid.height() - 1 && dircount >= 4 {
             return -dist;
@@ -72,12 +74,12 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             if dircount >= 10 && dir == dir2 {
                 continue;
             }
-            let Some((x, y)) = dir2.moveub((x, y), bounds) else {
+            let Some(p) = dir2.moveub(p, bounds) else {
                 continue;
             };
             let dircount = if dir == dir2 { dircount + 1 } else { 1 };
 
-            pqueue.push((dist, (x, y), dir2, dircount));
+            pqueue.push((dist, p, dir2, dircount));
         }
     }
 

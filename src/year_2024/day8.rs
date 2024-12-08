@@ -14,21 +14,24 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             (posa != posb && c1.is_alphanumeric() && c1 == c2).then_some((posa, posb))
         })
     {
-        let a = a.pair();
-        let b = b.pair();
-        let d = rel_off(a, b);
+        let a = a;
+        let b = b;
+        let d = a.rel_off(b);
         // We do the other direction when doing the (b, a) step
-        if let Some(pa) = move_off(a, d) {
+        if let Some(pa) = a.move_off(d) {
             if antinodes.contains_point(pa) {
                 antinodes[pa] = true;
             }
         }
     }
 
-    println!("{}", antinodes.clone().map(|b| match b {
-        true => '#',
-        false => '.',
-    }));
+    println!(
+        "{}",
+        antinodes.clone().map(|b| match b {
+            true => '#',
+            false => '.',
+        })
+    );
 
     antinodes.iter_idx().filter(|(_, &b)| b).count()
 }
@@ -48,7 +51,7 @@ fn test() {
 ............
 ............";
     let output = 34;
-    assert_eq!(part_2(input).to_string(), output.to_string());
+    assert_eq!(part_1(input).to_string(), output.to_string());
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
@@ -63,23 +66,26 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             (posa != posb && c1.is_alphanumeric() && c1 == c2).then_some((posa, posb))
         })
     {
-        let a = a.pair();
-        let b = b.pair();
-        let d = rel_off(a, b);
+        let a = a;
+        let b = b;
+        let d = a.rel_off(b);
         let mut p = a;
         while antinodes.contains_point(p) {
             antinodes[p] = true;
-            p = match move_off(p, d) {
+            p = match p.move_off(d) {
                 Some(p) => p,
                 None => break,
             };
         }
     }
 
-    println!("{}", antinodes.clone().map(|b| match b {
-        true => '#',
-        false => '.',
-    }));
+    println!(
+        "{}",
+        antinodes.clone().map(|b| match b {
+            true => '#',
+            false => '.',
+        })
+    );
 
     antinodes.iter_idx().filter(|(_, &b)| b).count()
 }

@@ -1,3 +1,4 @@
+use crate::helper::point::{Bound, Offset, Point};
 // TODO utils to manipulate directions
 // TODO account for isize -> usize overflow maybe????
 
@@ -11,7 +12,7 @@ pub trait Direction: Copy {
     /// The direction an anti-clockwise rotation from this one.
     fn acw(self) -> Self;
     /// The (x, y) offset this direction gives.
-    fn offset(self) -> (isize, isize);
+    fn offset(self) -> Offset;
 
     /* I would do this however it needs const_generic_exprs :(
     const COUNT: usize;
@@ -21,13 +22,13 @@ pub trait Direction: Copy {
 
     /// Move the point in this direction, assuming the point is an isize.
     fn movei(self, (x, y): (isize, isize)) -> (isize, isize) {
-        let (dx, dy) = self.offset();
+        let (dx, dy) = self.offset().pair();
         (x + dx, y + dy)
     }
 
     /// Move the point in this direction c times, assuming the point is an isize.
     fn moveic(self, (x, y): (isize, isize), c: isize) -> (isize, isize) {
-        let (dx, dy) = self.offset();
+        let (dx, dy) = self.offset().pair();
         (x + dx * c, y + dy * c)
     }
 
@@ -42,7 +43,7 @@ pub trait Direction: Copy {
     ) -> Option<(isize, isize)> {
         let (blx, bly) = bound_ul;
         let (brx, bry) = bound_dr;
-        let (dx, dy) = self.offset();
+        let (dx, dy) = self.offset().pair();
         let (x, y) = (x + dx, y + dy);
         if x < blx || x >= brx || y < bly || y >= bry {
             None
@@ -53,39 +54,22 @@ pub trait Direction: Copy {
 
     /// Move the point in this direction, assuming the point is a usize, returning None if we
     /// underflow.
-    fn moveu(self, point: (usize, usize)) -> Option<(usize, usize)> {
-        let (x, y) = point;
-        let (dx, dy) = self.offset();
-        let (x, y) = (x as isize + dx, y as isize + dy);
-        (x >= 0 && y >= 0).then_some((x as usize, y as usize))
+    fn moveu(self, point: Point) -> Option<Point> {
+        point.move_off(self.offset())
     }
 
     /// Move the point in this direction c times, assuming the point is a usize, returning None if
     /// we underflow.
-    fn moveuc(self, point: (usize, usize), c: usize) -> Option<(usize, usize)> {
-        let (x, y) = point;
-        let (dx, dy) = self.offset();
-        let (x, y) = (x as isize + dx * c as isize, y as isize + dy * c as isize);
-        if x < 0 || y < 0 {
-            None
-        } else {
-            Some((x as usize, y as usize))
-        }
+    fn moveuc(self, point: Point, c: usize) -> Option<Point> {
+        point.move_off(self.offset().times(c))
     }
 
     /// Move the point in this direction, assuming the point is a usize, within the bounds given by
     /// bounds, which gives a bottom right bound (we assume that we are bounded in the top left by
     /// (0, 0)), returning None if we underflow.
-    fn moveub(self, point: (usize, usize), bounds: (usize, usize)) -> Option<(usize, usize)> {
-        let (x, y) = point;
-        let (bx, by) = bounds;
-        let (dx, dy) = self.offset();
-        let (x, y) = (x as isize + dx, y as isize + dy);
-        if x < 0 || x >= bx as isize || y < 0 || y >= by as isize {
-            None
-        } else {
-            Some((x as usize, y as usize))
-        }
+    fn moveub(self, point: Point, bounds: Bound) -> Option<Point> {
+        let point = point.move_off(self.offset())?;
+        bounds.contains_point(point).then_some(point)
     }
 
     // TODO
@@ -141,12 +125,12 @@ impl Direction for Direction4 {
         }
     }
 
-    fn offset(self) -> (isize, isize) {
+    fn offset(self) -> Offset {
         match self {
-            Direction4::Up => (0, -1),
-            Direction4::Right => (1, 0),
-            Direction4::Down => (0, 1),
-            Direction4::Left => (-1, 0),
+            Direction4::Up => Offset {dx: 0, dy: -1},
+            Direction4::Right => Offset {dx: 1, dy: 0},
+            Direction4::Down => Offset {dx: 0, dy: 1},
+            Direction4::Left => Offset {dx: -1, dy: 0},
         }
     }
 
@@ -196,12 +180,12 @@ impl Direction for DirectionDiag4 {
         }
     }
 
-    fn offset(self) -> (isize, isize) {
+    fn offset(self) -> Offset {
         match self {
-            DirectionDiag4::UpLeft => (-1, -1),
-            DirectionDiag4::UpRight => (-1, 1),
-            DirectionDiag4::DownRight => (1, 1),
-            DirectionDiag4::DownLeft => (1, -1),
+            DirectionDiag4::UpLeft => Offset {dx: -1, dy: -1},
+            DirectionDiag4::UpRight => Offset {dx: -1, dy: 1},
+            DirectionDiag4::DownRight => Offset {dx: 1, dy: 1},
+            DirectionDiag4::DownLeft => Offset {dx: 1, dy: -1},
         }
     }
 
@@ -267,16 +251,16 @@ impl Direction for Direction8 {
         }
     }
 
-    fn offset(self) -> (isize, isize) {
+    fn offset(self) -> Offset {
         match self {
-            Direction8::UpLeft => (-1, -1),
-            Direction8::Up => (0, -1),
-            Direction8::UpRight => (-1, 1),
-            Direction8::Right => (1, 0),
-            Direction8::Left => (-1, 0),
-            Direction8::DownLeft => (1, -1),
-            Direction8::Down => (0, 1),
-            Direction8::DownRight => (1, 1),
+            Direction8::UpLeft => Offset {dx: -1, dy: -1},
+            Direction8::Up => Offset {dx: 0, dy: -1},
+            Direction8::UpRight => Offset {dx: -1, dy: 1},
+            Direction8::Right => Offset {dx: 1, dy: 0},
+            Direction8::Left => Offset {dx: -1, dy: 0},
+            Direction8::DownLeft => Offset {dx: 1, dy: -1},
+            Direction8::Down => Offset {dx: 0, dy: 1},
+            Direction8::DownRight => Offset {dx: 1, dy: 1},
         }
     }
 
@@ -334,10 +318,7 @@ pub fn move_off(point: (usize, usize), off: (isize, isize)) -> Option<(usize, us
 }
 
 pub fn rel_off(p1: (usize, usize), p2: (usize, usize)) -> (isize, isize) {
-    (
-        p1.0 as isize - p2.0 as isize,
-        p1.1 as isize - p2.1 as isize,
-    )
+    (p1.0 as isize - p2.0 as isize, p1.1 as isize - p2.1 as isize)
 }
 
 // Iterates in order:
@@ -351,23 +332,25 @@ pub fn adjacent_4_i(x: isize, y: isize) -> Vec<(isize, isize)> {
 
 // Iterates in order:
 // Left Up Down Right
-pub fn adjacent_4_u(x: usize, y: usize) -> Vec<(usize, usize)> {
+pub fn adjacent_4_u(x: usize, y: usize) -> Vec<Point> {
     DIRECTIONS4
         .iter()
         .map(|(dx, dy)| (x as isize + dx, y as isize + dy))
         .filter(|(x, y)| *x >= 0 && *y >= 0)
         .map(|(x, y)| (x as usize, y as usize))
+        .map(|(x, y)| Point { x, y })
         .collect()
 }
 
 // Iterates in order:
 // Left Up Down Right
-pub fn adjacent_4_ud(x: usize, y: usize) -> Vec<((usize, usize), Direction4)> {
+pub fn adjacent_4_ud(x: usize, y: usize) -> Vec<(Point, Direction4)> {
     DIRECTIONS4D
         .iter()
         .map(|((dx, dy), dir)| ((x as isize + dx, y as isize + dy), dir))
         .filter(|((x, y), _)| *x >= 0 && *y >= 0)
         .map(|((x, y), dir)| ((x as usize, y as usize), *dir))
+        .map(|((x, y), dir)| (Point { x, y }, dir))
         .collect()
 }
 
@@ -382,22 +365,24 @@ pub fn adjacent_8_i(x: isize, y: isize) -> Vec<(isize, isize)> {
 
 // Iterates in order:
 // UpLeft Up UpRight Left Right DownLeft Down DownRight
-pub fn adjacent_8_u(x: usize, y: usize) -> Vec<(usize, usize)> {
+pub fn adjacent_8_u(x: usize, y: usize) -> Vec<Point> {
     DIRECTIONS8
         .iter()
         .map(|(dx, dy)| (x as isize + dx, y as isize + dy))
         .filter(|(x, y)| *x >= 0 && *y >= 0)
         .map(|(x, y)| (x as usize, y as usize))
+        .map(|(x, y)| Point { x, y })
         .collect()
 }
 
 // Iterates in order:
 // UpLeft Up UpRight Left Right DownLeft Down DownRight
-pub fn adjacent_8_ud(x: usize, y: usize) -> Vec<((usize, usize), Direction8)> {
+pub fn adjacent_8_ud(x: usize, y: usize) -> Vec<(Point, Direction8)> {
     DIRECTIONS8D
         .iter()
         .map(|((dx, dy), dir)| ((x as isize + dx, y as isize + dy), dir))
         .filter(|((x, y), _)| *x >= 0 && *y >= 0)
         .map(|((x, y), dir)| ((x as usize, y as usize), *dir))
+        .map(|((x, y), dir)| (Point { x, y }, dir))
         .collect()
 }

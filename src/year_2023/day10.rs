@@ -1,6 +1,6 @@
-use crate::helper::grid::Grid;
 use crate::helper::adjacency::{adjacent_4_ud, Direction};
-use crate::helper::point::Bound;
+use crate::helper::grid::Grid;
+use crate::helper::point::{Bound, Point};
 
 fn format_chars(c: char) -> char {
     match c {
@@ -73,10 +73,13 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     println!("{pgrid}");
 
     // Make a bigger grid with gaps between pipes if they aren't connected
-    let mut adjusted_grid = Grid::new_filled('.', Bound {
-        width: 2 * grid.width() + 1,
-        height: 2 * grid.height() + 1
-    });
+    let mut adjusted_grid = Grid::new_filled(
+        '.',
+        Bound {
+            width: 2 * grid.width() + 1,
+            height: 2 * grid.height() + 1,
+        },
+    );
     for (p, c) in grid.iter_idx() {
         let (x, y) = p.pair();
         if *c == '.' {
@@ -94,22 +97,20 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     println!("{adjusted_grid}");
 
-    adjusted_grid.floodfill_4('.', '@', (0, 0));
+    adjusted_grid.floodfill_4('.', '@', Point { x: 0, y: 0 });
 
     println!("{adjusted_grid}");
 
-    let grid = grid.map_i(|p, c| {
-        match adjusted_grid[(2*p.x + 1, 2*p.y + 1)] {
+    let grid = grid
+        .map_i(|p, c| match adjusted_grid[(2 * p.x + 1, 2 * p.y + 1)] {
             '.' => 'I',
             '@' => 'O',
             _ => c,
-        }
-    }).map(format_chars);
+        })
+        .map(format_chars);
     println!("{grid}");
 
-    grid.iter_idx()
-        .filter(|(_, c)| **c == 'I')
-        .count()
+    grid.iter_idx().filter(|(_, c)| **c == 'I').count()
 }
 
 #[test]
