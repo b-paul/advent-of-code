@@ -1,5 +1,6 @@
 use crate::helper::grid::Grid;
 use crate::helper::adjacency::{adjacent_4_ud, Direction};
+use crate::helper::point::Bound;
 
 fn format_chars(c: char) -> char {
     match c {
@@ -13,6 +14,8 @@ fn format_chars(c: char) -> char {
         _ => c,
     }
 }
+
+// TODO fix this ??? it broke ?? :(
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     const STRS: [&str; 4] = ["S-J7", "S|LJ", "S|7F", "S-LF"];
@@ -70,8 +73,12 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     println!("{pgrid}");
 
     // Make a bigger grid with gaps between pipes if they aren't connected
-    let mut adjusted_grid = Grid::new_filled('.', 2 * grid.width() + 1, 2 * grid.height() + 1);
-    for ((x, y), c) in grid.iter_idx() {
+    let mut adjusted_grid = Grid::new_filled('.', Bound {
+        width: 2 * grid.width() + 1,
+        height: 2 * grid.height() + 1
+    });
+    for (p, c) in grid.iter_idx() {
+        let (x, y) = p.pair();
         if *c == '.' {
             continue;
         }
@@ -91,8 +98,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     println!("{adjusted_grid}");
 
-    let grid = grid.map_i(|(x, y), c| {
-        match adjusted_grid[(2*x + 1, 2*y + 1)] {
+    let grid = grid.map_i(|p, c| {
+        match adjusted_grid[(2*p.x + 1, 2*p.y + 1)] {
             '.' => 'I',
             '@' => 'O',
             _ => c,
@@ -101,7 +108,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     println!("{grid}");
 
     grid.iter_idx()
-        .filter(|((_, _), c)| **c == 'I')
+        .filter(|(_, c)| **c == 'I')
         .count()
 }
 

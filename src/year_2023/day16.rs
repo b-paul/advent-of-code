@@ -3,7 +3,7 @@ use itertools::Itertools;
 use std::collections::*;
 
 fn run(grid: &Grid<char>, start: (Direction4, (isize, isize))) -> usize {
-    let mut energised = Grid::new_filled(false, grid.width(), grid.height());
+    let mut energised = Grid::new_filled(false, grid.bound());
 
     let bound_ul = (0, 0);
     let bound_dr = (grid.width() as isize, grid.height() as isize);

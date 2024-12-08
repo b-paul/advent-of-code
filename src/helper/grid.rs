@@ -1,6 +1,7 @@
 use crate::helper::adjacency::{
     adjacent_4_ud, adjacent_8_ud, move_off, Direction, Direction4, Direction8,
 };
+use crate::helper::point::{Bound, Point};
 use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Display};
 use std::hash::Hash;
@@ -14,79 +15,83 @@ use thiserror::Error;
 // maybe want a deque like grid or something :grimacing:
 // Move GridPoint by offset or by direction
 // Trajectory for length n at point p in direction dir
+// TODO some sort of spare grid, or a sparse way to iterate over a grid somehow.
+// TODO owning iterator (and refactor functions to use this such as map and map_i)
 
 pub struct Grid<T> {
     entries: Vec<T>,
-    width: usize,
-    height: usize,
+    bound: Bound,
 }
 
 impl<T> Grid<T> {
     pub fn width(&self) -> usize {
-        self.width
+        self.bound.width
     }
 
     pub fn height(&self) -> usize {
-        self.height
+        self.bound.height
+    }
+
+    pub fn bound(&self) -> Bound {
+        self.bound
     }
 
     /// returns (VecVec, width, height)
-    pub fn into_vecvec(self) -> (Vec<Vec<T>>, usize, usize) {
+    pub fn into_vecvec(self) -> (Vec<Vec<T>>, Bound) {
         let mut grid = Vec::new();
         let mut line = Vec::new();
         for (i, x) in self.entries.into_iter().enumerate() {
             line.push(x);
-            if i % self.width == self.width - 1 {
+            if i % self.bound.width == self.bound.width - 1 {
                 grid.push(line);
                 line = Vec::new();
             }
         }
-        (grid, self.width, self.height)
+        (grid, self.bound)
     }
 
     pub fn map<F, U>(self, f: F) -> Grid<U>
     where
         F: FnMut(T) -> U,
     {
-        let width = self.width;
-        let height = self.height;
+        let bound = self.bound;
         let entries = self.entries.into_iter().map(f).collect();
-        Grid {
-            entries,
-            width,
-            height,
-        }
+        Grid { entries, bound }
     }
 
+    /// Apply a function to every cell of the grid, where the function additionally takes the point
+    /// of the cell as an input.
     pub fn map_i<F, U>(self, mut f: F) -> Grid<U>
     where
-        F: FnMut((usize, usize), T) -> U,
+        F: FnMut(Point, T) -> U,
     {
-        let width = self.width;
-        let height = self.height;
+        let bound = self.bound;
         let entries = self
             .entries
             .into_iter()
             .enumerate()
-            .map(|(i, x)| f((i % width, i / width), x))
+            .map(|(i, v)| {
+                f(
+                    Point {
+                        x: i % bound.width,
+                        y: i / bound.width,
+                    },
+                    v,
+                )
+            })
             .collect();
-        Grid {
-            entries,
-            width,
-            height,
-        }
+        Grid { entries, bound }
     }
 
     pub fn iter_idx(&self) -> GridIdxIterator<T> {
         GridIdxIterator {
             grid: self,
-            cur_x: 0,
-            cur_y: 0,
+            cur: Point { x: 0, y: 0 },
         }
     }
 
-    pub fn contains_point(&self, (x, y): (usize, usize)) -> bool {
-        x < self.width && y < self.height
+    pub fn contains_point(&self, p: (usize, usize)) -> bool {
+        self.bound.contains_point(p)
     }
 
     pub fn iter_rows(&self) -> GridRowIter<T> {
@@ -217,17 +222,16 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 }
 
 impl<T: Copy> Grid<T> {
-    pub fn new_filled(value: T, width: usize, height: usize) -> Grid<T> {
+    pub fn new_filled(value: T, bound: Bound) -> Grid<T> {
         Grid {
-            entries: vec![value; width * height],
-            width,
-            height,
+            entries: vec![value; bound.width * bound.height],
+            bound,
         }
     }
 
     pub fn set_border(&mut self, val: T) {
-        let w = self.width;
-        let h = self.height;
+        let w = self.bound.width;
+        let h = self.bound.height;
         for x in 0..w {
             self[(x, 0)] = val;
             self[(x, h - 1)] = val;
@@ -239,73 +243,71 @@ impl<T: Copy> Grid<T> {
     }
 
     pub fn get_row(&self, index: usize) -> Option<Vec<T>> {
-        if index >= self.height {
+        if index >= self.bound.height {
             None
         } else {
-            let start = index * self.width;
-            Some(self.entries[start..start + self.width].to_vec())
+            let start = index * self.bound.width;
+            Some(self.entries[start..start + self.bound.width].to_vec())
         }
     }
 
     pub fn get_col(&self, index: usize) -> Option<Vec<T>> {
-        if index >= self.width {
+        if index >= self.bound.width {
             None
         } else {
             let mut col = Vec::new();
             let mut i = index;
-            for _ in 0..self.height {
+            for _ in 0..self.bound.height {
                 col.push(self.entries[i]);
-                i += self.width;
+                i += self.bound.width;
             }
             Some(col)
         }
     }
 
     pub fn transpose(&self) -> Grid<T> {
-        let mut entries = Vec::with_capacity(self.width * self.height);
+        let mut entries = Vec::with_capacity(self.bound.width * self.bound.height);
+        let bound = Bound {
+            width: self.bound.height,
+            height: self.bound.width,
+        };
         for col in self.iter_cols() {
             for x in col {
                 entries.push(*x);
             }
         }
-        Grid {
-            entries,
-            width: self.height,
-            height: self.width,
-        }
+        Grid { entries, bound }
     }
 
     // TODO should this really take an &self ???
     pub fn rotate_cw(&self) -> Grid<T> {
-        let mut entries = Vec::with_capacity(self.width * self.height);
-
-        for y in 0..self.width {
-            for x in 0..self.height {
-                entries.push(self[(y, self.width - x - 1)]);
+        let mut entries = Vec::with_capacity(self.bound.width * self.bound.height);
+        let bound = Bound {
+            width: self.bound.height,
+            height: self.bound.width,
+        };
+        for y in 0..self.bound.width {
+            for x in 0..self.bound.height {
+                entries.push(self[(y, self.bound.width - x - 1)]);
             }
         }
 
-        Grid {
-            entries,
-            width: self.height,
-            height: self.width,
-        }
+        Grid { entries, bound }
     }
 
     pub fn rotate_acw(&self) -> Grid<T> {
-        let mut entries = Vec::with_capacity(self.width * self.height);
-
-        for y in 0..self.width {
-            for x in 0..self.height {
-                entries.push(self[(self.height - y - 1, x)]);
+        let mut entries = Vec::with_capacity(self.bound.width * self.bound.height);
+        let bound = Bound {
+            width: self.bound.height,
+            height: self.bound.width,
+        };
+        for y in 0..self.bound.width {
+            for x in 0..self.bound.height {
+                entries.push(self[(self.bound.height - y - 1, x)]);
             }
         }
 
-        Grid {
-            entries,
-            width: self.height,
-            height: self.width,
-        }
+        Grid { entries, bound }
     }
 }
 
@@ -313,15 +315,14 @@ impl<T: Clone> Clone for Grid<T> {
     fn clone(&self) -> Self {
         Self {
             entries: self.entries.clone(),
-            width: self.width,
-            height: self.height,
+            bound: self.bound,
         }
     }
 }
 
 impl<T: PartialEq> PartialEq for Grid<T> {
     fn eq(&self, other: &Self) -> bool {
-        self.entries == other.entries && self.width == other.width && self.height == other.height
+        self.entries == other.entries && self.bound == other.bound
     }
 }
 
@@ -329,14 +330,9 @@ impl<T: Eq> Eq for Grid<T> {}
 
 impl<T: PartialEq> Grid<T> {
     pub fn find(&self, elem: &T) -> Option<(usize, usize)> {
-        for y in 0..self.height {
-            for x in 0..self.width {
-                if self[(x, y)] == *elem {
-                    return Some((x, y));
-                }
-            }
-        }
-        None
+        self.iter_idx()
+            .filter_map(|(p, val)| (val == elem).then_some(p.pair()))
+            .next()
     }
 }
 
@@ -364,8 +360,8 @@ impl<T: PartialEq + Copy> Grid<T> {
 
 impl Display for Grid<char> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for y in 0..self.height {
-            for x in 0..self.width {
+        for y in 0..self.bound.height {
+            for x in 0..self.bound.width {
                 write!(f, "{}", self[(x, y)])?;
             }
             writeln!(f)?;
@@ -378,8 +374,7 @@ impl<T: Debug> Debug for Grid<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Grid")
             .field("entries", &self.entries)
-            .field("width", &self.width)
-            .field("height", &self.height)
+            .field("bound", &self.bound)
             .finish()
     }
 }
@@ -409,12 +404,9 @@ impl FromStr for Grid<char> {
             }
             height += 1;
         }
+        let bound = Bound { width, height };
 
-        Ok(Grid {
-            entries,
-            width,
-            height,
-        })
+        Ok(Grid { entries, bound })
     }
 }
 
@@ -423,36 +415,49 @@ impl<T> Index<(usize, usize)> for Grid<T> {
 
     fn index(&self, (x, y): (usize, usize)) -> &Self::Output {
         assert!(
-            x < self.width && y < self.height,
+            self.contains_point((x, y)),
             "index out of bounds: (width,height) = ({},{}) but index is ({},{})",
-            self.width,
-            self.height,
+            self.bound.width,
+            self.bound.height,
             x,
             y
         );
-        &self.entries[y * self.width + x]
+        &self.entries[y * self.bound.width + x]
     }
 }
 
 impl<T> IndexMut<(usize, usize)> for Grid<T> {
     fn index_mut(&mut self, (x, y): (usize, usize)) -> &mut Self::Output {
         assert!(
-            x < self.width && y < self.height,
+            self.contains_point((x, y)),
             "index out of bounds: (width,height) = ({},{}) but index is ({},{})",
-            self.width,
-            self.height,
+            self.bound.width,
+            self.bound.height,
             x,
             y
         );
-        self.entries.index_mut(y * self.width + x)
+        self.entries.index_mut(y * self.bound.width + x)
+    }
+}
+
+impl<T> Index<Point> for Grid<T> {
+    type Output = T;
+
+    fn index(&self, p: Point) -> &Self::Output {
+        self.index(p.pair())
+    }
+}
+
+impl<T> IndexMut<Point> for Grid<T> {
+    fn index_mut(&mut self, p: Point) -> &mut Self::Output {
+        self.index_mut(p.pair())
     }
 }
 
 impl<T: Hash> Hash for Grid<T> {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.entries.hash(state);
-        self.width.hash(state);
-        self.height.hash(state);
+        self.bound.hash(state);
     }
 }
 
@@ -531,6 +536,8 @@ impl<'a, T> GridEntry<'a, T> {
             grid: self.grid,
         }
     }
+
+    // TODO call these bounded trajectories, have unbounded trajectories.
 }
 
 impl<T: Debug> Debug for GridEntry<'_, T> {
@@ -545,25 +552,23 @@ impl<T: Debug> Debug for GridEntry<'_, T> {
 #[derive(Clone)]
 pub struct GridIdxIterator<'a, T> {
     grid: &'a Grid<T>,
-    cur_x: usize,
-    cur_y: usize,
+    cur: Point,
 }
 
 impl<'a, T> Iterator for GridIdxIterator<'a, T> {
-    type Item = ((usize, usize), &'a T);
+    type Item = (Point, &'a T);
 
     fn next(&mut self) -> Option<Self::Item> {
-        let x = self.cur_x;
-        let y = self.cur_y;
-        self.cur_x += 1;
-        if self.cur_x >= self.grid.width {
-            self.cur_x = 0;
-            self.cur_y += 1;
+        let p = self.cur;
+        self.cur.x += 1;
+        if self.cur.x >= self.grid.bound.width {
+            self.cur.x = 0;
+            self.cur.y += 1;
         }
-        if y >= self.grid.height {
+        if p.y >= self.grid.bound.height {
             None
         } else {
-            Some(((x, y), &self.grid[(x, y)]))
+            Some((p, &self.grid[p]))
         }
     }
 }
@@ -599,13 +604,13 @@ impl<'a, T> Iterator for GridRowIter<'a, T> {
     type Item = Row<'a, T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index >= self.grid.height {
+        if self.index >= self.grid.bound.height {
             None
         } else {
             let row = Row {
                 grid: self.grid,
-                index: self.index * self.grid.width,
-                end: (self.index + 1) * self.grid.width - 1,
+                index: self.index * self.grid.bound.width,
+                end: (self.index + 1) * self.grid.bound.width - 1,
             };
             self.index += 1;
             Some(row)
@@ -627,7 +632,7 @@ impl<'a, T> Iterator for Col<'a, T> {
             None
         } else {
             let val = &self.grid.entries[self.index];
-            self.index += self.grid.width;
+            self.index += self.grid.bound.width;
             Some(val)
         }
     }
@@ -643,7 +648,7 @@ impl<'a, T> Iterator for GridColIter<'a, T> {
     type Item = Col<'a, T>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index >= self.grid.width {
+        if self.index >= self.grid.bound.width {
             None
         } else {
             let col = Col {
