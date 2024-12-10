@@ -15,8 +15,8 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         skip = !skip;
     }
 
-    let mut checksum = 0u64;
-    let mut pos = 0u64;
+    let mut checksum = 0;
+    let mut pos = 0;
     skip = false;
 
     for n in input.chars().flat_map(|c| c.to_digit(10)) {
@@ -56,37 +56,37 @@ fn test() {
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    let mut checksum: u64 = 0;
+    let mut checksum = 0;
 
     let mut pos = 0;
 
     let mut skip = false;
 
-    let mut deque = Vec::new();
+    let mut list = Vec::new();
     let mut id = 0;
 
-    for c in input.chars() {
-        let Some(n) = c.to_digit(10) else { continue; };
-        deque.push((skip, id, n));
+    for n in input.chars().flat_map(|c| c.to_digit(10)) {
+        let n = n as u64;
+        list.push((skip, id, n));
         if !skip {
             id += 1;
         }
         skip = !skip;
     }
 
-    let mut end = deque.len() - 1;
+    let mut end = list.len() - 1;
     while end > 0 {
-        let (skip, id, n) = deque[end];
+        let (skip, id, n) = list[end];
         if skip {
             end -= 1;
             continue;
         }
         for i in 0..end {
-            let (skipp, _, m) = deque[i];
+            let (skipp, _, m) = list[i];
             if skipp && m >= n {
-                deque[i].2 = m - n;
-                deque[end].0 = true;
-                deque.insert(i, (skip, id, n));
+                list[i].2 = m - n;
+                list[end].0 = true;
+                list.insert(i, (skip, id, n));
                 end += 1;
                 break;
             }
@@ -94,14 +94,12 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         end -= 1;
     }
 
-    for (skip, id, n) in deque {
+    for (skip, id, n) in list {
         if skip {
             pos += n;
         } else {
-            for _ in 0..n {
-                checksum += id as u64 * pos as u64;
-                pos += 1;
-            }
+            checksum += id * (2 * pos + n - 1) * n / 2;
+            pos += n;
         }
     }
 
