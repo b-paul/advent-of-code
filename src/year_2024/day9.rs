@@ -3,43 +3,45 @@ use itertools::Itertools;
 use std::collections::*;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    let mut checksum = 0;
-
-    let mut pos = 0;
-
-    let mut skip = false;
-
     let mut deque = VecDeque::new();
     let mut id = 0;
+    let mut skip = false;
 
-    for c in input.chars() {
-        let Some(n) = c.to_digit(10) else { continue; };
+    for n in input.chars().flat_map(|c| c.to_digit(10)) {
         if !skip {
-            for _ in 0..n {
-                deque.push_back(id);
-            }
+            deque.push_back((id, n as u64));
             id += 1;
         }
         skip = !skip;
     }
 
+    let mut checksum = 0u64;
+    let mut pos = 0u64;
     skip = false;
 
-    for c in input.chars() {
-        let Some(n) = c.to_digit(10) else { continue; };
-        for _ in 0..n {
-            if deque.len() == 0 {
-                break;
+    for n in input.chars().flat_map(|c| c.to_digit(10)) {
+        let mut n = n as u64;
+        if !skip {
+            let Some((id, m)) = deque.pop_front() else { break; };
+            checksum += id * (2 * pos + m - 1) * m / 2;
+            pos += m;
+        } else {
+            while n > 0 {
+                let Some((id, m)) = deque.back_mut() else { break; };
+                if n >= *m {
+                    checksum += *id * (2 * pos + *m - 1) * *m / 2;
+                    pos += *m;
+                    n -= *m;
+                    deque.pop_back();
+                } else {
+                    *m -= n;
+                    checksum += *id * (2 * pos + n - 1) * n / 2;
+                    pos += n;
+                    n = 0;
+                }
             }
-
-            if skip {
-                checksum += pos * deque.pop_back().unwrap() as u64;
-            } else {
-                checksum += pos * deque.pop_front().unwrap() as u64;
-            }
-
-            pos += 1;
         }
+
         skip = !skip;
     }
 
@@ -60,12 +62,12 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     let mut skip = false;
 
-    let mut deque = VecDeque::new();
+    let mut deque = Vec::new();
     let mut id = 0;
 
     for c in input.chars() {
         let Some(n) = c.to_digit(10) else { continue; };
-        deque.push_back((skip, id, n));
+        deque.push((skip, id, n));
         if !skip {
             id += 1;
         }
