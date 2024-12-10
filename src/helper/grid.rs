@@ -154,6 +154,29 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, entry
     /// P takes a direction, from and to
+    /// Allows dups (was made for 2024 day 10 part 2 lol)
+    pub fn dfs_4_dups<F, P>(&self, start: Point, mut f: F, p: P)
+    where
+        F: FnMut(Point, T),
+        P: Fn(Direction4, T, T) -> bool,
+    {
+        let mut stack = Vec::new();
+        stack.push(start);
+
+        while let Some(from) = stack.pop() {
+            f(from, self[from]);
+            for (to, dir) in adjacent_4_ud(from.x, from.y) {
+                if self.contains_point(to)
+                    && p(dir, self[from], self[to])
+                {
+                    stack.push(to);
+                }
+            }
+        }
+    }
+
+    /// F takes a point, entry
+    /// P takes a direction, from and to
     pub fn dfs_8<F, P>(&self, start: Point, mut f: F, p: P)
     where
         F: FnMut(Point, T),
