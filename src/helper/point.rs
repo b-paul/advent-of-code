@@ -2,6 +2,7 @@ use std::ops::{Add, Neg};
 
 // TODO
 // Multiply points (see day 10 line 99)
+// Rotate points relative to a grid / to some bounds
 
 // TODO perhaps calling a 2d point a point hurts generalisations to other dimensions
 /// A point in a bounded 2d space. Points will always have non-negative x and y coordinates.
