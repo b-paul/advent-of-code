@@ -29,7 +29,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     let center = (width / 2, height / 2);
 
-    let mut counts = [0,0,0,0];
+    let mut counts = [0, 0, 0, 0];
 
     for (p, v) in robots {
         let p2 = p.wrapping_move_off(v.times(100), bounds);
@@ -105,19 +105,14 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut step = 0;
 
     loop {
-        println!("{step}");
-        print_robots(&robots, bounds);
+        if robots.iter().map(|&(p, _)| p).collect::<HashSet<_>>().len() == robots.len() {
+            print_robots(&robots, bounds);
+            return step;
+        }
         for (p, v) in robots.iter_mut() {
             let p2 = p.wrapping_move_off(*v, bounds);
             *p = p2;
         }
         step += 1;
-        let mut buf = String::new();
-        std::io::stdin().read_line(&mut buf).unwrap();
-        if buf == "q\n".to_string() {
-            break;
-        }
     }
-
-    "I hope you found the tree!"
 }
