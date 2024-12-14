@@ -1,4 +1,4 @@
-use crate::helper::point::{Bound, Offset, Point};
+use crate::helper::point::{Bounds, Offset, Point};
 // TODO utils to manipulate directions
 // TODO account for isize -> usize overflow maybe????
 
@@ -67,7 +67,7 @@ pub trait Direction: Copy {
     /// Move the point in this direction, assuming the point is a usize, within the bounds given by
     /// bounds, which gives a bottom right bound (we assume that we are bounded in the top left by
     /// (0, 0)), returning None if we underflow.
-    fn moveub(self, point: Point, bounds: Bound) -> Option<Point> {
+    fn moveub(self, point: Point, bounds: Bounds) -> Option<Point> {
         let point = point.move_off(self.offset())?;
         bounds.contains_point(point).then_some(point)
     }

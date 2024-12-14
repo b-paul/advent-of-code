@@ -1,6 +1,6 @@
 use crate::helper::adjacency::{adjacent_4_ud, Direction};
 use crate::helper::grid::Grid;
-use crate::helper::point::{Bound, Point};
+use crate::helper::point::{Bounds, Point};
 
 fn format_chars(c: char) -> char {
     match c {
@@ -75,7 +75,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     // Make a bigger grid with gaps between pipes if they aren't connected
     let mut adjusted_grid = Grid::new_filled(
         '.',
-        Bound {
+        Bounds {
             width: 2 * grid.width() + 1,
             height: 2 * grid.height() + 1,
         },

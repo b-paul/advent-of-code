@@ -1,7 +1,7 @@
 use crate::helper::adjacency::{
     adjacent_4_ud, adjacent_8_ud, move_off, Direction, Direction4, Direction8,
 };
-use crate::helper::point::{Bound, Offset, Point};
+use crate::helper::point::{Bounds, Offset, Point};
 use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Display};
 use std::hash::Hash;
@@ -21,7 +21,7 @@ use thiserror::Error;
 
 pub struct Grid<T> {
     entries: Vec<T>,
-    bound: Bound,
+    bound: Bounds,
 }
 
 impl<T> Grid<T> {
@@ -33,12 +33,12 @@ impl<T> Grid<T> {
         self.bound.height
     }
 
-    pub fn bounds(&self) -> Bound {
+    pub fn bounds(&self) -> Bounds {
         self.bound
     }
 
     /// returns (VecVec, width, height)
-    pub fn into_vecvec(self) -> (Vec<Vec<T>>, Bound) {
+    pub fn into_vecvec(self) -> (Vec<Vec<T>>, Bounds) {
         let mut grid = Vec::new();
         let mut line = Vec::new();
         for (i, x) in self.entries.into_iter().enumerate() {
@@ -256,7 +256,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 }
 
 impl<T: Copy> Grid<T> {
-    pub fn new_filled(value: T, bound: Bound) -> Grid<T> {
+    pub fn new_filled(value: T, bound: Bounds) -> Grid<T> {
         Grid {
             entries: vec![value; bound.width * bound.height],
             bound,
@@ -301,7 +301,7 @@ impl<T: Copy> Grid<T> {
 
     pub fn transpose(&self) -> Grid<T> {
         let mut entries = Vec::with_capacity(self.bound.width * self.bound.height);
-        let bound = Bound {
+        let bound = Bounds {
             width: self.bound.height,
             height: self.bound.width,
         };
@@ -316,7 +316,7 @@ impl<T: Copy> Grid<T> {
     // TODO should this really take an &self ???
     pub fn rotate_cw(&self) -> Grid<T> {
         let mut entries = Vec::with_capacity(self.bound.width * self.bound.height);
-        let bound = Bound {
+        let bound = Bounds {
             width: self.bound.height,
             height: self.bound.width,
         };
@@ -331,7 +331,7 @@ impl<T: Copy> Grid<T> {
 
     pub fn rotate_acw(&self) -> Grid<T> {
         let mut entries = Vec::with_capacity(self.bound.width * self.bound.height);
-        let bound = Bound {
+        let bound = Bounds {
             width: self.bound.height,
             height: self.bound.width,
         };
@@ -438,7 +438,7 @@ impl FromStr for Grid<char> {
             }
             height += 1;
         }
-        let bound = Bound { width, height };
+        let bound = Bounds { width, height };
 
         Ok(Grid { entries, bound })
     }
