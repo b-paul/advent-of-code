@@ -22,7 +22,7 @@ pub struct Offset {
 /// A bound for 2d space. Together this gets paired with the bound (0, 0) to make a full bounding
 /// box.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
-pub struct Bound {
+pub struct Bounds {
     pub width: usize,
     pub height: usize,
 }
@@ -43,11 +43,19 @@ impl Point {
         })
     }
 
+    /// Move a point by some offset of a grid that is wrapping.
+    pub fn wrapping_move_off(self, off: Offset, bounds: Bounds) -> Point {
+        let x = (self.x as isize + off.dx).rem_euclid(bounds.width as isize) as usize;
+        let y = (self.y as isize + off.dy).rem_euclid(bounds.height as isize) as usize;
+
+        Point { x, y }
+    }
+
     /// Returns the relative offset from this point to another point.
     pub fn rel_off(self, other: Point) -> Offset {
         Offset {
             dx: self.x as isize - other.x as isize,
-            dy: self.y as isize - other.y as isize
+            dy: self.y as isize - other.y as isize,
         }
     }
 }
@@ -76,7 +84,7 @@ impl Offset {
     }
 }
 
-impl Bound {
+impl Bounds {
     /// Convert an offset into a (width, height) pair.
     pub fn pair(self) -> (usize, usize) {
         (self.width, self.height)
