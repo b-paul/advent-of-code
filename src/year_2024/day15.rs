@@ -2,24 +2,18 @@ use crate::helper::prelude::*;
 use itertools::Itertools;
 use std::collections::*;
 
-fn try_push(grid: &Grid<char>, robot: Point, dir: Direction4) -> Option<Grid<char>> {
-    let mut new_grid = grid.clone();
-
-    let mut cur = robot;
-    let mut cur_c = '.';
-    loop {
-        let next = cur.move_off(dir.offset())?;
-        new_grid[cur] = cur_c;
-        new_grid[next] = grid[cur];
-        cur_c = grid[cur];
-        cur = next;
-        if grid[next] == '#' {
-            return None;
-        } else if grid[next] == '.' {
-            break;
+fn try_push(grid: &mut Grid<char>, point: Point, dir: Direction4, replace: char) -> Option<()> {
+    match grid[point] {
+        '.' => Some(()),
+        '#' => None,
+        _ => {
+            let next = point.move_dir(dir)?;
+            try_push2(grid, next, dir, grid[point])?;
+            grid[next] = grid[point];
+            grid[point] = replace;
+            Some(())
         }
     }
-    Some(new_grid)
 }
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
@@ -41,51 +35,71 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut robot = grid.find(&'@').unwrap();
 
     for dir in moves {
-        if let Some(new_grid) = try_push(&grid, robot, dir) {
+        let mut new_grid = grid.clone();
+        if let Some(_) = try_push(&mut new_grid, robot, dir, '.') {
             robot = robot.move_off(dir.offset()).unwrap();
             grid = new_grid;
         }
     }
+
+    println!("{grid}");
 
     grid.iter_idx()
         .filter_map(|(p, &c)| (c == 'O').then_some(p.y * 100 + p.x))
         .sum::<usize>()
 }
 
+#[test]
+fn test() {
+    let input = "##########
+#..O..O.O#
+#......O.#
+#.OO..O.O#
+#..O@..O.#
+#O#..O...#
+#O..O..O.#
+#.OO.O.OO#
+#....O...#
+##########
+
+<vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+<<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+>^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+<><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
+    let output = 9021;
+    assert_eq!(part_2(input).to_string(), output.to_string());
+}
+
 fn try_push2(grid: &mut Grid<char>, point: Point, dir: Direction4, replace: char) -> Option<()> {
-    if grid[point] == '.' {
-        return Some(());
-    }
-    if grid[point] == '#' {
-        return None;
-    }
-    let next = point.move_off(dir.offset())?;
-    match dir {
-        Direction4::Up | Direction4::Down => {
-            match grid[next] {
-                '.' => {}
-                '[' => {
-                    try_push2(grid, next, dir, grid[point])?;
-                    let point = point.move_off(Direction4::Right.offset())?;
-                    let next = point.move_off(dir.offset())?;
-                    try_push2(grid, next, dir, '.')?;
+    match grid[point] {
+        '.' => Some(()),
+        '#' => None,
+        _ => {
+            let next = point.move_dir(dir)?;
+            match dir {
+                Direction4::Up | Direction4::Down => {
+                    if let Some(dir2) = match grid[next] {
+                        '[' => Some(Direction4::Right),
+                        ']' => Some(Direction4::Left),
+                        _ => None,
+                    } {
+                        try_push2(grid, point.move_dir(dir2)?.move_dir(dir)?, dir, '.')?;
+                    }
                 }
-                ']' => {
-                    try_push2(grid, next, dir, grid[point])?;
-                    let point = point.move_off(Direction4::Left.offset())?;
-                    let next = point.move_off(dir.offset())?;
-                    try_push2(grid, next, dir, '.')?;
-                },
-                _ => return None,
+                Direction4::Right | Direction4::Left => {}
             }
-        }
-        Direction4::Right | Direction4::Left => {
-            try_push2(grid, point.move_off(dir.offset())?, dir, grid[point])?;
+            try_push2(grid, next, dir, grid[point])?;
+            grid[next] = grid[point];
+            grid[point] = replace;
+            Some(())
         }
     }
-    grid[next] = grid[point];
-    grid[point] = replace;
-    Some(())
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
@@ -112,34 +126,18 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         },
     );
 
-    for (pos, &c) in read_grid.iter_idx() {
-        let p2 = Point {
-            x: pos.x * 2,
-            y: pos.y,
-        };
-        let p3 = Point {
-            x: pos.x * 2 + 1,
-            y: pos.y,
-        };
-        match c {
-            '#' => {
-                grid[p2] = '#';
-                grid[p3] = '#';
-            }
-            'O' => {
-                grid[p2] = '[';
-                grid[p3] = ']';
-            }
-            '.' => {
-                grid[p2] = '.';
-                grid[p3] = '.';
-            }
-            '@' => {
-                grid[p2] = '@';
-                grid[p3] = '.';
-            }
+    for (p, &c) in read_grid.iter_idx() {
+        let p2 = Point { x: p.x * 2, ..p };
+        let p3 = Point { x: p2.x + 1, ..p2 };
+        let s = match c {
+            '#' => ['#', '#'],
+            'O' => ['[', ']'],
+            '.' => ['.', '.'],
+            '@' => ['@', '.'],
             _ => panic!(),
-        }
+        };
+        grid[p2] = s[0];
+        grid[p3] = s[1];
     }
 
     let mut robot = grid.find(&'@').unwrap();
@@ -151,6 +149,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             grid = new_grid;
         }
     }
+
+    println!("{grid}");
 
     grid.iter_idx()
         .filter_map(|(p, &c)| (c == '[').then_some(p.y * 100 + p.x))

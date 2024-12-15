@@ -1,5 +1,7 @@
 use std::ops::{Add, Neg};
 
+use crate::helper::adjacency::Direction;
+
 // TODO
 // Multiply points (see day 10 line 99)
 // Rotate points relative to a grid / to some bounds
@@ -41,6 +43,11 @@ impl Point {
             x: x as usize,
             y: y as usize,
         })
+    }
+
+    /// Move a point in some direction a single step
+    pub fn move_dir<D: Direction>(self, dir: D) -> Option<Point> {
+        self.move_off(dir.offset())
     }
 
     /// Move a point by some offset of a grid that is wrapping.
