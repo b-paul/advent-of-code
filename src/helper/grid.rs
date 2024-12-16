@@ -18,6 +18,7 @@ use thiserror::Error;
 // TODO some sort of spare grid, or a sparse way to iterate over a grid somehow.
 // TODO owning iterator (and refactor functions to use this such as map and map_i)
 // TODO scanning in a direction iterator
+// TODO wrapping movement around the grid
 
 pub struct Grid<T> {
     entries: Vec<T>,
