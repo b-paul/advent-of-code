@@ -23,13 +23,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         .next()
         .unwrap()
         .chars()
-        .flat_map(|c| match c {
-            '^' => Some(Direction4::Up),
-            '>' => Some(Direction4::Right),
-            'v' => Some(Direction4::Down),
-            '<' => Some(Direction4::Left),
-            _ => None,
-        })
+        .flat_map(read_dir)
         .collect_vec();
 
     let mut robot = grid.find(&'@').unwrap();
@@ -109,13 +103,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         .next()
         .unwrap()
         .chars()
-        .flat_map(|c| match c {
-            '^' => Some(Direction4::Up),
-            '>' => Some(Direction4::Right),
-            'v' => Some(Direction4::Down),
-            '<' => Some(Direction4::Left),
-            _ => None,
-        })
+        .flat_map(read_dir)
         .collect_vec();
 
     let mut grid = Grid::new_filled(
