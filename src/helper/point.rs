@@ -1,6 +1,6 @@
 use std::ops::{Add, Neg};
 
-use crate::helper::adjacency::Direction;
+use crate::helper::adjacency::{Direction, Rotation4};
 
 // TODO
 // Multiply points (see day 10 line 99)
@@ -50,12 +50,17 @@ impl Point {
         self.move_off(dir.offset())
     }
 
-    /// Move a point by some offset of a grid that is wrapping.
-    pub fn wrapping_move_off(self, off: Offset, bounds: Bounds) -> Point {
+    /// Move a point by some offset wrapping around on the borders of the bounds.
+    pub fn move_off_wrapping(self, off: Offset, bounds: Bounds) -> Point {
         let x = (self.x as isize + off.dx).rem_euclid(bounds.width as isize) as usize;
         let y = (self.y as isize + off.dy).rem_euclid(bounds.height as isize) as usize;
 
         Point { x, y }
+    }
+
+    /// Move a point in some direction, wrapping around on the borders of the bounds.
+    pub fn move_dir_wrapping<D: Direction>(self, dir: D, bounds: Bounds) -> Point {
+        self.move_off_wrapping(dir.offset(), bounds)
     }
 
     /// Returns the relative offset from this point to another point.
@@ -63,6 +68,26 @@ impl Point {
         Offset {
             dx: self.x as isize - other.x as isize,
             dy: self.y as isize - other.y as isize,
+        }
+    }
+
+    // TODO maybe this can be more general?
+    /// Rotate a point about the center of a bounding box.
+    pub fn rotate(self, rot: Rotation4, bounds: Bounds) -> Point {
+        match rot {
+            Rotation4::None => self,
+            Rotation4::Clockwise => Point {
+                x: self.y,
+                y: bounds.width - 1 - self.x,
+            },
+            Rotation4::Double => Point {
+                x: bounds.width - 1 - self.x,
+                y: bounds.height - 1 - self.y,
+            },
+            Rotation4::Anticlockwise => Point {
+                x: bounds.height - 1 - self.y,
+                y: self.x,
+            },
         }
     }
 }
@@ -119,6 +144,17 @@ impl Neg for Offset {
 
     fn neg(self) -> Self::Output {
         self.reverse()
+    }
+}
+
+impl Add for Offset {
+    type Output = Offset;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Offset {
+            dx: self.dx + rhs.dx,
+            dy: self.dy + rhs.dy,
+        }
     }
 }
 

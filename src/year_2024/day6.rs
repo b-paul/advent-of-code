@@ -92,18 +92,6 @@ fn part_2_slower(input: &str) -> impl std::fmt::Display {
         .count()
 }
 
-// TODO maybe this should be a library function?
-fn adjust_pos(p: Point, dir: Direction4, width: usize, height: usize) -> Point {
-    let (col, row) = p.pair();
-    let (x, y) = match dir {
-        Direction4::Up => (col, row),
-        Direction4::Right => (height - 1 - row, col),
-        Direction4::Down => (width - 1 - col, height - 1 - row),
-        Direction4::Left => (row, width - 1 - col),
-    };
-    Point { x, y }
-}
-
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let grid = input.parse::<Grid<char>>().unwrap();
     // Because we know that there will not be a cycle, we can represent the path instead of the set
@@ -140,8 +128,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     // Hopefully this will be faster!
     let mut move_grid: Grid<[Option<Point>; 4]> = grid.clone().map(|_| [None; 4]);
 
-    let width = grid.width();
-    let height = grid.height();
+    let bounds = grid.bounds();
 
     for dir in Direction4::dir_list() {
         // Assume we are going upwards (accounted for by rotating the grid).
@@ -149,12 +136,12 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         // determine where we will be after moving. The inductive hypothesis would be "The square
         // above us knows where we'll end up if we kept moving upwards", and we simply just use
         // this result.
-        for col in 0..width {
+        for col in 0..bounds.width {
             // Row 0 will always have None, since we are moving upwards (and if we are an obstacle
             // then the value doesn't matter). Thus we skip and start at row 1.
-            for row in 1..height {
+            for row in 1..bounds.height {
                 let pos = Point { x: col, y: row };
-                let adjusted_pos = adjust_pos(pos, dir, width, height);
+                let adjusted_pos = pos.rotate(dir.rotation_between(Direction4::Up), bounds);
                 let square = grid
                     .get(adjusted_pos)
                     .expect("This position should be inside the grid.");
@@ -165,7 +152,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
                 let above = Direction4::Up
                     .moveu(pos)
                     .expect("We should not be able to go out of bounds at row >= 1 moving up.");
-                let adjusted_above = adjust_pos(above, dir, width, height);
+                let adjusted_above = above.rotate(dir.rotation_between(Direction4::Up), bounds);
                 if grid.get(adjusted_above) == Some(&'#') {
                     // If the above square is an obstacle, we will stay put. We have to rewrite
                     // the coordinate in terms of the original unrotated grid.

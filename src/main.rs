@@ -22,7 +22,6 @@ mod year_2024;
 
 use std::env;
 use std::fs;
-use std::io::Read;
 use std::time::Instant;
 
 use clap::Parser;

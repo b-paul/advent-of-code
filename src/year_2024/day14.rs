@@ -32,7 +32,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut counts = [0, 0, 0, 0];
 
     for (p, v) in robots {
-        let p2 = p.wrapping_move_off(v.times(100), bounds);
+        let p2 = p.move_off_wrapping(v.times(100), bounds);
         if p2.x < center.0 && p2.y < center.1 {
             counts[0] += 1;
         }
@@ -110,7 +110,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             return step;
         }
         for (p, v) in robots.iter_mut() {
-            let p2 = p.wrapping_move_off(*v, bounds);
+            let p2 = p.move_off_wrapping(*v, bounds);
             *p = p2;
         }
         step += 1;
