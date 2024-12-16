@@ -1,6 +1,7 @@
 use crate::helper::point::{Bounds, Offset, Point};
 // TODO utils to manipulate directions
 // TODO account for isize -> usize overflow maybe????
+// TODO neg for opposite
 
 /// Trait for a direction. The purpose of this trait is to avoid having to implement the various
 /// move functions multiple times.
@@ -92,7 +93,7 @@ impl From<Direction4> for usize {
             Direction4::Up => 0,
             Direction4::Right => 1,
             Direction4::Down => 2,
-            Direction4::Left => 4,
+            Direction4::Left => 3,
         }
     }
 }
@@ -127,10 +128,10 @@ impl Direction for Direction4 {
 
     fn offset(self) -> Offset {
         match self {
-            Direction4::Up => Offset {dx: 0, dy: -1},
-            Direction4::Right => Offset {dx: 1, dy: 0},
-            Direction4::Down => Offset {dx: 0, dy: 1},
-            Direction4::Left => Offset {dx: -1, dy: 0},
+            Direction4::Up => Offset { dx: 0, dy: -1 },
+            Direction4::Right => Offset { dx: 1, dy: 0 },
+            Direction4::Down => Offset { dx: 0, dy: 1 },
+            Direction4::Left => Offset { dx: -1, dy: 0 },
         }
     }
 
@@ -141,6 +142,30 @@ impl Direction for Direction4 {
             Direction4::Down,
             Direction4::Left,
         ]
+    }
+}
+
+impl Direction4 {
+    /// Get the rotation from self to other
+    pub fn rotation_between(self, other: Self) -> Rotation4 {
+        match (self, other) {
+            (Direction4::Up, Direction4::Up) => Rotation4::None,
+            (Direction4::Up, Direction4::Right) => Rotation4::Clockwise,
+            (Direction4::Up, Direction4::Down) => Rotation4::Double,
+            (Direction4::Up, Direction4::Left) => Rotation4::Anticlockwise,
+            (Direction4::Right, Direction4::Up) => Rotation4::Anticlockwise,
+            (Direction4::Right, Direction4::Right) => Rotation4::None,
+            (Direction4::Right, Direction4::Down) => Rotation4::Clockwise,
+            (Direction4::Right, Direction4::Left) => Rotation4::Double,
+            (Direction4::Down, Direction4::Up) => Rotation4::Double,
+            (Direction4::Down, Direction4::Right) => Rotation4::Anticlockwise,
+            (Direction4::Down, Direction4::Down) => Rotation4::None,
+            (Direction4::Down, Direction4::Left) => Rotation4::Clockwise,
+            (Direction4::Left, Direction4::Up) => Rotation4::Clockwise,
+            (Direction4::Left, Direction4::Right) => Rotation4::Double,
+            (Direction4::Left, Direction4::Down) => Rotation4::Anticlockwise,
+            (Direction4::Left, Direction4::Left) => Rotation4::None,
+        }
     }
 }
 
@@ -182,10 +207,10 @@ impl Direction for DirectionDiag4 {
 
     fn offset(self) -> Offset {
         match self {
-            DirectionDiag4::UpLeft => Offset {dx: -1, dy: -1},
-            DirectionDiag4::UpRight => Offset {dx: -1, dy: 1},
-            DirectionDiag4::DownRight => Offset {dx: 1, dy: 1},
-            DirectionDiag4::DownLeft => Offset {dx: 1, dy: -1},
+            DirectionDiag4::UpLeft => Offset { dx: -1, dy: -1 },
+            DirectionDiag4::UpRight => Offset { dx: -1, dy: 1 },
+            DirectionDiag4::DownRight => Offset { dx: 1, dy: 1 },
+            DirectionDiag4::DownLeft => Offset { dx: 1, dy: -1 },
         }
     }
 
@@ -253,14 +278,14 @@ impl Direction for Direction8 {
 
     fn offset(self) -> Offset {
         match self {
-            Direction8::UpLeft => Offset {dx: -1, dy: -1},
-            Direction8::Up => Offset {dx: 0, dy: -1},
-            Direction8::UpRight => Offset {dx: -1, dy: 1},
-            Direction8::Right => Offset {dx: 1, dy: 0},
-            Direction8::Left => Offset {dx: -1, dy: 0},
-            Direction8::DownLeft => Offset {dx: 1, dy: -1},
-            Direction8::Down => Offset {dx: 0, dy: 1},
-            Direction8::DownRight => Offset {dx: 1, dy: 1},
+            Direction8::UpLeft => Offset { dx: -1, dy: -1 },
+            Direction8::Up => Offset { dx: 0, dy: -1 },
+            Direction8::UpRight => Offset { dx: -1, dy: 1 },
+            Direction8::Right => Offset { dx: 1, dy: 0 },
+            Direction8::Left => Offset { dx: -1, dy: 0 },
+            Direction8::DownLeft => Offset { dx: 1, dy: -1 },
+            Direction8::Down => Offset { dx: 0, dy: 1 },
+            Direction8::DownRight => Offset { dx: 1, dy: 1 },
         }
     }
 
@@ -275,6 +300,77 @@ impl Direction for Direction8 {
             Direction8::Down,
             Direction8::DownRight,
         ]
+    }
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+pub enum Rotation4 {
+    None,
+    Clockwise,
+    Double,
+    Anticlockwise,
+}
+
+impl Rotation4 {
+    /// The rotation opposite to this one.
+    pub fn opposite(self) -> Self {
+        match self {
+            Rotation4::None => Rotation4::Double,
+            Rotation4::Clockwise => Rotation4::Anticlockwise,
+            Rotation4::Double => Rotation4::None,
+            Rotation4::Anticlockwise => Rotation4::Clockwise,
+        }
+    }
+
+    /// The rotation a clockwise rotation from this one.
+    pub fn cw(self) -> Self {
+        match self {
+            Rotation4::None => Rotation4::Clockwise,
+            Rotation4::Clockwise => Rotation4::Double,
+            Rotation4::Double => Rotation4::Anticlockwise,
+            Rotation4::Anticlockwise => Rotation4::None,
+        }
+    }
+
+    /// The rotation an anti-clockwise rotation from this one.
+    pub fn acw(self) -> Self {
+        match self {
+            Rotation4::None => Rotation4::Anticlockwise,
+            Rotation4::Clockwise => Rotation4::None,
+            Rotation4::Double => Rotation4::Clockwise,
+            Rotation4::Anticlockwise => Rotation4::Double,
+        }
+    }
+
+    /// A list of the possible rotations.
+    pub fn rot_list() -> Vec<Rotation4> {
+        vec![
+            Rotation4::None,
+            Rotation4::Clockwise,
+            Rotation4::Double,
+            Rotation4::Anticlockwise,
+        ]
+    }
+
+    /// Flip the rotation about the None/Clockwise axis
+    pub fn flip(self) -> Rotation4 {
+        match self {
+            Rotation4::None => Rotation4::None,
+            Rotation4::Clockwise => Rotation4::Anticlockwise,
+            Rotation4::Double => Rotation4::Double,
+            Rotation4::Anticlockwise => Rotation4::Clockwise,
+        }
+    }
+}
+
+impl From<Rotation4> for usize {
+    fn from(value: Rotation4) -> Self {
+        match value {
+            Rotation4::None => 0,
+            Rotation4::Clockwise => 1,
+            Rotation4::Double => 2,
+            Rotation4::Anticlockwise => 3,
+        }
     }
 }
 
@@ -308,18 +404,6 @@ pub const DIRECTIONS8D: [((isize, isize), Direction8); 8] = [
 ];
 
 // TODO replace these methods with associated methods in the Direction trait
-
-// TODO make a point and an offset struct, and have this functionality sit in that
-pub fn move_off(point: (usize, usize), off: (isize, isize)) -> Option<(usize, usize)> {
-    let (x, y) = point;
-    let (dx, dy) = off;
-    let (x, y) = (x as isize + dx, y as isize + dy);
-    (x >= 0 && y >= 0).then_some((x as usize, y as usize))
-}
-
-pub fn rel_off(p1: (usize, usize), p2: (usize, usize)) -> (isize, isize) {
-    (p1.0 as isize - p2.0 as isize, p1.1 as isize - p2.1 as isize)
-}
 
 // Iterates in order:
 // Left Up Down Right

@@ -1,5 +1,5 @@
 use crate::helper::adjacency::{
-    adjacent_4_ud, adjacent_8_ud, move_off, Direction, Direction4, Direction8,
+    adjacent_4_ud, adjacent_8_ud, Direction, Direction4, Direction8,
 };
 use crate::helper::point::{Bounds, Offset, Point};
 use std::collections::{HashSet, VecDeque};
@@ -10,15 +10,14 @@ use std::str::FromStr;
 use thiserror::Error;
 
 // TODO bfs/dfs_mut
-// TODO impl Debug
 // TODO insert row/col
 // maybe want a deque like grid or something :grimacing:
-// Move GridPoint by offset or by direction
-// Trajectory for length n at point p in direction dir
-// TODO some sort of spare grid, or a sparse way to iterate over a grid somehow.
+// TODO some sort of sparse grid, or a sparse way to iterate over a grid somehow.
 // TODO owning iterator (and refactor functions to use this such as map and map_i)
 // TODO scanning in a direction iterator
-// TODO wrapping movement around the grid
+// TODO bitboard like grid
+// TODO from sparse representation (with default cell)
+// TODO expand grid like in 2023 day10
 
 pub struct Grid<T> {
     entries: Vec<T>,
@@ -120,10 +119,8 @@ impl<T> Grid<T> {
 
     /// Return the entry at the given point.
     pub fn point(&self, pos: Point) -> Option<GridEntry<T>> {
-        self.contains_point(pos).then_some(GridEntry {
-            pos,
-            grid: self,
-        })
+        self.contains_point(pos)
+            .then_some(GridEntry { pos, grid: self })
     }
 }
 
@@ -143,9 +140,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         while let Some(from) = stack.pop() {
             f(from, self[from]);
             for (to, dir) in adjacent_4_ud(from.x, from.y) {
-                if self.contains_point(to)
-                    && p(dir, self[from], self[to])
-                    && !visited.contains(&to)
+                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
                     stack.push(to);
                     visited.insert(to);
@@ -168,9 +163,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         while let Some(from) = stack.pop() {
             f(from, self[from]);
             for (to, dir) in adjacent_4_ud(from.x, from.y) {
-                if self.contains_point(to)
-                    && p(dir, self[from], self[to])
-                {
+                if self.contains_point(to) && p(dir, self[from], self[to]) {
                     stack.push(to);
                 }
             }
@@ -192,9 +185,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         while let Some(from) = stack.pop() {
             f(from, self[from]);
             for (to, dir) in adjacent_8_ud(from.x, from.y) {
-                if self.contains_point(to)
-                    && p(dir, self[from], self[to])
-                    && !visited.contains(&to)
+                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
                     stack.push(to);
                     visited.insert(to);
@@ -218,9 +209,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         while let Some((from, depth)) = queue.pop_front() {
             f(from, self[from], depth);
             for (to, dir) in adjacent_4_ud(from.x, from.y) {
-                if self.contains_point(to)
-                    && p(dir, self[from], self[to])
-                    && !visited.contains(&to)
+                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
                     queue.push_back((to, depth + 1));
                     visited.insert(to);
@@ -244,9 +233,7 @@ impl<T: Copy + Eq + Hash> Grid<T> {
         while let Some((from, depth)) = queue.pop_front() {
             f(from, self[from], depth);
             for (to, dir) in adjacent_8_ud(from.x, from.y) {
-                if self.contains_point(to)
-                    && p(dir, self[from], self[to])
-                    && !visited.contains(&to)
+                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
                 {
                     queue.push_back((to, depth + 1));
                     visited.insert(to);
@@ -545,6 +532,34 @@ impl<'a, T> GridEntry<'a, T> {
             pos,
             grid: self.grid,
         })
+    }
+
+    /// Get the entry at (pos + offset) on the grid, wrapping around the edges.
+    pub fn move_off_wrapping(&self, offset: Offset) -> GridEntry<'a, T> {
+        GridEntry {
+            pos: self.pos.move_off_wrapping(offset, self.grid.bounds()),
+            grid: self.grid,
+        }
+    }
+
+    /// Get the point at the position found by moving in the direction dir, wrapping around the
+    /// edges.
+    pub fn move_dir_wrapping<D: Direction>(&self, dir: D) -> GridEntry<'a, T> {
+        GridEntry {
+            pos: self.pos.move_off_wrapping(dir.offset(), self.grid.bounds()),
+            grid: self.grid,
+        }
+    }
+
+    /// Get the point at the position found by moving in the direction dir c times, wrapping around
+    /// the edges.
+    pub fn move_dirc_wrappin<D: Direction>(&self, dir: D, c: usize) -> GridEntry<'a, T> {
+        GridEntry {
+            pos: self
+                .pos
+                .move_off_wrapping(dir.offset().times(c), self.grid.bounds()),
+            grid: self.grid,
+        }
     }
 
     /// Returns an iterator of entries into the grid found by moving by the offset off for len
