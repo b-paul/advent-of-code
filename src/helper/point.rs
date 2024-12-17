@@ -1,4 +1,5 @@
 use std::ops::{Add, Neg};
+use std::fmt::Display;
 
 use crate::helper::adjacency::{Direction, Rotation4};
 
@@ -136,6 +137,12 @@ impl Add for Point {
             x: self.x + rhs.x,
             y: self.y + rhs.y,
         }
+    }
+}
+
+impl Display for Point {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {})", self.x, self.y)
     }
 }
 
