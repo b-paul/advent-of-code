@@ -1,5 +1,5 @@
-use std::ops::{Add, Neg};
 use std::fmt::Display;
+use std::ops::{Add, Neg};
 
 use crate::helper::adjacency::{Direction, Rotation4};
 
@@ -127,6 +127,43 @@ impl Bounds {
     /// Determine whether a given point sits inside this bounding box.
     pub fn contains_point(&self, p: Point) -> bool {
         p.x < self.width && p.y < self.height
+    }
+
+    /// Get the top left point of the bounding box
+    pub fn top_left(&self) -> Point {
+        Point { x: 0, y: 0 }
+    }
+
+    /// Get the top right point of the bounding box
+    pub fn top_right(&self) -> Point {
+        Point {
+            x: self.width - 1,
+            y: 0,
+        }
+    }
+
+    /// Get the bottom right point of the bounding box
+    pub fn bottom_right(&self) -> Point {
+        Point {
+            x: self.width - 1,
+            y: self.height - 1,
+        }
+    }
+
+    /// Get the bottom left point of the bounding box
+    pub fn bottom_left(&self) -> Point {
+        Point {
+            x: 0,
+            y: self.height - 1,
+        }
+    }
+
+    /// Compute the smallest bounds that fit all points given.
+    pub fn max_bounds(points: &[Point]) -> Bounds {
+        Bounds {
+            width: points.iter().map(|p| p.x).max().unwrap_or(0) + 1,
+            height: points.iter().map(|p| p.y).max().unwrap_or(0) + 1,
+        }
     }
 }
 

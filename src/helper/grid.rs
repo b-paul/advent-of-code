@@ -10,6 +10,7 @@ use std::str::FromStr;
 use thiserror::Error;
 
 // TODO bfs/dfs_mut
+// TODO bfs/dfs termination conditions
 // TODO insert row/col
 // maybe want a deque like grid or something :grimacing:
 // TODO some sort of sparse grid, or a sparse way to iterate over a grid somehow.
@@ -239,6 +240,16 @@ impl<T: Copy + Eq + Hash> Grid<T> {
                     visited.insert(to);
                 }
             }
+        }
+    }
+
+    // TODO don't panic
+    /// Insert a `val` at all of the points given.
+    /// Currently this panics if a point is out of bounds.
+    pub fn load_points(&mut self, points: &[Point], val: T) {
+        for &point in points {
+            assert!(self.contains_point(point));
+            self[point] = val;
         }
     }
 }
