@@ -3,40 +3,21 @@ use itertools::Itertools;
 use std::collections::*;
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    let points = input
-        .lines()
-        .map(|l| {
-            let nums = l.split(',').map(p::<usize>).collect_vec();
-            Point {
-                x: nums[0],
-                y: nums[1],
-            }
-        })
-        .collect_vec();
+    let points = input.lines().map(read_point).collect_vec();
 
-    let width = points.iter().map(|p| p.x).max().unwrap() + 1;
-    let height = points.iter().map(|p| p.y).max().unwrap() + 1;
+    let bounds = Bounds::max_bounds(&points);
 
-    let mut grid = Grid::new_filled('.', Bounds { width, height });
-    let exit = Point {
-        x: width - 1,
-        y: height - 1,
-    };
+    let mut grid = Grid::new_filled(false, bounds);
+    let exit = bounds.bottom_right();
 
     // Change 1024 to 12 when running the test :(
-    for p in &points[..1024] {
-        grid[*p] = '#';
-    }
+    grid.load_points(&points[..1024], true);
 
     let mut best_score = None;
     grid.bfs_4(
-        Point { x: 0, y: 0 },
-        |p, _, d| {
-            if p == exit && best_score == None {
-                best_score = Some(d);
-            }
-        },
-        |_, _, t| t != '#',
+        bounds.top_left(),
+        |p, _, depth| best_score = best_score.or((p == exit).then_some(depth)),
+        |_, _, to| to,
     );
 
     best_score.unwrap()
@@ -74,38 +55,17 @@ fn test() {
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    let points = input
-        .lines()
-        .map(|l| {
-            let nums = l.split(',').map(p::<usize>).collect_vec();
-            Point {
-                x: nums[0],
-                y: nums[1],
-            }
-        })
-        .collect_vec();
+    let points = input.lines().map(read_point).collect_vec();
 
-    let width = points.iter().map(|p| p.x).max().unwrap() + 1;
-    let height = points.iter().map(|p| p.y).max().unwrap() + 1;
+    let bounds = Bounds::max_bounds(&points);
 
-    let mut grid = Grid::new_filled('.', Bounds { width, height });
-    let exit = Point {
-        x: width - 1,
-        y: height - 1,
-    };
+    let mut grid = Grid::new_filled(false, bounds);
+    let exit = bounds.bottom_right();
 
     for d in 0..points.len() {
-        grid[points[d]] = '#';
+        grid[points[d]] = true;
         let mut ok = false;
-        grid.bfs_4(
-            Point { x: 0, y: 0 },
-            |p, _, _| {
-                if p == exit {
-                    ok = true;
-                }
-            },
-            |_, _, t| t != '#',
-        );
+        grid.bfs_4(bounds.top_left(), |p, _, _| ok |= p == exit, |_, _, to| to);
         if !ok {
             println!("{}", points[d]);
             return "manual submit today :(".to_string();

@@ -109,6 +109,7 @@ fn main() -> anyhow::Result<()> {
         println!("Ran for {elapsed:?}");
     }
 
+    // TODO some mechanism to check whether the solution should be automatically submitted or not
     if args.submit {
         println!("submitting");
         let response = submit_answer(args.year, args.day, args.part as u32 + 1, result)?;
