@@ -7,10 +7,8 @@ fn can(s: &str, towels: &[&str]) -> bool {
         return true;
     }
     for towel in towels {
-        if s.starts_with(towel) {
-            if can(&s[towel.len()..], towels) {
-                return true;
-            }
+        if s.starts_with(towel) && can(&s[towel.len()..], towels) {
+            return true;
         }
     }
     false
@@ -19,9 +17,12 @@ fn can(s: &str, towels: &[&str]) -> bool {
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     let mut input = input.split("\n\n");
     let have = input.next().unwrap().split(", ").collect_vec();
-    input.next().unwrap().lines().filter(|l| {
-        can(l, &have)
-    }).count()
+    input
+        .next()
+        .unwrap()
+        .lines()
+        .filter(|l| can(l, &have))
+        .count()
 }
 
 #[test]
@@ -40,11 +41,8 @@ bbrgwb";
     assert_eq!(part_2(input).to_string(), output.to_string());
 }
 
-fn count(s: &str, towels: &[&str], memo: &mut HashMap<usize, u64>) -> u64 {
-    if s == "" {
-        return 1;
-    }
-    if let Some(n) = memo.get(&s.len()) {
+fn count<'a>(s: &'a str, towels: &[&str], memo: &mut HashMap<&'a str, u64>) -> u64 {
+    if let Some(n) = memo.get(&s) {
         return *n;
     }
     let mut n = 0;
@@ -53,15 +51,21 @@ fn count(s: &str, towels: &[&str], memo: &mut HashMap<usize, u64>) -> u64 {
             n += count(&s[towel.len()..], towels, memo);
         }
     }
-    memo.insert(s.len(), n);
+    memo.insert(s, n);
     n
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let mut input = input.split("\n\n");
     let have = input.next().unwrap().split(", ").collect_vec();
-    input.next().unwrap().lines().map(|l| {
-        let mut memo = HashMap::new();
-        count(l, &have, &mut memo)
-    }).sum::<u64>()
+    input
+        .next()
+        .unwrap()
+        .lines()
+        .map(|l| {
+            let mut memo = HashMap::new();
+            memo.insert("", 1);
+            count(l, &have, &mut memo)
+        })
+        .sum::<u64>()
 }
