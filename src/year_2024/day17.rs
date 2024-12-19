@@ -42,7 +42,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         let (op, arg) = (program[ip], program[ip + 1]);
         let combo = get_combo(arg, a, b, c);
         match op {
-            0 => a = a >> combo,
+            0 => a >>= combo,
             1 => b ^= arg,
             2 => b = combo % 8,
             3 => {
@@ -77,14 +77,7 @@ Program: 0,3,5,4,3,0";
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     // this looks so funny lol
-    let output = input
-        .split("\n\n")
-        .skip(1)
-        .next()
-        .unwrap()
-        .lines()
-        .next()
-        .unwrap()[9..]
+    let output = input.split("\n\n").nth(1).unwrap().lines().next().unwrap()[9..]
         .split(',')
         .map(p::<u64>)
         .collect_vec();

@@ -1,6 +1,4 @@
-use crate::helper::adjacency::{
-    adjacent_4_ud, adjacent_8_ud, Direction, Direction4, Direction8,
-};
+use crate::helper::adjacency::{adjacent_4_ud, adjacent_8_ud, Direction, Direction4, Direction8};
 use crate::helper::point::{Bounds, Offset, Point};
 use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Display};

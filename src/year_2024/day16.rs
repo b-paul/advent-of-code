@@ -99,9 +99,9 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     visit_scores.insert((start, dir), 0);
 
     while let Some((score, (p, d), pred)) = pq.pop() {
-        if visit_scores.get(&(p, d)) == Some(&score) || visit_scores.get(&(p, d)) == None {
+        if visit_scores.get(&(p, d)) == Some(&score) || visit_scores.get(&(p, d)).is_none() {
             let s2 = visit_sets.get(&pred).unwrap().clone();
-            let s = visit_sets.entry((p, d)).or_insert(HashSet::new());
+            let s = visit_sets.entry((p, d)).or_default();
             for p in s2 {
                 s.insert(p);
             }
