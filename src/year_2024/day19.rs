@@ -3,7 +3,7 @@ use itertools::Itertools;
 use std::collections::*;
 
 fn can(s: &str, towels: &[&str]) -> bool {
-    if s == "" {
+    if s.is_empty() {
         return true;
     }
     for towel in towels {
@@ -47,8 +47,8 @@ fn count<'a>(s: &'a str, towels: &[&str], memo: &mut HashMap<&'a str, u64>) -> u
     }
     let mut n = 0;
     for towel in towels {
-        if s.starts_with(towel) {
-            n += count(&s[towel.len()..], towels, memo);
+        if let Some(end) = s.strip_prefix(towel) {
+            n += count(end, towels, memo);
         }
     }
     memo.insert(s, n);

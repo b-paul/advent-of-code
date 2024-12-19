@@ -30,7 +30,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
     for dir in moves {
         let mut new_grid = grid.clone();
-        if let Some(_) = try_push(&mut new_grid, robot, dir, '.') {
+        if try_push(&mut new_grid, robot, dir, '.').is_some() {
             robot = robot.move_off(dir.offset()).unwrap();
             grid = new_grid;
         }
@@ -132,7 +132,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     for dir in moves {
         let mut new_grid = grid.clone();
-        if let Some(_) = try_push2(&mut new_grid, robot, dir, '.') {
+        if try_push2(&mut new_grid, robot, dir, '.').is_some() {
             robot = robot.move_off(dir.offset()).unwrap();
             grid = new_grid;
         }
