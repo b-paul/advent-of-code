@@ -122,7 +122,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             for &[op, arg] in program.iter() {
                 let combo = get_combo(arg, a, b, c);
                 match op {
-                    0 => a = a >> combo,
+                    0 => a >>= combo,
                     1 => b ^= arg,
                     2 => b = combo % 8,
                     3 => {} // break
