@@ -219,6 +219,33 @@ impl<T: Copy + Eq + Hash> Grid<T> {
 
     /// F takes a point, entry, depth
     /// P takes a direction, from and to
+    /// has a maximum depth (for 2024 day 20 part 2)
+    pub fn bfs_4_depth_limit<F, P>(&self, start: Point, mut f: F, p: P, md: usize)
+    where
+        F: FnMut(Point, T, usize),
+        P: Fn(Direction4, T, T) -> bool,
+    {
+        let mut queue = VecDeque::new();
+        let mut visited = HashSet::new();
+        queue.push_back((start, 0));
+        visited.insert(start);
+
+        while let Some((from, depth)) = queue.pop_front() {
+            f(from, self[from], depth);
+            for (to, dir) in adjacent_4_ud(from.x, from.y) {
+                if self.contains_point(to) && p(dir, self[from], self[to]) && !visited.contains(&to)
+                {
+                    visited.insert(to);
+                    if depth < md {
+                        queue.push_back((to, depth + 1));
+                    }
+                }
+            }
+        }
+    }
+
+    /// F takes a point, entry, depth
+    /// P takes a direction, from and to
     pub fn bfs_8<F, P>(&self, start: Point, mut f: F, p: P)
     where
         F: FnMut(Point, T, usize),
