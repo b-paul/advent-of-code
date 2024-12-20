@@ -4,7 +4,6 @@ use std::collections::*;
 
 pub fn solve<const LEN: isize>(input: &str) -> usize {
     let grid = input.parse::<Grid<char>>().unwrap();
-    // TODO this should be a Grid<Option<usize>> I reckon
     let mut time_grid = Grid::new_filled(i64::MAX, grid.bounds());
 
     let end = grid.find(&'E').unwrap();
