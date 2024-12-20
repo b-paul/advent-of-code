@@ -47,6 +47,18 @@ impl Point {
         })
     }
 
+    /// Move a point by some offset within some bounds.
+    pub fn move_off_bounded(self, off: Offset, bounds: Bounds) -> Option<Point> {
+        let x = self.x as isize + off.dx;
+        let y = self.y as isize + off.dy;
+        (x >= 0 && y >= 0 && (x as usize) < bounds.width && (y as usize) < bounds.height).then_some(
+            Point {
+                x: x as usize,
+                y: y as usize,
+            },
+        )
+    }
+
     /// Move a point in some direction a single step
     pub fn move_dir<D: Direction>(self, dir: D) -> Option<Point> {
         self.move_off(dir.offset())
