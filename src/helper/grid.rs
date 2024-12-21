@@ -530,6 +530,8 @@ pub struct GridEntry<'a, T> {
     grid: &'a Grid<T>,
 }
 
+// TODO impl Ord on GridEntry for a pq (2024 day21)
+
 impl<'a, T> GridEntry<'a, T> {
     /// Get the value at this point on the grid.
     pub fn val(&self) -> &T {
@@ -541,6 +543,11 @@ impl<'a, T> GridEntry<'a, T> {
     /// Get the position of this point on the grid.
     pub fn pos(&self) -> Point {
         self.pos
+    }
+
+    /// The grid this entry is on.
+    pub fn grid(&self) -> &'a Grid<T> {
+        self.grid
     }
 
     /// Get the entry at (pos + offset) on the grid, if it is in bounds.
