@@ -1,5 +1,6 @@
 use crate::helper::prelude::*;
 use itertools::Itertools;
+use std::cmp::Reverse;
 use std::collections::*;
 
 const NUMPAD: &'static str = "789
@@ -9,100 +10,100 @@ const NUMPAD: &'static str = "789
 const DIRPAD: &'static str = " ^A
 <v>";
 
-fn press<'a>(
-    poss: Vec<GridEntry<'a, char>>,
-    numpad: GridEntry<'a, char>,
-    c: char,
-) -> Option<(Vec<GridEntry<'a, char>>, GridEntry<'a, char>)> {
-    if poss.len() == 0 {
-        if *numpad.val() == ' ' {
-            return None;
+/// The const to move from from to to on the kth pad and all previous pads move to 'A'
+fn cost<'a>(
+    from: GridEntry<'a, char>,
+    to: GridEntry<'a, char>,
+    k: usize,
+    dirpad: &'a Grid<char>,
+    memo: &mut HashMap<(usize, GridEntry<'a, char>, GridEntry<'a, char>), u64>,
+) -> u64 {
+    // If there are no dirpads before us, this is the human (me) pressing the button.
+    if k == 0 {
+        return 0;
+    }
+    if let Some(&n) = memo.get(&(k, from, to)) {
+        return n;
+    }
+
+    let curpad = from.grid();
+    let base = dirpad.point(Point { x: 2, y: 0 }).unwrap();
+
+    let mut ans = 0;
+    // Invariant, 0..k dirpads are all sitting at 'A'
+    // We want to press some buttons on the k-1th dirpad, to
+    let mut pq = BinaryHeap::new();
+    let mut visited = HashSet::new();
+    pq.push((Reverse(0), from.pos(), base.pos()));
+    while let Some((Reverse(cost1), cur, prev)) = pq.pop() {
+        if visited.contains(&(cur, prev)) {
+            continue;
         }
-        // moving numpad
-        match c {
-            '<' | '^' | '>' | 'v' => {
-                let dir = read_dir(c).unwrap();
-                let numpad = numpad.move_dir(dir)?;
-                Some((poss, numpad))
-            }
-            'A' => {
-                //panic!("Pressed A on the solution ?")
-                None
-            }
-            _ => None,
+        visited.insert((cur, prev));
+
+        let cur = curpad.point(cur).unwrap();
+
+        if cur == to && prev == base.pos() {
+            ans = cost1;
+            break;
         }
-    } else {
-        let head = poss.last().unwrap();
-        if *head.val() == ' ' {
-            return None;
+
+        // Try move the previous cursor to all of the points it can
+        for c in "<^>vA".chars() {
+            // TODO don't do this every step
+            let target = dirpad.find(&c).unwrap();
+            // Calc however much it consts to move the previous pad to this button.
+            let cost2 = cost(
+                dirpad.point(prev).unwrap(),
+                dirpad.point(target).unwrap(),
+                k - 1,
+                dirpad,
+                memo,
+            );
+            pq.push((Reverse(cost1 + cost2), cur.pos(), target));
         }
-        let mut tail = poss[..poss.len() - 1].to_vec();
-        match c {
-            '<' | '^' | '>' | 'v' => {
-                let dir = read_dir(c).unwrap();
-                let head = head.move_dir(dir)?;
-                tail.push(head);
-                Some((tail, numpad))
+        // Press the previous cursor's button if it makes sense to
+        if let Some(dir) = read_dir(dirpad[prev]) {
+            if let Some(cur) = cur.move_dir(dir) {
+                if *cur.val() != ' ' {
+                    pq.push((Reverse(cost1 + 1), cur.pos(), prev));
+                }
             }
-            'A' => {
-                let (mut tail, numpad) = press(tail, numpad, *head.val())?;
-                tail.push(*head);
-                Some((tail, numpad))
-            }
-            _ => None,
         }
     }
+
+    assert!(from.pos() == to.pos() || ans != 0);
+
+    memo.insert((k, from, to), ans);
+    ans
 }
 
-fn solve<const PADS: usize>(input: &str) -> Option<u64> {
+fn solve(input: &str, pads: usize) -> Option<u64> {
     let numpad = NUMPAD.parse::<Grid<char>>().unwrap();
     let dirpad = DIRPAD.parse::<Grid<char>>().unwrap();
 
     // I control a dirpad, which controls a dirpad, which controls the numpad.
 
     let mut numpad_pos = numpad.point(Point { x: 2, y: 3 })?;
-    let base_dirpos = dirpad.point(Point { x: 2, y: 0 })?;
+    //let base_dirpos = dirpad.point(Point { x: 2, y: 0 })?;
 
-    let mut soln = Vec::new();
+    let mut soln = 0;
+    let mut memo = HashMap::new();
 
     for c in input.chars() {
-        // "BFS" from numpad_pos, finding the shortest sequence to press this digit.
-        // We can separate per digit, since once the digit is pressed every cursor must point to
-        // the A on dirpads
-        let mut queue = VecDeque::new();
-        let mut visited = HashSet::new();
-        queue.push_back((vec![base_dirpos; PADS], numpad_pos, Vec::new()));
-        visited.insert((vec![base_dirpos; PADS], numpad_pos));
-        while let Some((many, numpad, mut cur_soln)) = queue.pop_front() {
-            if *numpad.val() == c && many.iter().all(|p| *p.val() == 'A') {
-                numpad_pos = numpad;
-                cur_soln.push('A');
-                soln.append(&mut cur_soln);
-                break;
-            }
-
-            for c in "<^>vA".chars() {
-                let Some((many, numpad)) = press(many.clone(), numpad, c) else {
-                    continue;
-                };
-                let mut soln = cur_soln.clone();
-                soln.push(c);
-                if !visited.contains(&(many.clone(), numpad)) {
-                    queue.push_back((many.clone(), numpad, soln));
-                    visited.insert((many, numpad));
-                }
-            }
-        }
+        let target = numpad.point(numpad.find(&c).unwrap()).unwrap();
+        soln += cost(numpad_pos, target, pads + 1, &dirpad, &mut memo);
+        soln += 1;
+        numpad_pos = target;
     }
 
     let numpart = p::<u64>(&input[0..=2]);
-    println!("{:?} {} {}", soln, soln.len() as u64, numpart);
 
-    Some(soln.len() as u64 * numpart)
+    Some(soln as u64 * numpart)
 }
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    input.lines().map(|l| solve::<2>(l).unwrap()).sum::<u64>()
+    input.lines().map(|l| solve(l, 2).unwrap()).sum::<u64>()
 }
 
 #[test]
@@ -117,5 +118,5 @@ fn test() {
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    input.lines().map(|l| solve::<25>(l).unwrap()).sum::<u64>()
+    input.lines().map(|l| solve(l, 25).unwrap()).sum::<u64>()
 }
