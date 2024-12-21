@@ -104,6 +104,11 @@ impl Point {
             },
         }
     }
+
+    /// Returns the manhattan distance between two points
+    pub fn dist(self, other: Point) -> usize {
+        self.x.abs_diff(other.x) + self.y.abs_diff(other.y)
+    }
 }
 
 impl Offset {
