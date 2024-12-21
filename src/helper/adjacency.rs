@@ -224,6 +224,17 @@ impl Direction for DirectionDiag4 {
     }
 }
 
+impl Direction4 {
+    pub fn char(self) -> char {
+        match self {
+            Direction4::Up => '^',
+            Direction4::Right => '>',
+            Direction4::Down => 'v',
+            Direction4::Left => '<',
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Direction8 {
     UpLeft,

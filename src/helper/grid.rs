@@ -522,7 +522,7 @@ impl<T: Hash> Hash for Grid<T> {
 }
 
 /// A "pointer into a cell in a grid"
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct GridEntry<'a, T> {
     /// The cell we are pointin at
     pos: Point,
