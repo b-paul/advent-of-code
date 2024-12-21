@@ -521,6 +521,26 @@ impl<T: Hash> Hash for Grid<T> {
     }
 }
 
+impl<T: PartialOrd> PartialOrd for Grid<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.entries.partial_cmp(&other.entries) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        self.bound.partial_cmp(&other.bound)
+    }
+}
+
+impl<T: Ord> Ord for Grid<T> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.entries.cmp(&other.entries) {
+            core::cmp::Ordering::Equal => {}
+            ord => return ord,
+        }
+        self.bound.cmp(&other.bound)
+    }
+}
+
 /// A "pointer into a cell in a grid"
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct GridEntry<'a, T> {
@@ -529,8 +549,6 @@ pub struct GridEntry<'a, T> {
     /// The grid
     grid: &'a Grid<T>,
 }
-
-// TODO impl Ord on GridEntry for a pq (2024 day21)
 
 impl<'a, T> GridEntry<'a, T> {
     /// Get the value at this point on the grid.
@@ -638,6 +656,26 @@ impl<T: Debug> Debug for GridEntry<'_, T> {
             .field("pos", &self.pos)
             .field("grid", &self.grid)
             .finish()
+    }
+}
+
+impl<T: PartialOrd> PartialOrd for GridEntry<'_, T> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.pos.partial_cmp(&other.pos) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        self.grid.partial_cmp(&other.grid)
+    }
+}
+
+impl<T: Ord> Ord for GridEntry<'_, T> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        match self.pos.cmp(&other.pos) {
+            core::cmp::Ordering::Equal => {}
+            ord => return ord,
+        }
+        self.grid.cmp(&other.grid)
     }
 }
 

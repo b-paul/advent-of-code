@@ -10,7 +10,7 @@ const NUMPAD: &'static str = "789
 const DIRPAD: &'static str = " ^A
 <v>";
 
-/// The const to move from from to to on the kth pad and all previous pads move to 'A'
+/// The const to move from from to to on the kth pad, with all previous pads on 'A'.
 fn cost<'a>(
     from: GridEntry<'a, char>,
     to: GridEntry<'a, char>,
@@ -18,41 +18,43 @@ fn cost<'a>(
     dirpad: &'a Grid<char>,
     memo: &mut HashMap<(usize, GridEntry<'a, char>, GridEntry<'a, char>), u64>,
 ) -> u64 {
-    // If there are no dirpads before us, this is the human (me) pressing the button.
+    // The 0th dirpad is controlled by us, so moving between buttons costs nothing.
     if k == 0 {
         return 0;
     }
+
     if let Some(&n) = memo.get(&(k, from, to)) {
         return n;
     }
 
-    let curpad = from.grid();
-    let base = dirpad.point(Point { x: 2, y: 0 }).unwrap();
-
+    let base = Point { x: 2, y: 0 };
     let mut ans = 0;
-    // Invariant, 0..k dirpads are all sitting at 'A'
-    // We want to press some buttons on the k-1th dirpad, to
+
     let mut pq = BinaryHeap::new();
     let mut visited = HashSet::new();
-    pq.push((Reverse(0), from.pos(), base.pos()));
+    pq.push((Reverse(0), from, base));
     while let Some((Reverse(cost1), cur, prev)) = pq.pop() {
         if visited.contains(&(cur, prev)) {
             continue;
         }
         visited.insert((cur, prev));
 
-        let cur = curpad.point(cur).unwrap();
-
-        if cur == to && prev == base.pos() {
+        if cur == to && prev == base {
             ans = cost1;
             break;
         }
 
         // Try move the previous cursor to all of the points it can
-        for c in "<^>vA".chars() {
-            // TODO don't do this every step
-            let target = dirpad.find(&c).unwrap();
-            // Calc however much it consts to move the previous pad to this button.
+        for (target, &c) in dirpad.iter_idx().filter(|(_, &c)| c != ' ') {
+            if let Some(dir) = read_dir(c) {
+                if let Some(next) = cur.move_dir(dir) {
+                    if next.pos().dist(to.pos()) > cur.pos().dist(to.pos()) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            }
             let cost2 = cost(
                 dirpad.point(prev).unwrap(),
                 dirpad.point(target).unwrap(),
@@ -60,50 +62,52 @@ fn cost<'a>(
                 dirpad,
                 memo,
             );
-            pq.push((Reverse(cost1 + cost2), cur.pos(), target));
+            if !visited.contains(&(cur, target)) {
+                pq.push((Reverse(cost1 + cost2), cur, target));
+            }
         }
+
         // Press the previous cursor's button if it makes sense to
         if let Some(dir) = read_dir(dirpad[prev]) {
             if let Some(cur) = cur.move_dir(dir) {
-                if *cur.val() != ' ' {
-                    pq.push((Reverse(cost1 + 1), cur.pos(), prev));
+                if *cur.val() != ' ' && !visited.contains(&(cur, prev)) {
+                    pq.push((Reverse(cost1 + 1), cur, prev));
                 }
             }
         }
     }
 
-    assert!(from.pos() == to.pos() || ans != 0);
-
     memo.insert((k, from, to), ans);
     ans
 }
 
-fn solve(input: &str, pads: usize) -> Option<u64> {
+fn solve(input: &str, pads: usize) -> u64 {
     let numpad = NUMPAD.parse::<Grid<char>>().unwrap();
     let dirpad = DIRPAD.parse::<Grid<char>>().unwrap();
 
-    // I control a dirpad, which controls a dirpad, which controls the numpad.
-
-    let mut numpad_pos = numpad.point(Point { x: 2, y: 3 })?;
-    //let base_dirpos = dirpad.point(Point { x: 2, y: 0 })?;
-
-    let mut soln = 0;
     let mut memo = HashMap::new();
 
-    for c in input.chars() {
-        let target = numpad.point(numpad.find(&c).unwrap()).unwrap();
-        soln += cost(numpad_pos, target, pads + 1, &dirpad, &mut memo);
-        soln += 1;
-        numpad_pos = target;
-    }
+    input
+        .lines()
+        .map(|l| {
+            let mut numpad_pos = numpad.point(Point { x: 2, y: 3 }).unwrap();
+            let mut len = 0;
 
-    let numpart = p::<u64>(&input[0..=2]);
+            for c in l.chars() {
+                let target = numpad.point(numpad.find(&c).unwrap()).unwrap();
+                len += cost(numpad_pos, target, pads + 1, &dirpad, &mut memo) + 1;
+                numpad_pos = target;
+            }
 
-    Some(soln as u64 * numpart)
+            let numpart = p::<u64>(&l[0..=2]);
+
+            len as u64 * numpart
+        })
+        .sum::<u64>()
 }
 
 pub fn part_1(input: &str) -> impl std::fmt::Display {
-    input.lines().map(|l| solve(l, 2).unwrap()).sum::<u64>()
+    solve(input, 2)
 }
 
 #[test]
@@ -118,5 +122,5 @@ fn test() {
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    input.lines().map(|l| solve(l, 25).unwrap()).sum::<u64>()
+    solve(input, 25)
 }
