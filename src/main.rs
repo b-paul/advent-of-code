@@ -3,6 +3,7 @@
 #![feature(iter_array_chunks)]
 #![feature(iter_next_chunk)]
 #![feature(array_chunks)]
+#![feature(array_try_from_fn)]
 #![feature(test)]
 #![feature(portable_simd)]
 extern crate test;
