@@ -17,7 +17,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
     grid.bfs_4(
         bounds.top_left(),
         |p, _, depth| best_score = best_score.or((p == exit).then_some(depth)),
-        |_, _, to| to,
+        |_, _, to| !to,
     );
 
     best_score.unwrap()
@@ -65,7 +65,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     for d in 0..points.len() {
         grid[points[d]] = true;
         let mut ok = false;
-        grid.bfs_4(bounds.top_left(), |p, _, _| ok |= p == exit, |_, _, to| to);
+        grid.bfs_4(bounds.top_left(), |p, _, _| ok |= p == exit, |_, _, to| !to);
         if !ok {
             println!("{}", points[d]);
             return "manual submit today :(".to_string();
