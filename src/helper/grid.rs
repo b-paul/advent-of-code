@@ -83,7 +83,7 @@ impl<T> Grid<T> {
         Grid { entries, bound }
     }
 
-    pub fn iter_idx(&self) -> GridIdxIterator<T> {
+    pub fn iter_idx(&self) -> GridIdxIterator<'_, T> {
         GridIdxIterator {
             grid: self,
             cur: Point { x: 0, y: 0 },
@@ -94,14 +94,14 @@ impl<T> Grid<T> {
         self.bound.contains_point(p)
     }
 
-    pub fn iter_rows(&self) -> GridRowIter<T> {
+    pub fn iter_rows(&self) -> GridRowIter<'_, T> {
         GridRowIter {
             grid: self,
             index: 0,
         }
     }
 
-    pub fn iter_cols(&self) -> GridColIter<T> {
+    pub fn iter_cols(&self) -> GridColIter<'_, T> {
         GridColIter {
             grid: self,
             index: 0,
@@ -117,7 +117,7 @@ impl<T> Grid<T> {
     }
 
     /// Return the entry at the given point.
-    pub fn point(&self, pos: Point) -> Option<GridEntry<T>> {
+    pub fn point(&self, pos: Point) -> Option<GridEntry<'_, T>> {
         self.contains_point(pos)
             .then_some(GridEntry { pos, grid: self })
     }
