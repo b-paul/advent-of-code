@@ -36,7 +36,6 @@ impl<T> Grid<T> {
         self.bound
     }
 
-    /// returns (VecVec, width, height)
     pub fn into_vecvec(self) -> (Vec<Vec<T>>, Bounds) {
         let mut grid = Vec::new();
         let mut line = Vec::new();
