@@ -1,4 +1,5 @@
 use crate::helper::adjacency::{adjacent_4_ud, adjacent_8_ud, Direction, Direction4, Direction8};
+use crate::helper::graph::DigraphView;
 use crate::helper::point::{Bounds, Offset, Point};
 use std::collections::{HashSet, VecDeque};
 use std::fmt::{Debug, Display};
@@ -119,6 +120,28 @@ impl<T> Grid<T> {
     pub fn point(&self, pos: Point) -> Option<GridEntry<'_, T>> {
         self.contains_point(pos)
             .then_some(GridEntry { pos, grid: self })
+    }
+
+    pub fn graph_view_4<A>(&self, is_adj: A) -> GridGraphView<'_, T, Direction4, A>
+    where
+        A: Fn(Direction4, T, T) -> bool,
+    {
+        GridGraphView {
+            grid: self,
+            is_adj,
+            _phantom: std::marker::PhantomData,
+        }
+    }
+
+    pub fn graph_view_8<A>(&self, is_adj: A) -> GridGraphView<'_, T, Direction8, A>
+    where
+        A: Fn(Direction8, T, T) -> bool,
+    {
+        GridGraphView {
+            grid: self,
+            is_adj,
+            _phantom: std::marker::PhantomData,
+        }
     }
 }
 
@@ -787,6 +810,31 @@ impl<'a, T> Iterator for GridColIter<'a, T> {
             self.index += 1;
             Some(col)
         }
+    }
+}
+
+pub struct GridGraphView<'a, T, D, A>
+where
+    D: Direction,
+    A: Fn(D, T, T) -> bool,
+{
+    grid: &'a Grid<T>,
+    is_adj: A,
+    _phantom: std::marker::PhantomData<D>,
+}
+
+impl<'a, T: Copy, D, A> DigraphView<Point, D> for GridGraphView<'a, T, D, A>
+where
+    D: Direction,
+    A: Fn(D, T, T) -> bool,
+{
+    fn adj(&self, point: Point) -> Option<impl Iterator<Item = (D, Point)>> {
+        self.grid.point(point).map(|p| {
+            D::dir_list().into_iter().filter_map(move |d| {
+                p.move_dir(d)
+                    .and_then(|p2| (self.is_adj)(d, *p.val(), *p2.val()).then_some((d, p2.pos())))
+            })
+        })
     }
 }
 
