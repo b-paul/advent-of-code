@@ -2,6 +2,7 @@
 // TODO graph algos, range arithmetic, 3d grid ?!, counter, a -> P(b) hashmap, parsing tools,
 // memoisation proc macro
 pub mod adjacency;
+pub mod graph;
 pub mod grid;
 pub mod point;
 pub mod shorthand;
