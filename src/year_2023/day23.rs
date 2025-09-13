@@ -53,7 +53,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     let grid = input.parse::<Grid<char>>().unwrap();
     let start = Point { x: 1, y: 0 };
 
-    let view = grid.graph_view_4(|_, _, to| to == '#');
+    let view = grid.graph_view_4(|_, _, to| to != '#');
 
     view.collapse_count(start)
         .write_graphviz_undirected(vec![start].into_iter(), "graph.dot")
