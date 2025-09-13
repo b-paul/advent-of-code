@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 use std::hash::Hash;
 
@@ -8,7 +9,7 @@ pub trait DigraphView<V, E> {
 
     /// Creates a new graph where trivial edges are collapsed (think o-o-o-o turning into o-o) and
     /// structure is encoded in a new edge type.
-    fn collapse_with<E2, F1, F2>(&self, start: V, map: F1, join: F2) -> EdgeMap<V, E2>
+    fn collapse_with<E2, F1, F2>(&self, start: V, convert: F1, join: F2) -> EdgeMap<V, E2>
     where
         V: Copy + Eq + Hash,
         F1: Fn(E) -> E2,
@@ -22,13 +23,33 @@ pub trait DigraphView<V, E> {
         stack.push(start);
         visited.insert(start);
 
-        while let Some(mut from) = stack.pop() {
-            for (e, mut to) in self.adj(from) {
-                todo!()
+        while let Some(from) = stack.pop() {
+            for (e, mut to) in self.adj(from).into_iter().flatten() {
+                let mut e = convert(e);
+                while let Some((e2, to2)) = self
+                    .adj(to)
+                    .and_then(|adjs| adjs.filter(|&(_, v)| v != from).exactly_one().ok())
+                {
+                    to = to2;
+                    e = join(e, convert(e2));
+                }
+                map.entry(from).or_default().push((e, to));
+                if !visited.contains(&to) {
+                    stack.push(to);
+                    visited.insert(to);
+                }
             }
         }
 
         EdgeMap { map }
+    }
+
+    /// Collapse trivial edges in a graph (o-o-o into o-o) and count how many edges are collapsed.
+    fn collapse_count(&self, start: V) -> EdgeMap<V, usize>
+    where
+        V: Copy + Eq + Hash,
+    {
+        self.collapse_with(start, |_| 1, |a, b| a + b)
     }
 }
 
