@@ -108,7 +108,7 @@ pub(crate) fn part_2_faster(input: &str) -> impl std::fmt::Display {
         .lines()
         .map(|l| {
             let mut n = 0;
-            'end: for (i, c) in l.chars().enumerate() {
+            'end: for (i, c) in l.char_indices() {
                 if let Some(m) = c.to_digit(10) {
                     n += m;
                     break;

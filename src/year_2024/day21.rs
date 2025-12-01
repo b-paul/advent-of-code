@@ -3,11 +3,11 @@ use itertools::Itertools;
 use std::cmp::Reverse;
 use std::collections::*;
 
-const NUMPAD: &'static str = "789
+const NUMPAD: &str = "789
 456
 123
  0A";
-const DIRPAD: &'static str = " ^A
+const DIRPAD: &str = " ^A
 <v>";
 
 /// The const to move from from to to on the kth pad, with all previous pads on 'A'.
@@ -101,7 +101,7 @@ fn solve(input: &str, pads: usize) -> u64 {
 
             let numpart = p::<u64>(&l[0..=2]);
 
-            len as u64 * numpart
+            len * numpart
         })
         .sum::<u64>()
 }

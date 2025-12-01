@@ -28,24 +28,24 @@ fn opertest(i: usize, item: &mut u32) {
 
 fn throw(i: usize, item: u32) -> usize {
     match i {
-        0 => if item % 2 == 0 { 7 } else { 1 },
-        1 => if item % 7 == 0 { 2 } else { 4 },
-        2 => if item % 13 == 0 { 5 } else { 4 },
-        3 => if item % 19 == 0 { 6 } else { 0 },
-        4 => if item % 11 == 0 { 5 } else { 3 },
-        5 => if item % 5 == 0 { 6 } else { 3 },
-        6 => if item % 3 == 0 { 0 } else { 7 },
-        7 => if item % 17 == 0 { 2 } else { 1 },
+        0 => if item.is_multiple_of(2) { 7 } else { 1 },
+        1 => if item.is_multiple_of(7) { 2 } else { 4 },
+        2 => if item.is_multiple_of(13) { 5 } else { 4 },
+        3 => if item.is_multiple_of(19) { 6 } else { 0 },
+        4 => if item.is_multiple_of(11) { 5 } else { 3 },
+        5 => if item.is_multiple_of(5) { 6 } else { 3 },
+        6 => if item.is_multiple_of(3) { 0 } else { 7 },
+        7 => if item.is_multiple_of(17) { 2 } else { 1 },
         _ => unreachable!()
     }
 }
 
 fn throwtest(i: usize, item: u32) -> usize {
     match i {
-        0 => if item % 23 == 0 { 2 } else { 3 },
-        1 => if item % 19 == 0 { 2 } else { 0 },
-        2 => if item % 13 == 0 { 1 } else { 3 },
-        3 => if item % 17 == 0 { 0 } else { 1 },
+        0 => if item.is_multiple_of(23) { 2 } else { 3 },
+        1 => if item.is_multiple_of(19) { 2 } else { 0 },
+        2 => if item.is_multiple_of(13) { 1 } else { 3 },
+        3 => if item.is_multiple_of(17) { 0 } else { 1 },
         _ => unreachable!()
     }
 }
@@ -112,7 +112,7 @@ Monkey 3:
     If true: throw to monkey 0
     If false: throw to monkey 1"
         .to_string();
-    let mut items = vec![
+    let mut items = [
         vec![79, 98],
         vec![54, 65, 75, 74],
         vec![79, 60, 97],
@@ -167,24 +167,24 @@ fn opertest2(i: usize, item: &mut u64) {
 
 fn throw2(i: usize, item: u64) -> usize {
     match i {
-        0 => if item % 2 == 0 { 7 } else { 1 },
-        1 => if item % 7 == 0 { 2 } else { 4 },
-        2 => if item % 13 == 0 { 5 } else { 4 },
-        3 => if item % 19 == 0 { 6 } else { 0 },
-        4 => if item % 11 == 0 { 5 } else { 3 },
-        5 => if item % 5 == 0 { 6 } else { 3 },
-        6 => if item % 3 == 0 { 0 } else { 7 },
-        7 => if item % 17 == 0 { 2 } else { 1 },
+        0 => if item.is_multiple_of(2) { 7 } else { 1 },
+        1 => if item.is_multiple_of(7) { 2 } else { 4 },
+        2 => if item.is_multiple_of(13) { 5 } else { 4 },
+        3 => if item.is_multiple_of(19) { 6 } else { 0 },
+        4 => if item.is_multiple_of(11) { 5 } else { 3 },
+        5 => if item.is_multiple_of(5) { 6 } else { 3 },
+        6 => if item.is_multiple_of(3) { 0 } else { 7 },
+        7 => if item.is_multiple_of(17) { 2 } else { 1 },
         _ => unreachable!()
     }
 }
 
 fn throwtest2(i: usize, item: u64) -> usize {
     match i {
-        0 => if item % 23 == 0 { 2 } else { 3 },
-        1 => if item % 19 == 0 { 2 } else { 0 },
-        2 => if item % 13 == 0 { 1 } else { 3 },
-        3 => if item % 17 == 0 { 0 } else { 1 },
+        0 => if item.is_multiple_of(23) { 2 } else { 3 },
+        1 => if item.is_multiple_of(19) { 2 } else { 0 },
+        2 => if item.is_multiple_of(13) { 1 } else { 3 },
+        3 => if item.is_multiple_of(17) { 0 } else { 1 },
         _ => unreachable!()
     }
 }
@@ -251,7 +251,7 @@ Monkey 3:
     If true: throw to monkey 0
     If false: throw to monkey 1"
         .to_string();
-    let mut items = vec![
+    let mut items = [
         vec![79, 98],
         vec![54, 65, 75, 74],
         vec![79, 60, 97],

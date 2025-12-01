@@ -347,17 +347,17 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     for tile in tiles.iter() {
         for edge in tile.edges {
             if edge == 37 {
-                println!("{:?}", tile);
+                println!("{tile:?}");
             }
         }
     }
 
     let grid2: Vec<Vec<_>> = grid.clone().into_iter().map(|v| v.into_iter().map(|t| t.map(|x| x.edges)).collect()).collect();
-    println!("{:?}", grid2);
+    println!("{grid2:?}");
 
     let grid: Vec<Vec<_>> = grid.into_iter().map(|v| v.into_iter().map(|t| t.unwrap()).collect()).collect();
     let p: Vec<Vec<_>> = grid.clone().into_iter().map(|v| v.into_iter().map(|t| t.id).collect()).collect();
-    println!("{:?}", p);
+    println!("{p:?}");
 
     let mut bits = bitvec![];
 
@@ -404,7 +404,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         for _y in 0..93 {
             for _x in 0..76 {
                 if sea_monster.clone() & bits.clone() == sea_monster {
-                    println!("{} {}", _x, _y);
+                    println!("{_x} {_y}");
                 }
                 //println!("{:?}", (sea_monster.clone() & bits.clone()).count_ones());
 

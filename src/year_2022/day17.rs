@@ -141,7 +141,7 @@ fn run<const N: usize>(input: &str) -> impl std::fmt::Display {
                         }
                         println!();
                     }
-                    println!("{} {}", maxheight, count);
+                    println!("{maxheight} {count}");
                     println!();
                     println!();
 

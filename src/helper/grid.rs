@@ -687,7 +687,7 @@ impl<T: PartialOrd> PartialOrd for GridEntry<'_, T> {
             Some(core::cmp::Ordering::Equal) => {}
             ord => return ord,
         }
-        self.grid.partial_cmp(&other.grid)
+        self.grid.partial_cmp(other.grid)
     }
 }
 
@@ -697,7 +697,7 @@ impl<T: Ord> Ord for GridEntry<'_, T> {
             core::cmp::Ordering::Equal => {}
             ord => return ord,
         }
-        self.grid.cmp(&other.grid)
+        self.grid.cmp(other.grid)
     }
 }
 

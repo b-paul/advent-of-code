@@ -34,7 +34,7 @@ fn print(blizzards: &HashSet<(usize, usize, i32)>, width: usize, height: usize) 
                     print!("^");
                 }
             } else if count != 0 {
-                print!("{}", count);
+                print!("{count}");
             } else {
                 print!(".");
             }
