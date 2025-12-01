@@ -34,7 +34,7 @@ pub fn part_1_simd(input: &str) -> impl std::fmt::Display {
                 ns = (ns >> 5) ^ ns;
                 ns = (ns << 11) ^ ns;
             }
-            ns = ns & mask;
+            ns &= mask;
             ns.to_array().into_iter().map(|n| n as u64).sum::<u64>()
         })
         .sum::<u64>()
@@ -67,14 +67,14 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         }
         let mut done = HashSet::new();
         for (seq, val) in v.windows(4).zip(s.into_iter().skip(3)) {
-            if !done.contains(&seq.to_vec()) {
+            if !done.contains(seq) {
                 *counter.entry(seq.to_vec()).or_default() += val;
                 done.insert(seq.to_vec());
             }
         }
     }
 
-    counter.into_iter().map(|(_, v)| v).max().unwrap()
+    counter.into_values().max().unwrap()
 }
 
 #[cfg(test)]

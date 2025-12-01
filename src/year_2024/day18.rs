@@ -48,7 +48,7 @@ pub fn part_1_faster(input: &str) -> impl std::fmt::Display {
     let mut visited2 = [0u128; 71];
 
     for p in input.lines().map(read_point).take(1024) {
-        occ[p.y as usize] &= !(1 << p.x);
+        occ[p.y] &= !(1 << p.x);
     }
 
     let mut count = 0;

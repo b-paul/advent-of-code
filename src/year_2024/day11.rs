@@ -14,7 +14,7 @@ fn solve(n: u64, steps: usize, memo: &mut HashMap<(u64, usize), u64>) -> u64 {
         let ans = solve(1, steps-1, memo);
         memo.insert((n, steps), ans);
         ans
-    } else if n.to_string().len() % 2 == 0 {
+    } else if n.to_string().len().is_multiple_of(2) {
         let s = n.to_string();
         let a = p::<u64>(&s[..s.len()/2]);
         let b = p::<u64>(&s[s.len()/2..]);

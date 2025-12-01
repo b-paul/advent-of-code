@@ -30,14 +30,14 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 
         for (a, op, b, out) in &instructions.clone() {
             if map.contains_key(a) && map.contains_key(b) {
-                match op {
-                    &"AND" => {
+                match *op {
+                    "AND" => {
                         map.insert(out, map[a] & map[b]);
                     }
-                    &"OR" => {
+                    "OR" => {
                         map.insert(out, map[a] | map[b]);
                     }
-                    &"XOR" => {
+                    "XOR" => {
                         map.insert(out, map[a] ^ map[b]);
                     }
                     _ => panic!(),

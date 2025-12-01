@@ -23,7 +23,7 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
             if let Some(sub) = num.checked_sub(nums[i]) {
                 stack.push((sub, i-1));
             }
-            if num % nums[i] == 0 {
+            if num.is_multiple_of(nums[i]) {
                 stack.push((num / nums[i], i-1));
             }
         }
@@ -68,7 +68,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             if let Some(sub) = num.checked_sub(nums[i]) {
                 stack.push((sub, i-1));
             }
-            if num % nums[i] == 0 {
+            if num.is_multiple_of(nums[i]) {
                 stack.push((num / nums[i], i-1));
             }
             let n = nums[i];
