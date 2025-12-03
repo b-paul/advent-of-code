@@ -2,6 +2,7 @@
 #![allow(unused_imports)]
 #![feature(iter_array_chunks)]
 #![feature(iter_next_chunk)]
+#![feature(iter_map_windows)]
 #![feature(array_chunks)]
 #![feature(array_try_from_fn)]
 #![feature(test)]
