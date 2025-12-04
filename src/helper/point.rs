@@ -59,9 +59,14 @@ impl Point {
         )
     }
 
-    /// Move a point in some direction a single step
+    /// Move a point in some direction a single step.
     pub fn move_dir<D: Direction>(self, dir: D) -> Option<Point> {
         self.move_off(dir.offset())
+    }
+
+    /// Move a point in some direction a single step within some bounds.
+    pub fn move_dir_bounded<D: Direction>(self, dir: D, bounds: Bounds) -> Option<Point> {
+        self.move_off_bounded(dir.offset(), bounds)
     }
 
     /// Move a point by some offset wrapping around on the borders of the bounds.
@@ -182,6 +187,15 @@ impl Bounds {
             height: points.iter().map(|p| p.y).max().unwrap_or(0) + 1,
         }
     }
+
+    /// Iterate over all of the points in the bounds
+    pub fn iter_points(&self) -> BoundIter {
+        BoundIter {
+            width: self.width,
+            height: self.height,
+            cur: Some(Point { x: 0, y: 0 }),
+        }
+    }
 }
 
 impl Add for Point {
@@ -217,6 +231,35 @@ impl Add for Offset {
             dx: self.dx + rhs.dx,
             dy: self.dy + rhs.dy,
         }
+    }
+}
+
+pub struct BoundIter {
+    width: usize,
+    height: usize,
+    cur: Option<Point>,
+}
+
+impl Iterator for BoundIter {
+    type Item = Point;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let ret = self.cur?;
+
+        if ret.x + 1 >= self.width {
+            if ret.y + 1 >= self.height {
+                self.cur = None;
+            } else {
+                self.cur = Some(Point { x: 0, y: ret.y + 1 })
+            }
+        } else {
+            self.cur = Some(Point {
+                x: ret.x + 1,
+                ..ret
+            })
+        }
+
+        Some(ret)
     }
 }
 
