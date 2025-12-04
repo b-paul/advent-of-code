@@ -77,6 +77,7 @@ pub trait Direction: Copy {
     // unsized bounded top left?
     // unsized with count?
     // bounds + counts?
+    // Iterator over results of moving
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]

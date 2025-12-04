@@ -116,10 +116,28 @@ impl<T> Grid<T> {
         self.contains_point(idx).then(|| &self[idx])
     }
 
+    pub fn get_mut(&mut self, idx: Point) -> Option<&mut T> {
+        self.contains_point(idx).then(|| &mut self[idx])
+    }
+
     /// Return the entry at the given point.
     pub fn point(&self, pos: Point) -> Option<GridEntry<'_, T>> {
         self.contains_point(pos)
             .then_some(GridEntry { pos, grid: self })
+    }
+
+    /// Returns an iterator over entries of points in the grid.
+    pub fn iter_points(&self) -> GridEntryIter<'_, T> {
+        GridEntryIter {
+            grid: self,
+            cur: Point { x: 0, y: 0 },
+        }
+    }
+
+    /// Return the entry at the given point with mutability.
+    pub fn point_mut(&mut self, pos: Point) -> Option<GridEntryMut<'_, T>> {
+        self.contains_point(pos)
+            .then_some(GridEntryMut { pos, grid: self })
     }
 
     pub fn graph_view_4<A>(&self, is_adj: A) -> GridGraphView<'_, T, Direction4, A>
@@ -566,7 +584,7 @@ impl<T: Ord> Ord for Grid<T> {
 /// A "pointer into a cell in a grid"
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct GridEntry<'a, T> {
-    /// The cell we are pointin at
+    /// The cell we are pointing at
     pos: Point,
     /// The grid
     grid: &'a Grid<T>,
@@ -669,6 +687,11 @@ impl<'a, T> GridEntry<'a, T> {
         }
     }
 
+    /// An iterator over the adjacent entries based on the given direction type.
+    pub fn adjs<D: Direction>(&self) -> impl Iterator<Item = GridEntry<'_, T>> {
+        D::dir_list().into_iter().flat_map(|d| self.move_dir(d))
+    }
+
     // TODO call these bounded trajectories, have unbounded trajectories.
 }
 
@@ -699,6 +722,123 @@ impl<T: Ord> Ord for GridEntry<'_, T> {
         }
         self.grid.cmp(other.grid)
     }
+}
+
+/// A "pointer into a cell in a grid" that has mutable access to the value in the cell
+#[derive(PartialEq, Eq, Hash)]
+pub struct GridEntryMut<'a, T> {
+    /// The cell we are pointing at
+    pos: Point,
+    /// The grid
+    grid: &'a mut Grid<T>,
+}
+
+impl<'a, T> GridEntryMut<'a, T> {
+    /// Get the value at this point on the grid.
+    pub fn val(&mut self) -> &mut T {
+        self.grid
+            .get_mut(self.pos)
+            .expect("Invalid GridEntry was created")
+    }
+
+    /// Get the position of this point on the grid.
+    pub fn pos(&self) -> Point {
+        self.pos
+    }
+
+    /// Get the entry at (pos + offset) on the grid, if it is in bounds.
+    pub fn move_off(&'a mut self, offset: Offset) -> Option<GridEntryMut<'a, T>> {
+        self.pos.move_off(offset).map(|pos| GridEntryMut {
+            pos,
+            grid: self.grid,
+        })
+    }
+
+    /// Get the point at the position found by moving in the direction dir, if it is in bounds.
+    pub fn move_dir<D: Direction>(&'a mut self, dir: D) -> Option<GridEntryMut<'a, T>> {
+        let pos = dir.moveu(self.pos)?;
+        self.grid.contains_point(pos).then_some(GridEntryMut {
+            pos,
+            grid: self.grid,
+        })
+    }
+
+    /// Get the point at the position found by moving in the direction dir c times, if it is in
+    /// bounds.
+    pub fn move_dirc<D: Direction>(&'a mut self, dir: D, c: usize) -> Option<GridEntryMut<'a, T>> {
+        let pos = dir.moveuc(self.pos, c)?;
+        self.grid.contains_point(pos).then_some(GridEntryMut {
+            pos,
+            grid: self.grid,
+        })
+    }
+
+    /// Get the entry at (pos + offset) on the grid, wrapping around the edges.
+    pub fn move_off_wrapping(&'a mut self, offset: Offset) -> GridEntryMut<'a, T> {
+        GridEntryMut {
+            pos: self.pos.move_off_wrapping(offset, self.grid.bounds()),
+            grid: self.grid,
+        }
+    }
+
+    /// Get the point at the position found by moving in the direction dir, wrapping around the
+    /// edges.
+    pub fn move_dir_wrapping<D: Direction>(&'a mut self, dir: D) -> GridEntryMut<'a, T> {
+        GridEntryMut {
+            pos: self.pos.move_off_wrapping(dir.offset(), self.grid.bounds()),
+            grid: self.grid,
+        }
+    }
+
+    /// Get the point at the position found by moving in the direction dir c times, wrapping around
+    /// the edges.
+    pub fn move_dirc_wrappin<D: Direction>(&'a mut self, dir: D, c: usize) -> GridEntryMut<'a, T> {
+        GridEntryMut {
+            pos: self
+                .pos
+                .move_off_wrapping(dir.offset().times(c), self.grid.bounds()),
+            grid: self.grid,
+        }
+    }
+
+    /*
+     * TODO this stuff
+    /// Returns an iterator of entries into the grid found by moving by the offset off for len
+    /// steps. We count this current point as step 0, meaning that if len = 1, we will not move to
+    /// another point.
+    pub fn trajectory(&self, off: Offset, len: usize) -> Trajectory<'a, T> {
+        Trajectory {
+            pos: self.pos,
+            steps: len,
+            off,
+            grid: self.grid,
+        }
+    }
+
+    /// Returns an iterator of entries into the grid found by following the direction dir len
+    /// steps. We count this current point as step 0, meaning that if len = 1, we will not move to
+    /// another point.
+    pub fn trajectory_dir<D: Direction>(&self, dir: D, len: usize) -> Trajectory<'a, T> {
+        Trajectory {
+            pos: self.pos,
+            steps: len,
+            off: dir.offset(),
+            grid: self.grid,
+        }
+    }
+
+    /// An iterator over the adjacent entries based on the given direction type.
+    pub fn adjs<D: Direction>(&'a mut self) -> impl Iterator<Item = GridEntryMut<'a, T>> {
+        D::dir_list().into_iter().flat_map(|d| {
+            self.pos
+                .move_dir_bounded(d, self.grid.bounds())
+                .map(|p| GridEntryMut {
+                    pos: p,
+                    grid: todo!(),
+                })
+        })
+    }
+    */
 }
 
 #[derive(Clone)]
@@ -809,6 +949,33 @@ impl<'a, T> Iterator for GridColIter<'a, T> {
             };
             self.index += 1;
             Some(col)
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct GridEntryIter<'a, T> {
+    grid: &'a Grid<T>,
+    cur: Point,
+}
+
+impl<'a, T> Iterator for GridEntryIter<'a, T> {
+    type Item = GridEntry<'a, T>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let p = self.cur;
+        self.cur.x += 1;
+        if self.cur.x >= self.grid.bound.width {
+            self.cur.x = 0;
+            self.cur.y += 1;
+        }
+        if p.y >= self.grid.bound.height {
+            None
+        } else {
+            Some(GridEntry {
+                pos: p,
+                grid: self.grid,
+            })
         }
     }
 }
