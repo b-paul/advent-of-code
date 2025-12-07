@@ -194,6 +194,10 @@ impl Bounds {
             width: self.width,
             height: self.height,
             cur: Some(Point { x: 0, y: 0 }),
+            cur_back: Some(Point {
+                x: self.width - 1,
+                y: self.height - 1,
+            }),
         }
     }
 }
@@ -238,6 +242,7 @@ pub struct BoundIter {
     width: usize,
     height: usize,
     cur: Option<Point>,
+    cur_back: Option<Point>,
 }
 
 impl Iterator for BoundIter {
@@ -246,17 +251,39 @@ impl Iterator for BoundIter {
     fn next(&mut self) -> Option<Self::Item> {
         let ret = self.cur?;
 
-        if ret.x + 1 >= self.width {
-            if ret.y + 1 >= self.height {
-                self.cur = None;
-            } else {
-                self.cur = Some(Point { x: 0, y: ret.y + 1 })
-            }
+        if self.cur == self.cur_back {
+            self.cur = None;
+            self.cur_back = None;
+        } else if ret.x >= self.width - 1 {
+            self.cur = Some(Point { x: 0, y: ret.y + 1 });
         } else {
             self.cur = Some(Point {
                 x: ret.x + 1,
                 ..ret
-            })
+            });
+        }
+
+        Some(ret)
+    }
+}
+
+impl DoubleEndedIterator for BoundIter {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        let ret = self.cur_back?;
+
+        if self.cur_back == self.cur {
+            self.cur_back = None;
+            self.cur = None;
+        } else if ret.x == 0 {
+            self.cur_back = Some(Point {
+                x: self.width - 1,
+                y: ret.y - 1,
+            });
+        } else {
+            self.cur_back = Some(Point {
+                x: ret.x - 1,
+                ..ret
+            });
         }
 
         Some(ret)
