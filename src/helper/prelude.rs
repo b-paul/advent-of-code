@@ -1,1 +1,1 @@
-pub use super::{adjacency::*, graph::*, grid::*, point::*, shorthand::*};
+pub use super::{adjacency::*, ds::*, graph::*, grid::*, point::*, shorthand::*};
