@@ -4,9 +4,9 @@ use itertools::Itertools;
 pub fn part_1(input: &str) -> impl std::fmt::Display {
     const CONNECTIONS: usize = 1000;
 
-    let points = input
+    let points: Vec<[_; 3]> = input
         .lines()
-        .map(|s| s.split(',').map(p::<u64>).collect_vec())
+        .map(|s| s.split(',').map(p::<u64>).collect_vec().try_into().unwrap())
         .collect_vec();
 
     let mut uf = UnionFind::new(points.iter());
@@ -30,9 +30,9 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
 }
 
 pub fn part_2(input: &str) -> impl std::fmt::Display {
-    let points = input
+    let points: Vec<[_; 3]> = input
         .lines()
-        .map(|s| s.split(',').map(p::<u64>).collect_vec())
+        .map(|s| s.split(',').map(p::<u64>).collect_vec().try_into().unwrap())
         .collect_vec();
 
     let mut uf = UnionFind::new(points.iter());
