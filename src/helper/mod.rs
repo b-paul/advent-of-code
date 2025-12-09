@@ -6,6 +6,7 @@ pub mod ds;
 pub mod graph;
 pub mod grid;
 pub mod point;
+pub mod shape;
 pub mod shorthand;
 
 pub mod prelude;

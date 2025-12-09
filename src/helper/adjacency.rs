@@ -168,6 +168,46 @@ impl Direction4 {
             (Direction4::Left, Direction4::Left) => Rotation4::None,
         }
     }
+
+    /// Rotate this direction clockwise
+    pub fn clockwise(self) -> Direction4 {
+        match self {
+            Direction4::Up => Direction4::Right,
+            Direction4::Right => Direction4::Down,
+            Direction4::Down => Direction4::Left,
+            Direction4::Left => Direction4::Up,
+        }
+    }
+
+    /// Rotate this direction anticlockwise
+    pub fn anticlockwise(self) -> Direction4 {
+        match self {
+            Direction4::Up => Direction4::Left,
+            Direction4::Right => Direction4::Up,
+            Direction4::Down => Direction4::Right,
+            Direction4::Left => Direction4::Down,
+        }
+    }
+
+    /// Rotate this direction 180 degrees
+    pub fn r180(self) -> Direction4 {
+        match self {
+            Direction4::Up => Direction4::Down,
+            Direction4::Right => Direction4::Left,
+            Direction4::Down => Direction4::Up,
+            Direction4::Left => Direction4::Right,
+        }
+    }
+
+    /// Rotate this direction by a given Rotation4
+    pub fn rotate(self, r: Rotation4) -> Direction4 {
+        match r {
+            Rotation4::None => self,
+            Rotation4::Clockwise => self.clockwise(),
+            Rotation4::Double => self.r180(),
+            Rotation4::Anticlockwise => self.anticlockwise(),
+        }
+    }
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, PartialOrd, Ord)]
