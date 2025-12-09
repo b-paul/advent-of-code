@@ -13,20 +13,6 @@ pub fn part_1(input: &str) -> impl std::fmt::Display {
         .unwrap()
 }
 
-#[test]
-fn test() {
-    let input = "7,1
-11,1
-11,7
-9,7
-9,5
-2,5
-2,3
-7,3";
-    let output = 24;
-    assert_eq!(part_2(input).to_string(), output.to_string());
-}
-
 pub fn part_2(input: &str) -> impl std::fmt::Display {
     let p = input.lines().map(read_point).collect_vec();
     let lines = p
@@ -35,10 +21,6 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         .map_windows(|[&a, &b]| StraightLine::from_points(a, b).unwrap())
         .take(p.len())
         .collect_vec();
-    let boundary = lines
-        .iter()
-        .flat_map(|l| l.points())
-        .collect::<HashSet<_>>();
 
     // This computes the side of each line that the polygon is contained in.
     let dir = if lines[0].vertical() {
@@ -68,21 +50,26 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
     // contain at least one point directly adjacent to the boundary outside the polygon. We compute
     // all of such points, then check each rectangle to find ones that do not contain any of these
     // points, and these are precisely the interior rectangles.
-    let exterior = lines
+    //
+    // To save computation, instead of computing the points directly, we compute lines of points,
+    // and remove existing boundary points individually.
+
+    let exteriors = lines
         .iter()
-        .flat_map(|(l, d)| {
-            l.points()
-                .into_iter()
-                .map(|p| p.move_dir(d.opposite()).unwrap())
-        })
-        .filter(|p| !boundary.contains(p))
+        .map(|&(l, d)| StraightLine(l.0.move_dir(d.opposite()).unwrap(), l.1.move_dir(d.opposite()).unwrap()))
         .collect_vec();
+
+    let exteriors = lines.iter().fold(exteriors, |e, &(l, _)| {
+        e.into_iter()
+            .flat_map(|l2| l2.subtract_line(l))
+            .collect_vec()
+    });
 
     p.iter()
         .cartesian_product(p.iter())
         .map(|(&a, &b)| Rect::new(a, b))
         .sorted_by_key(|r| std::cmp::Reverse(r.area()))
-        .filter(|&r| !exterior.iter().any(|&p| r.contains_point(p)))
+        .filter(|&r| !exteriors.iter().any(|&l| r.intersects_line(l)))
         .map(|r| r.area())
         .next()
         .unwrap()

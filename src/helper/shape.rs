@@ -76,6 +76,50 @@ impl StraightLine {
                 .collect()
         }
     }
+
+    /// Remove all points from the given line from this line and return the resulting possibly
+    /// multiple lines left.
+    pub fn subtract_line(self, minus: StraightLine) -> Vec<StraightLine> {
+        if self.intersects_perp(minus).is_none() {
+            return vec![self];
+        }
+        let (r1, r2) = match (self.vertical(), minus.vertical()) {
+            (true, true) | (false, false) => (self.point_range(), minus.point_range()),
+            (true, false) => (self.point_range(), minus.0.y..=minus.0.y),
+            (false, true) => (self.point_range(), minus.0.x..=minus.0.x),
+        };
+        match (*r2.start() <= *r1.start(), *r1.end() <= *r2.end()) {
+            (true, true) => vec![].into_iter(),
+            (true, false) => vec![*r2.end() + 1..=*r1.end()].into_iter(),
+            (false, true) => vec![*r1.start()..=*r2.start() - 1].into_iter(),
+            (false, false) => vec![*r1.start()..=*r2.start() - 1, *r2.end() + 1..=*r1.start()].into_iter(),
+        }
+        .map(move |r: RangeInclusive<usize>| {
+            if self.vertical() {
+                StraightLine(
+                    Point {
+                        x: self.0.x,
+                        y: *r.start(),
+                    },
+                    Point {
+                        x: self.0.x,
+                        y: *r.end(),
+                    },
+                )
+            } else {
+                StraightLine(
+                    Point {
+                        x: *r.start(),
+                        y: self.0.y,
+                    },
+                    Point {
+                        x: *r.end(),
+                        y: self.0.y,
+                    },
+                )
+            }
+        }).collect()
+    }
 }
 
 /// A rectangle formed by a top right and bottom left vertex in 2d space (with integer
@@ -135,5 +179,13 @@ impl Rect {
     /// Determine whether a point is contained inside this rectangle.
     pub fn contains_point(&self, p: Point) -> bool {
         (self.ul.x..=self.dr.x).contains(&p.x) && (self.ul.y..=self.dr.y).contains(&p.y)
+    }
+
+    /// Determine whether a line intersects this rectangle
+    pub fn intersects_line(&self, l: StraightLine) -> bool {
+        let [top, right, bottom, left] = self.boundary();
+        l.vertical() && (top.intersects_perp(l).is_some() || bottom.intersects_perp(l).is_some())
+            || l.horizontal()
+                && (right.intersects_perp(l).is_some() || left.intersects_perp(l).is_some())
     }
 }
