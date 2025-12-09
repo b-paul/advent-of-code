@@ -43,7 +43,6 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
             (v, d2)
         })
         .0;
-    let lines = lines.into_iter().zip(dirs).collect_vec();
 
     // Notice that any rectangle that is not contained in the polygon must still contain points on
     // the boundary of the polygon. Since it also contains points not in the polygon, it must
@@ -56,7 +55,8 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     let exteriors = lines
         .iter()
-        .map(|&(l, d)| {
+        .zip(dirs)
+        .map(|(&l, d)| {
             StraightLine(
                 l.0.move_dir(d.opposite()).unwrap(),
                 l.1.move_dir(d.opposite()).unwrap(),
@@ -64,7 +64,7 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
         })
         .collect_vec();
 
-    let exteriors = lines.iter().fold(exteriors, |e, &(l, _)| {
+    let exteriors = lines.iter().fold(exteriors, |e, &l| {
         e.into_iter()
             .flat_map(|l2| l2.subtract_line(l))
             .collect_vec()
