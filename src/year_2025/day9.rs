@@ -56,7 +56,12 @@ pub fn part_2(input: &str) -> impl std::fmt::Display {
 
     let exteriors = lines
         .iter()
-        .map(|&(l, d)| StraightLine(l.0.move_dir(d.opposite()).unwrap(), l.1.move_dir(d.opposite()).unwrap()))
+        .map(|&(l, d)| {
+            StraightLine(
+                l.0.move_dir(d.opposite()).unwrap(),
+                l.1.move_dir(d.opposite()).unwrap(),
+            )
+        })
         .collect_vec();
 
     let exteriors = lines.iter().fold(exteriors, |e, &(l, _)| {
