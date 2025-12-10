@@ -9,6 +9,7 @@ edition = "2021"
 anyhow = "1.0.75"
 bitvec = "1.0.1"
 clap = { version = "4.4.8", features = ["derive"] }
+good_lp = "1.14.2"
 itertools = "0.10.5"
 nalgebra = "0.32.3"
 nom = "7.1.3"
