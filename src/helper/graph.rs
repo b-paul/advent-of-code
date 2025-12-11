@@ -136,7 +136,7 @@ pub trait DigraphView<V, E> {
 }
 
 pub struct EdgeMap<V, E> {
-    map: HashMap<V, Vec<(E, V)>>,
+    pub map: HashMap<V, Vec<(E, V)>>,
 }
 
 impl<V, E> DigraphView<V, E> for EdgeMap<V, E>
